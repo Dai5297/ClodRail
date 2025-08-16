@@ -1,0 +1,747 @@
+/* 车次查询页面样式 */
+
+/* 搜索头部 */
+.search-header {
+    background-color: #1976D2;
+    color: #fff;
+    padding: 16px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.search-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.route-display {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.route-cities {
+    font-size: 18px;
+    font-weight: 600;
+    margin-right: 12px;
+}
+
+.route-arrow {
+    width: 20px;
+    height: 20px;
+    margin: 0 8px;
+}
+
+.search-date {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.modify-search {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modify-search:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.search-stats {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* 快速筛选 */
+.quick-filters {
+    background-color: #fff;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    position: sticky;
+    top: 84px;
+    z-index: 9;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.filter-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-tab {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    font-size: 12px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.filter-tab.active {
+    background-color: #1976D2;
+    color: #fff;
+    border-color: #1976D2;
+}
+
+.filter-tab:hover:not(.active) {
+    border-color: #1976D2;
+    color: #1976D2;
+}
+
+/* 排序选项 */
+.sort-options {
+    background-color: #fff;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sort-item {
+    flex: 1;
+    text-align: center;
+    padding: 8px 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.sort-item.active {
+    color: #1976D2;
+}
+
+.sort-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.sort-arrow {
+    width: 12px;
+    height: 12px;
+    margin-left: 4px;
+    transition: transform 0.3s ease;
+}
+
+.sort-item.desc .sort-arrow {
+    transform: rotate(180deg);
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    border-color: #1976D2;
+    color: #1976D2;
+}
+
+.filter-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+}
+
+.filter-text {
+    font-size: 12px;
+}
+
+/* 车次列表 */
+.train-list {
+    background-color: #f5f5f5;
+    padding-bottom: 20px;
+}
+
+.train-item {
+    background-color: #fff;
+    margin: 8px 12px;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.train-item:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.train-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.train-number {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.train-type {
+    font-size: 12px;
+    color: #666;
+    margin-left: 8px;
+}
+
+.ticket-status {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.ticket-status.available {
+    background-color: #E8F5E8;
+    color: #4CAF50;
+}
+
+.ticket-status.tight {
+    background-color: #FFF3E0;
+    color: #FF9800;
+}
+
+.ticket-status.unavailable {
+    background-color: #FFEBEE;
+    color: #f44336;
+}
+
+.train-route {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.route-station {
+    flex: 1;
+    text-align: center;
+}
+
+.route-station:first-child {
+    text-align: left;
+}
+
+.route-station:last-child {
+    text-align: right;
+}
+
+.station-time {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.station-name {
+    font-size: 14px;
+    color: #666;
+}
+
+.route-middle {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 16px;
+}
+
+.route-duration {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.route-line {
+    width: 100%;
+    height: 1px;
+    background-color: #e0e0e0;
+    position: relative;
+}
+
+.route-line::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+}
+
+.route-line::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #f44336;
+}
+
+.train-seats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.seat-types {
+    display: flex;
+    gap: 16px;
+    flex: 1;
+}
+
+.seat-type {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.seat-name {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.seat-price {
+    font-size: 16px;
+    font-weight: 600;
+    color: #f44336;
+}
+
+.seat-availability {
+    font-size: 10px;
+    color: #999;
+}
+
+.book-btn {
+    padding: 8px 16px;
+    background-color: #1976D2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.book-btn:hover {
+    background-color: #1565C0;
+}
+
+.book-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* 空状态 */
+.empty-trains {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.empty-image {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+}
+
+.empty-title {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.empty-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.retry-btn {
+    padding: 10px 20px;
+    background-color: #1976D2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.retry-btn:hover {
+    background-color: #1565C0;
+}
+
+/* 加载状态 */
+.loading-trains {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #1976D2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+.loading-text {
+    font-size: 14px;
+    color: #666;
+}
+
+/* 筛选弹窗 */
+.filter-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.filter-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.filter-content {
+    background-color: #fff;
+    border-radius: 12px 12px 0 0;
+    width: 100%;
+    max-height: 70%;
+    overflow: hidden;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.filter-modal.show .filter-content {
+    transform: translateY(0);
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.filter-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.filter-reset {
+    font-size: 14px;
+    color: #1976D2;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.filter-body {
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.filter-section {
+    margin-bottom: 24px;
+}
+
+.filter-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter-option {
+    padding: 8px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.filter-option.active {
+    background-color: #1976D2;
+    color: #fff;
+    border-color: #1976D2;
+}
+
+.filter-option:hover:not(.active) {
+    border-color: #1976D2;
+    color: #1976D2;
+}
+
+.time-range {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.time-slot {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.time-slot.active {
+    background-color: #1976D2;
+    color: #fff;
+    border-color: #1976D2;
+}
+
+.time-slot:hover:not(.active) {
+    border-color: #1976D2;
+    background-color: #f3f8ff;
+}
+
+.time-label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.time-range-text {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 12px;
+    padding: 16px 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.filter-cancel {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #666;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-cancel:hover {
+    border-color: #ccc;
+    background-color: #f9f9f9;
+}
+
+.filter-confirm {
+    flex: 2;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #1976D2;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.filter-confirm:hover {
+    background-color: #1565C0;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .search-header {
+        padding: 12px 16px;
+    }
+    
+    .route-cities {
+        font-size: 16px;
+    }
+    
+    .search-date {
+        font-size: 13px;
+    }
+    
+    .quick-filters {
+        padding: 10px 16px;
+    }
+    
+    .sort-options {
+        padding: 10px 16px;
+    }
+    
+    .sort-text {
+        font-size: 13px;
+    }
+    
+    .train-item {
+        margin: 6px 10px;
+        padding: 14px;
+    }
+    
+    .train-number {
+        font-size: 16px;
+    }
+    
+    .station-time {
+        font-size: 18px;
+    }
+    
+    .station-name {
+        font-size: 13px;
+    }
+    
+    .route-middle {
+        margin: 0 12px;
+    }
+    
+    .seat-types {
+        gap: 12px;
+    }
+    
+    .seat-price {
+        font-size: 15px;
+    }
+    
+    .book-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    
+    .filter-body {
+        padding: 16px;
+    }
+    
+    .time-range {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 360px) {
+    .search-header {
+        padding: 10px 12px;
+    }
+    
+    .route-cities {
+        font-size: 15px;
+    }
+    
+    .modify-search {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+    
+    .quick-filters {
+        padding: 8px 12px;
+    }
+    
+    .filter-tab {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+    
+    .sort-options {
+        padding: 8px 12px;
+    }
+    
+    .sort-text {
+        font-size: 12px;
+    }
+    
+    .train-item {
+        margin: 4px 8px;
+        padding: 12px;
+    }
+    
+    .train-number {
+        font-size: 15px;
+    }
+    
+    .station-time {
+        font-size: 16px;
+    }
+    
+    .route-middle {
+        margin: 0 8px;
+    }
+    
+    .seat-types {
+        gap: 8px;
+    }
+    
+    .seat-price {
+        font-size: 14px;
+    }
+    
+    .book-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+}

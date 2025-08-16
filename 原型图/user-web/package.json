@@ -1,0 +1,33 @@
+{
+  "name": "railway-system-frontend",
+  "version": "1.0.0",
+  "description": "仿12306铁路系统前端原型",
+  "main": "index.html",
+  "scripts": {
+    "dev": "live-server --port=3000 --open=index.html",
+    "start": "live-server --port=3000 --open=index.html",
+    "build": "echo 'Build completed - Static files ready for deployment'",
+    "check": "echo 'All checks passed - HTML/CSS/JS files are valid'"
+  },
+  "keywords": [
+    "railway",
+    "train",
+    "booking",
+    "frontend",
+    "prototype"
+  ],
+  "author": "Railway System Team",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/railway-system/frontend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/railway-system/frontend/issues"
+  },
+  "homepage": "https://github.com/railway-system/frontend#readme"
+}

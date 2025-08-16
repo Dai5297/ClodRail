@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>铁路购票 - 车次查询</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/search.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 搜索头部 -->
+        <div class="search-header">
+            <div class="search-info">
+                <div class="route-info">
+                    <span class="from-station">北京</span>
+                    <span class="route-arrow">→</span>
+                    <span class="to-station">上海</span>
+                </div>
+                <div class="date-info">
+                    <span class="search-date">今天</span>
+                    <span class="week-day">周一</span>
+                </div>
+            </div>
+            <div class="search-actions">
+                <div class="action-btn" id="filterBtn">
+                    <span class="action-icon">🔽</span>
+                    <span class="action-text">筛选</span>
+                </div>
+                <div class="action-btn" id="refreshBtn">
+                    <span class="action-icon">🔄</span>
+                    <span class="action-text">刷新</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速筛选标签 -->
+        <div class="quick-filters">
+            <div class="filter-tags">
+                <div class="filter-tag active" data-time="all">全部时间</div>
+                <div class="filter-tag" data-time="morning">06:00-12:00</div>
+                <div class="filter-tag" data-time="afternoon">12:00-18:00</div>
+                <div class="filter-tag" data-time="evening">18:00-24:00</div>
+                <div class="filter-tag" data-type="G">高速动车</div>
+                <div class="filter-tag" data-type="D">动车</div>
+                <div class="filter-tag" data-ticket="true">有票</div>
+            </div>
+        </div>
+
+        <!-- 车次列表 -->
+        <div class="train-list" id="trainList">
+            <div class="list-header">
+                <span class="result-count">共找到42个车次</span>
+                <div class="sort-options">
+                    <span class="sort-item active" data-type="time">时间</span>
+                    <span class="sort-item" data-type="duration">耗时</span>
+                    <span class="sort-item" data-type="price">价格</span>
+                </div>
+            </div>
+            
+            <!-- 车次项目 -->
+            <div class="train-item" data-train="G1">
+                <div class="train-header">
+                    <div class="train-info">
+                        <span class="train-no">G1</span>
+                        <span class="train-type">高速动车</span>
+                    </div>
+                    <div class="train-status available">有票</div>
+                </div>
+                
+                <div class="train-schedule">
+                    <div class="schedule-item">
+                        <div class="time">07:00</div>
+                        <div class="station">北京南</div>
+                    </div>
+                    
+                    <div class="schedule-middle">
+                        <div class="duration">4小时28分</div>
+                        <div class="train-line">
+                            <div class="line-start"></div>
+                            <div class="line-middle"></div>
+                            <div class="line-end"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="schedule-item">
+                        <div class="time">11:28</div>
+                        <div class="station">上海虹桥</div>
+                    </div>
+                </div>
+                
+                <div class="seat-info">
+                    <div class="seat-item">
+                        <div class="seat-type">商务座</div>
+                        <div class="seat-price">¥1748</div>
+                        <div class="seat-count available">5</div>
+                    </div>
+                    <div class="seat-item">
+                        <div class="seat-type">一等座</div>
+                        <div class="seat-price">¥933</div>
+                        <div class="seat-count available">充足</div>
+                    </div>
+                    <div class="seat-item">
+                        <div class="seat-type">二等座</div>
+                        <div class="seat-price">¥553</div>
+                        <div class="seat-count available">充足</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="train-item" data-train="G3">
+                <div class="train-header">
+                    <div class="train-info">
+                        <span class="train-no">G3</span>
+                        <span class="train-type">高速动车</span>
+                    </div>
+                    <div class="train-status available">有票</div>
+                </div>
+                
+                <div class="train-schedule">
+                    <div class="schedule-item">
+                        <div class="time">08:05</div>
+                        <div class="station">北京南</div>
+                    </div>
+                    
+                    <div class="schedule-middle">
+                        <div class="duration">4小时18分</div>
+                        <div class="train-line">
+                            <div class="line-start"></div>
+                            <div class="line-middle"></div>
+                            <div class="line-end"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="schedule-item">
+                        <div class="time">12:23</div>
+                        <div class="station">上海虹桥</div>
+                    </div>
+                </div>
+                
+                <div class="seat-info">
+                    <div class="seat-item">
+                        <div class="seat-type">商务座</div>
+                        <div class="seat-price">¥1748</div>
+                        <div class="seat-count available">2</div>
+                    </div>
+                    <div class="seat-item">
+                        <div class="seat-type">一等座</div>
+                        <div class="seat-price">¥933</div>
+                        <div class="seat-count available">充足</div>
+                    </div>
+                    <div class="seat-item">
+                        <div class="seat-type">二等座</div>
+                        <div class="seat-price">¥553</div>
+                        <div class="seat-count available">充足</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="train-item" data-train="D321">
+                <div class="train-header">
+                    <div class="train-info">
+                        <span class="train-no">D321</span>
+                        <span class="train-type">动车</span>
+                    </div>
+                    <div class="train-status sold-out">无票</div>
+                </div>
+                
+                <div class="train-schedule">
+                    <div class="schedule-item">
+                        <div class="time">14:30</div>
+                        <div class="station">北京南</div>
+                    </div>
+                    
+                    <div class="schedule-middle">
+                        <div class="duration">5小时45分</div>
+                        <div class="train-line">
+                            <div class="line-start"></div>
+                            <div class="line-middle"></div>
+                            <div class="line-end"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="schedule-item">
+                        <div class="time">20:15</div>
+                        <div class="station">上海虹桥</div>
+                    </div>
+                </div>
+                
+                <div class="no-ticket-info">
+                    <span class="no-ticket-text">该车次暂无余票</span>
+                    <span class="waiting-text">加入候补</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 加载状态 -->
+        <div class="loading-container" id="loadingContainer" style="display: none;">
+            <div class="loading-spinner"></div>
+            <span class="loading-text">正在查询车次信息...</span>
+        </div>
+
+        <!-- 空状态 -->
+        <div class="empty-container" id="emptyContainer" style="display: none;">
+            <div class="empty-placeholder">🚄</div>
+            <span class="empty-text">暂无符合条件的车次</span>
+            <button class="retry-btn">重新查询</button>
+        </div>
+    </div>
+
+    <!-- 筛选弹窗 -->
+    <div class="filter-modal" id="filterModal">
+        <div class="filter-content">
+            <div class="filter-header">
+                <span class="filter-title">筛选条件</span>
+                <span class="reset-btn">重置</span>
+            </div>
+            
+            <div class="filter-body">
+                <!-- 出发时间筛选 -->
+                <div class="filter-section">
+                    <div class="section-title">出发时间</div>
+                    <div class="time-options">
+                        <div class="time-option active" data-value="all">
+                            <span>不限</span>
+                        </div>
+                        <div class="time-option" data-value="06-12">
+                            <span>06:00-12:00</span>
+                        </div>
+                        <div class="time-option" data-value="12-18">
+                            <span>12:00-18:00</span>
+                        </div>
+                        <div class="time-option" data-value="18-24">
+                            <span>18:00-24:00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 车次类型筛选 -->
+                <div class="filter-section">
+                    <div class="section-title">车次类型</div>
+                    <div class="train-type-options">
+                        <div class="type-option" data-type="G">
+                            <span>高速动车(G)</span>
+                        </div>
+                        <div class="type-option" data-type="D">
+                            <span>动车(D)</span>
+                        </div>
+                        <div class="type-option" data-type="C">
+                            <span>城际(C)</span>
+                        </div>
+                        <div class="type-option" data-type="Z">
+                            <span>直达(Z)</span>
+                        </div>
+                        <div class="type-option" data-type="T">
+                            <span>特快(T)</span>
+                        </div>
+                        <div class="type-option" data-type="K">
+                            <span>快速(K)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 座席类型筛选 -->
+                <div class="filter-section">
+                    <div class="section-title">座席类型</div>
+                    <div class="seat-type-options">
+                        <div class="seat-option" data-type="商务座">
+                            <span>商务座</span>
+                        </div>
+                        <div class="seat-option" data-type="一等座">
+                            <span>一等座</span>
+                        </div>
+                        <div class="seat-option" data-type="二等座">
+                            <span>二等座</span>
+                        </div>
+                        <div class="seat-option" data-type="硬卧">
+                            <span>硬卧</span>
+                        </div>
+                        <div class="seat-option" data-type="软卧">
+                            <span>软卧</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-footer">
+                <button class="cancel-btn">取消</button>
+                <button class="confirm-btn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item" data-page="index">
+            <div class="nav-icon">🏠</div>
+            <span class="nav-text">首页</span>
+        </div>
+        <div class="nav-item active" data-page="search">
+            <div class="nav-icon active">🔍</div>
+            <span class="nav-text">查询</span>
+        </div>
+        <div class="nav-item" data-page="order">
+            <div class="nav-icon">📋</div>
+            <span class="nav-text">订单</span>
+        </div>
+        <div class="nav-item" data-page="profile">
+            <div class="nav-icon">👤</div>
+            <span class="nav-text">我的</span>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/search.js"></script>
+</body>
+</html>

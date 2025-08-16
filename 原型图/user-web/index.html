@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仿12306铁路票务系统</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/floating-ai.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="images/logo.png" alt="铁路票务系统" class="logo-img">
+                <span class="logo-text">铁路票务系统</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link active">首页</a></li>
+                <li><a href="train-search.html" class="nav-link">车票</a></li>
+                <li><a href="points-mall.html" class="nav-link">积分商城</a></li>
+                <li><a href="ai-assistant.html" class="nav-link">AI助手</a></li>
+                <li><a href="profile.html" class="nav-link">个人中心</a></li>
+            </ul>
+            <div class="nav-user">
+                <span class="user-name">张三</span>
+                <span class="user-points">积分: 1,250</span>
+                <button class="btn btn-outline btn-sm" id="logoutBtn">退出</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="main-content">
+        <!-- 搜索区域 -->
+        <section class="search-section">
+            <div class="search-container">
+                <h1 class="search-title">火车票预订</h1>
+                <div class="search-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="departure">出发地</label>
+                            <select id="departure" class="form-select">
+                                <option value="北京">北京</option>
+                                <option value="上海">上海</option>
+                                <option value="广州">广州</option>
+                                <option value="深圳">深圳</option>
+                                <option value="成都">成都</option>
+                                <option value="重庆">重庆</option>
+                                <option value="杭州">杭州</option>
+                                <option value="南京">南京</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="destination">目的地</label>
+                            <select id="destination" class="form-select">
+                                <option value="上海">上海</option>
+                                <option value="北京">北京</option>
+                                <option value="广州">广州</option>
+                                <option value="深圳">深圳</option>
+                                <option value="成都">成都</option>
+                                <option value="重庆">重庆</option>
+                                <option value="杭州">杭州</option>
+                                <option value="南京">南京</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">出发日期</label>
+                            <input type="date" id="date" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="passengers">乘客</label>
+                            <select id="passengers" class="form-select">
+                                <option value="1">成人1</option>
+                                <option value="2">成人2</option>
+                                <option value="3">成人3</option>
+                                <option value="4">成人4</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-search" id="searchBtn">
+                            🔍 搜索车票
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 热门线路推荐 -->
+        <section class="popular-routes">
+            <div class="container">
+                <h2 class="section-title">热门线路推荐</h2>
+                <div class="routes-grid">
+                    <div class="route-card">
+                        <div class="route-info">
+                            <h3 class="route-name">北京 → 上海</h3>
+                            <p class="route-price">¥553起</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm">查看</button>
+                    </div>
+                    <div class="route-card">
+                        <div class="route-info">
+                            <h3 class="route-name">广州 → 深圳</h3>
+                            <p class="route-price">¥75起</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm">查看</button>
+                    </div>
+                    <div class="route-card">
+                        <div class="route-info">
+                            <h3 class="route-name">成都 → 重庆</h3>
+                            <p class="route-price">¥154起</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm">查看</button>
+                    </div>
+                    <div class="route-card">
+                        <div class="route-info">
+                            <h3 class="route-name">杭州 → 南京</h3>
+                            <p class="route-price">¥267起</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm">查看</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 服务特色 -->
+        <section class="features">
+            <div class="container">
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">🎯</div>
+                        <h3 class="feature-title">智能推荐</h3>
+                        <p class="feature-desc">AI智能分析，为您推荐最优出行方案</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🔒</div>
+                        <h3 class="feature-title">安全支付</h3>
+                        <p class="feature-desc">多重安全保障，支付更安心</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📱</div>
+                        <h3 class="feature-title">便捷购票</h3>
+                        <p class="feature-desc">一键购票，快速出行</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🤖</div>
+                        <h3 class="feature-title">AI客服</h3>
+                        <p class="feature-desc">24小时智能客服，随时为您服务</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 仿12306铁路票务系统. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/utils.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/floating-ai.js"></script>
+</body>
+</html>

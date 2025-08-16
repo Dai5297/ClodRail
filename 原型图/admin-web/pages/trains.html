@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>车次管理 - 铁路票务管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20minimalist%20train%20logo%20icon%20blue%20gradient%20circular%20design&image_size=square" alt="Logo" class="logo">
+            <h3>管理系统</h3>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="../index.html" class="menu-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>仪表板</span>
+            </a>
+            <a href="users.html" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>用户管理</span>
+            </a>
+            <a href="trains.html" class="menu-item active">
+                <i class="fas fa-train"></i>
+                <span>车次管理</span>
+            </a>
+            <a href="orders.html" class="menu-item">
+                <i class="fas fa-ticket-alt"></i>
+                <span>订单管理</span>
+            </a>
+            <a href="statistics.html" class="menu-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>数据统计</span>
+            </a>
+            <a href="settings.html" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>系统设置</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 顶部导航栏 -->
+        <div class="top-navbar">
+            <div class="navbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="breadcrumb">
+                    <a href="../index.html"><i class="fas fa-home"></i></a>
+                    <span>/</span>
+                    <span>车次管理</span>
+                </div>
+            </div>
+            <div class="navbar-right">
+                <div class="user-info" onclick="showUserMenu()">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span id="adminName">管理员</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页面内容 -->
+        <div class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">车次管理</h1>
+                <p class="page-description">管理列车车次信息、时刻表和座位配置</p>
+            </div>
+
+            <!-- 操作栏 -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="search-bar">
+                        <div class="form-group search-input">
+                            <input type="text" class="form-control" id="trainSearch" placeholder="搜索车次号、起点站、终点站...">
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="trainTypeFilter">
+                                <option value="">全部类型</option>
+                                <option value="G">高速动车组(G)</option>
+                                <option value="D">动车组(D)</option>
+                                <option value="C">城际动车组(C)</option>
+                                <option value="Z">直达特快(Z)</option>
+                                <option value="T">特快(T)</option>
+                                <option value="K">快速(K)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="statusFilter">
+                                <option value="">全部状态</option>
+                                <option value="active">运行中</option>
+                                <option value="suspended">停运</option>
+                                <option value="maintenance">检修</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="searchTrains()">
+                            <i class="fas fa-search"></i> 搜索
+                        </button>
+                        <button class="btn btn-success" onclick="showAddTrainModal()">
+                            <i class="fas fa-plus"></i> 新增车次
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportTrains()">
+                            <i class="fas fa-download"></i> 导出
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 车次列表 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-train"></i>
+                        车次列表
+                    </h3>
+                    <div class="card-actions">
+                        <span id="trainCount">共 0 个车次</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="data-table" id="trainsTable">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                    </th>
+                                    <th data-sort="trainNumber">车次号</th>
+                                    <th data-sort="trainType">类型</th>
+                                    <th data-sort="startStation">起点站</th>
+                                    <th data-sort="endStation">终点站</th>
+                                    <th data-sort="departureTime">发车时间</th>
+                                    <th data-sort="arrivalTime">到达时间</th>
+                                    <th data-sort="duration">运行时长</th>
+                                    <th data-sort="price">票价起</th>
+                                    <th data-sort="status">状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trainsTableBody">
+                                <!-- 动态加载 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 批量操作 -->
+                    <div class="batch-actions" id="batchActions" style="display: none; margin-top: 15px;">
+                        <button class="btn btn-warning btn-sm" onclick="batchUpdateStatus('suspended')">
+                            <i class="fas fa-pause"></i> 批量停运
+                        </button>
+                        <button class="btn btn-success btn-sm" onclick="batchUpdateStatus('active')">
+                            <i class="fas fa-play"></i> 批量启用
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="batchDeleteTrains()">
+                            <i class="fas fa-trash"></i> 批量删除
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增/编辑车次模态框 -->
+    <div class="modal" id="trainModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="trainModalTitle">新增车次</h3>
+                <button class="modal-close" onclick="ModalManager.hide('trainModal')">&times;</button>
+            </div>
+            <form id="trainForm">
+                <div class="modal-body">
+                    <input type="hidden" id="trainId" name="id">
+                    
+                    <!-- 基本信息 -->
+                    <div class="form-section">
+                        <h4>基本信息</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="trainNumber">车次号 *</label>
+                                <input type="text" class="form-control" id="trainNumber" name="trainNumber" required placeholder="如：G1234">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="trainType">车次类型 *</label>
+                                <select class="form-control" id="trainType" name="trainType" required>
+                                    <option value="">请选择</option>
+                                    <option value="G">高速动车组(G)</option>
+                                    <option value="D">动车组(D)</option>
+                                    <option value="C">城际动车组(C)</option>
+                                    <option value="Z">直达特快(Z)</option>
+                                    <option value="T">特快(T)</option>
+                                    <option value="K">快速(K)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="startStation">起点站 *</label>
+                                <input type="text" class="form-control" id="startStation" name="startStation" required placeholder="如：北京南">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="endStation">终点站 *</label>
+                                <input type="text" class="form-control" id="endStation" name="endStation" required placeholder="如：上海虹桥">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 时刻信息 -->
+                    <div class="form-section">
+                        <h4>时刻信息</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="departureTime">发车时间 *</label>
+                                <input type="time" class="form-control" id="departureTime" name="departureTime" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="arrivalTime">到达时间 *</label>
+                                <input type="time" class="form-control" id="arrivalTime" name="arrivalTime" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="duration">运行时长</label>
+                                <input type="text" class="form-control" id="duration" name="duration" readonly placeholder="自动计算">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="status">运行状态</label>
+                                <select class="form-control" id="status" name="status">
+                                    <option value="active">运行中</option>
+                                    <option value="suspended">停运</option>
+                                    <option value="maintenance">检修</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 座位配置 -->
+                    <div class="form-section">
+                        <h4>座位配置</h4>
+                        <div class="seat-config">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="businessSeats">商务座</label>
+                                    <input type="number" class="form-control" id="businessSeats" name="businessSeats" min="0" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="firstClassSeats">一等座</label>
+                                    <input type="number" class="form-control" id="firstClassSeats" name="firstClassSeats" min="0" value="0">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="secondClassSeats">二等座</label>
+                                    <input type="number" class="form-control" id="secondClassSeats" name="secondClassSeats" min="0" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="standingTickets">无座</label>
+                                    <input type="number" class="form-control" id="standingTickets" name="standingTickets" min="0" value="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 票价设置 -->
+                    <div class="form-section">
+                        <h4>票价设置</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="businessPrice">商务座票价</label>
+                                <input type="number" class="form-control" id="businessPrice" name="businessPrice" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="firstClassPrice">一等座票价</label>
+                                <input type="number" class="form-control" id="firstClassPrice" name="firstClassPrice" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="secondClassPrice">二等座票价</label>
+                                <input type="number" class="form-control" id="secondClassPrice" name="secondClassPrice" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="standingPrice">无座票价</label>
+                                <input type="number" class="form-control" id="standingPrice" name="standingPrice" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="ModalManager.hide('trainModal')">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 车次详情模态框 -->
+    <div class="modal" id="trainDetailModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3 class="modal-title">车次详情</h3>
+                <button class="modal-close" onclick="ModalManager.hide('trainDetailModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="trainDetailContent">
+                    <!-- 动态加载车次详情 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="ModalManager.hide('trainDetailModal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户菜单 -->
+    <div class="modal" id="userMenuModal">
+        <div class="modal-content" style="max-width: 300px;">
+            <div class="modal-header">
+                <h3 class="modal-title">用户菜单</h3>
+                <button class="modal-close" onclick="ModalManager.hide('userMenuModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="user-menu">
+                    <a href="#" class="user-menu-item">
+                        <i class="fas fa-user"></i>
+                        个人资料
+                    </a>
+                    <a href="#" class="user-menu-item">
+                        <i class="fas fa-key"></i>
+                        修改密码
+                    </a>
+                    <a href="#" class="user-menu-item">
+                        <i class="fas fa-cog"></i>
+                        系统设置
+                    </a>
+                    <hr style="margin: 10px 0;">
+                    <a href="#" class="user-menu-item" onclick="adminLogout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        退出登录
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+    <script>
+        // 车次数据表格管理器
+        class TrainsTableManager extends DataTableManager {
+            createTableRow(train) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <input type="checkbox" class="train-checkbox" value="${train.id}" onchange="updateBatchActions()">
+                    </td>
+                    <td><strong>${train.trainNumber}</strong></td>
+                    <td>
+                        <span class="train-type-badge train-type-${train.trainType.toLowerCase()}">
+                            ${train.trainType}
+                        </span>
+                    </td>
+                    <td>${train.startStation}</td>
+                    <td>${train.endStation}</td>
+                    <td>${train.departureTime}</td>
+                    <td>${train.arrivalTime}</td>
+                    <td>${train.duration}</td>
+                    <td>¥${train.minPrice}</td>
+                    <td>
+                        <span class="status-badge status-${train.status === 'active' ? 'active' : train.status === 'suspended' ? 'inactive' : 'pending'}">
+                            ${getStatusText(train.status)}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="viewTrain(${train.id})" title="查看详情">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-warning" onclick="editTrain(${train.id})" title="编辑">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-info" onclick="manageSeatConfig(${train.id})" title="座位配置">
+                            <i class="fas fa-chair"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteTrain(${train.id})" title="删除">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                return row;
+            }
+        }
+
+        // 全局变量
+        let trainsTableManager;
+        let allTrains = [];
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initTrainsPage();
+            loadTrains();
+        });
+
+        // 初始化车次页面
+        function initTrainsPage() {
+            // 设置管理员名称
+            const adminUser = AdminUtils.storage.get('admin-user');
+            if (adminUser) {
+                document.getElementById('adminName').textContent = adminUser.name || '管理员';
+            }
+
+            // 初始化数据表格
+            trainsTableManager = new TrainsTableManager('trainsTable', {
+                pageSize: 15,
+                searchable: false
+            });
+            window.trainsTableManager = trainsTableManager;
+
+            // 绑定表单提交事件
+            document.getElementById('trainForm').addEventListener('submit', handleTrainSubmit);
+
+            // 绑定搜索事件
+            document.getElementById('trainSearch').addEventListener('input', 
+                AdminUtils.debounce(searchTrains, 300)
+            );
+            document.getElementById('trainTypeFilter').addEventListener('change', searchTrains);
+            document.getElementById('statusFilter').addEventListener('change', searchTrains);
+            
+            // 绑定时间变化事件
+            document.getElementById('departureTime').addEventListener('change', calculateDuration);
+            document.getElementById('arrivalTime').addEventListener('change', calculateDuration);
+        }
+
+        // 加载车次数据
+        function loadTrains() {
+            // 模拟从API加载车次数据
+            allTrains = MockDataGenerator.generateTrains(30);
+            updateTrainsDisplay();
+        }
+
+        // 更新车次显示
+        function updateTrainsDisplay() {
+            trainsTableManager.setData(allTrains);
+            document.getElementById('trainCount').textContent = `共 ${allTrains.length} 个车次`;
+        }
+
+        // 搜索车次
+        function searchTrains() {
+            const searchTerm = document.getElementById('trainSearch').value.toLowerCase();
+            const typeFilter = document.getElementById('trainTypeFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            let filteredTrains = MockDataGenerator.generateTrains(30);
+            
+            // 文本搜索
+            if (searchTerm) {
+                filteredTrains = filteredTrains.filter(train => 
+                    train.trainNumber.toLowerCase().includes(searchTerm) ||
+                    train.startStation.toLowerCase().includes(searchTerm) ||
+                    train.endStation.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // 类型筛选
+            if (typeFilter) {
+                filteredTrains = filteredTrains.filter(train => train.trainType === typeFilter);
+            }
+            
+            // 状态筛选
+            if (statusFilter) {
+                filteredTrains = filteredTrains.filter(train => train.status === statusFilter);
+            }
+            
+            allTrains = filteredTrains;
+            updateTrainsDisplay();
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            const statusMap = {
+                'active': '运行中',
+                'suspended': '停运',
+                'maintenance': '检修'
+            };
+            return statusMap[status] || status;
+        }
+
+        // 计算运行时长
+        function calculateDuration() {
+            const departureTime = document.getElementById('departureTime').value;
+            const arrivalTime = document.getElementById('arrivalTime').value;
+            
+            if (departureTime && arrivalTime) {
+                const departure = new Date(`2000-01-01 ${departureTime}`);
+                let arrival = new Date(`2000-01-01 ${arrivalTime}`);
+                
+                // 如果到达时间小于发车时间，说明是第二天到达
+                if (arrival < departure) {
+                    arrival.setDate(arrival.getDate() + 1);
+                }
+                
+                const diffMs = arrival - departure;
+                const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                
+                document.getElementById('duration').value = `${hours}小时${minutes}分钟`;
+            }
+        }
+
+        // 显示新增车次模态框
+        function showAddTrainModal() {
+            document.getElementById('trainModalTitle').textContent = '新增车次';
+            document.getElementById('trainForm').reset();
+            document.getElementById('trainId').value = '';
+            ModalManager.show('trainModal');
+        }
+
+        // 编辑车次
+        function editTrain(trainId) {
+            const train = allTrains.find(t => t.id === trainId);
+            if (!train) return;
+            
+            document.getElementById('trainModalTitle').textContent = '编辑车次';
+            document.getElementById('trainId').value = train.id;
+            document.getElementById('trainNumber').value = train.trainNumber;
+            document.getElementById('trainType').value = train.trainType;
+            document.getElementById('startStation').value = train.startStation;
+            document.getElementById('endStation').value = train.endStation;
+            document.getElementById('departureTime').value = train.departureTime;
+            document.getElementById('arrivalTime').value = train.arrivalTime;
+            document.getElementById('duration').value = train.duration;
+            document.getElementById('status').value = train.status;
+            
+            // 填充座位配置
+            document.getElementById('businessSeats').value = train.seatConfig?.business || 0;
+            document.getElementById('firstClassSeats').value = train.seatConfig?.firstClass || 0;
+            document.getElementById('secondClassSeats').value = train.seatConfig?.secondClass || 0;
+            document.getElementById('standingTickets').value = train.seatConfig?.standing || 0;
+            
+            // 填充票价
+            document.getElementById('businessPrice').value = train.prices?.business || 0;
+            document.getElementById('firstClassPrice').value = train.prices?.firstClass || 0;
+            document.getElementById('secondClassPrice').value = train.prices?.secondClass || 0;
+            document.getElementById('standingPrice').value = train.prices?.standing || 0;
+            
+            ModalManager.show('trainModal');
+        }
+
+        // 查看车次详情
+        function viewTrain(trainId) {
+            const train = allTrains.find(t => t.id === trainId);
+            if (!train) return;
+            
+            const detailContent = document.getElementById('trainDetailContent');
+            detailContent.innerHTML = `
+                <div class="train-detail">
+                    <div class="detail-section">
+                        <h4>基本信息</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>车次号:</label>
+                                <span><strong>${train.trainNumber}</strong></span>
+                            </div>
+                            <div class="detail-item">
+                                <label>车次类型:</label>
+                                <span class="train-type-badge train-type-${train.trainType.toLowerCase()}">
+                                    ${train.trainType}
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <label>起点站:</label>
+                                <span>${train.startStation}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>终点站:</label>
+                                <span>${train.endStation}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>发车时间:</label>
+                                <span>${train.departureTime}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>到达时间:</label>
+                                <span>${train.arrivalTime}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>运行时长:</label>
+                                <span>${train.duration}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>运行状态:</label>
+                                <span class="status-badge status-${train.status === 'active' ? 'active' : train.status === 'suspended' ? 'inactive' : 'pending'}">
+                                    ${getStatusText(train.status)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4>座位配置</h4>
+                        <div class="seat-detail-grid">
+                            <div class="seat-detail-item">
+                                <div class="seat-type">商务座</div>
+                                <div class="seat-count">${train.seatConfig?.business || 0}个</div>
+                                <div class="seat-price">¥${train.prices?.business || 0}</div>
+                            </div>
+                            <div class="seat-detail-item">
+                                <div class="seat-type">一等座</div>
+                                <div class="seat-count">${train.seatConfig?.firstClass || 0}个</div>
+                                <div class="seat-price">¥${train.prices?.firstClass || 0}</div>
+                            </div>
+                            <div class="seat-detail-item">
+                                <div class="seat-type">二等座</div>
+                                <div class="seat-count">${train.seatConfig?.secondClass || 0}个</div>
+                                <div class="seat-price">¥${train.prices?.secondClass || 0}</div>
+                            </div>
+                            <div class="seat-detail-item">
+                                <div class="seat-type">无座</div>
+                                <div class="seat-count">${train.seatConfig?.standing || 0}个</div>
+                                <div class="seat-price">¥${train.prices?.standing || 0}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4>运营统计</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>今日售票:</label>
+                                <span>${Math.floor(Math.random() * 500)}张</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>上座率:</label>
+                                <span>${(Math.random() * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>本月收入:</label>
+                                <span>¥${(Math.random() * 100000).toFixed(2)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>运行天数:</label>
+                                <span>${Math.floor(Math.random() * 365)}天</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            ModalManager.show('trainDetailModal');
+        }
+
+        // 管理座位配置
+        function manageSeatConfig(trainId) {
+            editTrain(trainId);
+            // 可以在这里添加特殊的座位配置逻辑
+        }
+
+        // 删除车次
+        function deleteTrain(trainId) {
+            AdminUtils.confirm('确定要删除这个车次吗？此操作不可恢复。', () => {
+                allTrains = allTrains.filter(t => t.id !== trainId);
+                updateTrainsDisplay();
+                AdminUtils.showMessage('车次删除成功', 'success');
+            });
+        }
+
+        // 处理车次表单提交
+        function handleTrainSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const trainData = Object.fromEntries(formData.entries());
+            
+            // 构建座位配置和票价
+            trainData.seatConfig = {
+                business: parseInt(trainData.businessSeats) || 0,
+                firstClass: parseInt(trainData.firstClassSeats) || 0,
+                secondClass: parseInt(trainData.secondClassSeats) || 0,
+                standing: parseInt(trainData.standingTickets) || 0
+            };
+            
+            trainData.prices = {
+                business: parseFloat(trainData.businessPrice) || 0,
+                firstClass: parseFloat(trainData.firstClassPrice) || 0,
+                secondClass: parseFloat(trainData.secondClassPrice) || 0,
+                standing: parseFloat(trainData.standingPrice) || 0
+            };
+            
+            // 计算最低票价
+            const prices = Object.values(trainData.prices).filter(p => p > 0);
+            trainData.minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+            
+            // 模拟保存操作
+            if (trainData.id) {
+                // 编辑车次
+                const trainIndex = allTrains.findIndex(t => t.id == trainData.id);
+                if (trainIndex !== -1) {
+                    allTrains[trainIndex] = { ...allTrains[trainIndex], ...trainData, id: parseInt(trainData.id) };
+                    AdminUtils.showMessage('车次更新成功', 'success');
+                }
+            } else {
+                // 新增车次
+                const newTrain = {
+                    ...trainData,
+                    id: Math.max(...allTrains.map(t => t.id)) + 1
+                };
+                allTrains.unshift(newTrain);
+                AdminUtils.showMessage('车次创建成功', 'success');
+            }
+            
+            updateTrainsDisplay();
+            ModalManager.hide('trainModal');
+        }
+
+        // 切换全选
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.train-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            updateBatchActions();
+        }
+
+        // 更新批量操作显示
+        function updateBatchActions() {
+            const checkedBoxes = document.querySelectorAll('.train-checkbox:checked');
+            const batchActions = document.getElementById('batchActions');
+            
+            if (checkedBoxes.length > 0) {
+                batchActions.style.display = 'block';
+            } else {
+                batchActions.style.display = 'none';
+            }
+        }
+
+        // 批量更新状态
+        function batchUpdateStatus(status) {
+            const checkedBoxes = document.querySelectorAll('.train-checkbox:checked');
+            const trainIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+            
+            if (trainIds.length === 0) {
+                AdminUtils.showMessage('请选择要操作的车次', 'warning');
+                return;
+            }
+            
+            const statusText = status === 'active' ? '启用' : '停运';
+            AdminUtils.confirm(`确定要${statusText}选中的 ${trainIds.length} 个车次吗？`, () => {
+                trainIds.forEach(trainId => {
+                    const train = allTrains.find(t => t.id === trainId);
+                    if (train) {
+                        train.status = status;
+                    }
+                });
+                
+                updateTrainsDisplay();
+                document.getElementById('selectAll').checked = false;
+                updateBatchActions();
+                AdminUtils.showMessage(`批量${statusText}成功`, 'success');
+            });
+        }
+
+        // 批量删除车次
+        function batchDeleteTrains() {
+            const checkedBoxes = document.querySelectorAll('.train-checkbox:checked');
+            const trainIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+            
+            if (trainIds.length === 0) {
+                AdminUtils.showMessage('请选择要删除的车次', 'warning');
+                return;
+            }
+            
+            AdminUtils.confirm(`确定要删除选中的 ${trainIds.length} 个车次吗？此操作不可恢复。`, () => {
+                allTrains = allTrains.filter(t => !trainIds.includes(t.id));
+                updateTrainsDisplay();
+                document.getElementById('selectAll').checked = false;
+                updateBatchActions();
+                AdminUtils.showMessage('批量删除成功', 'success');
+            });
+        }
+
+        // 导出车次数据
+        function exportTrains() {
+            const exportData = allTrains.map(train => ({
+                '车次号': train.trainNumber,
+                '类型': train.trainType,
+                '起点站': train.startStation,
+                '终点站': train.endStation,
+                '发车时间': train.departureTime,
+                '到达时间': train.arrivalTime,
+                '运行时长': train.duration,
+                '最低票价': `¥${train.minPrice}`,
+                '状态': getStatusText(train.status)
+            }));
+            
+            AdminUtils.exportToCSV(exportData, `车次数据_${AdminUtils.formatDate(new Date(), 'YYYY-MM-DD')}.csv`);
+        }
+
+        // 显示用户菜单
+        function showUserMenu() {
+            ModalManager.show('userMenuModal');
+        }
+
+        // 添加车次相关样式
+        const trainStyles = document.createElement('style');
+        trainStyles.textContent = `
+            .train-type-badge {
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: bold;
+                color: white;
+            }
+            
+            .train-type-g { background-color: #e74c3c; }
+            .train-type-d { background-color: #3498db; }
+            .train-type-c { background-color: #2ecc71; }
+            .train-type-z { background-color: #9b59b6; }
+            .train-type-t { background-color: #f39c12; }
+            .train-type-k { background-color: #95a5a6; }
+            
+            .form-section {
+                margin-bottom: 25px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .form-section:last-child {
+                border-bottom: none;
+            }
+            
+            .form-section h4 {
+                margin-bottom: 15px;
+                color: #333;
+                font-size: 16px;
+                font-weight: 600;
+            }
+            
+            .seat-config {
+                background: #f8f9fa;
+                padding: 15px;
+                border-radius: 6px;
+            }
+            
+            .seat-detail-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+                margin-top: 15px;
+            }
+            
+            .seat-detail-item {
+                background: white;
+                padding: 15px;
+                border-radius: 6px;
+                text-align: center;
+                border: 1px solid #e9ecef;
+            }
+            
+            .seat-type {
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 8px;
+            }
+            
+            .seat-count {
+                font-size: 18px;
+                color: #007bff;
+                margin-bottom: 5px;
+            }
+            
+            .seat-price {
+                color: #28a745;
+                font-weight: 500;
+            }
+            
+            .train-detail {
+                max-height: 70vh;
+                overflow-y: auto;
+            }
+            
+            .detail-section {
+                margin-bottom: 25px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .detail-section:last-child {
+                border-bottom: none;
+            }
+            
+            .detail-section h4 {
+                margin-bottom: 15px;
+                color: #333;
+                font-size: 16px;
+                font-weight: 600;
+            }
+            
+            .detail-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+            }
+            
+            .detail-item {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .detail-item label {
+                font-weight: 500;
+                color: #666;
+                font-size: 14px;
+            }
+            
+            .detail-item span {
+                color: #333;
+                font-size: 14px;
+            }
+            
+            .user-menu-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 12px 16px;
+                color: #333;
+                text-decoration: none;
+                border-radius: 6px;
+                transition: background-color 0.3s ease;
+            }
+            
+            .user-menu-item:hover {
+                background-color: #f8f9fa;
+            }
+        `;
+        document.head.appendChild(trainStyles);
+    </script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>车次查询 - 仿12306铁路票务系统</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/train-search.css">
+    <link rel="stylesheet" href="css/floating-ai.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="images/logo.png" alt="铁路票务系统" class="logo-img">
+                <span class="logo-text">铁路票务系统</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">首页</a></li>
+                <li><a href="train-search.html" class="nav-link active">车票</a></li>
+                <li><a href="points-mall.html" class="nav-link">积分商城</a></li>
+                <li><a href="ai-assistant.html" class="nav-link">AI助手</a></li>
+                <li><a href="profile.html" class="nav-link">个人中心</a></li>
+            </ul>
+            <div class="nav-user">
+                <span class="user-name">张三</span>
+                <span class="user-points">积分: 1,250</span>
+                <button class="btn btn-outline btn-sm" id="logoutBtn">退出</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 搜索条件栏 -->
+    <section class="search-bar">
+        <div class="container">
+            <div class="search-form-compact">
+                <div class="form-group">
+                    <label>出发地</label>
+                    <select id="departure" class="form-select">
+                        <option value="北京">北京</option>
+                        <option value="上海">上海</option>
+                        <option value="广州">广州</option>
+                        <option value="深圳">深圳</option>
+                        <option value="成都">成都</option>
+                        <option value="重庆">重庆</option>
+                        <option value="杭州">杭州</option>
+                        <option value="南京">南京</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>目的地</label>
+                    <select id="destination" class="form-select">
+                        <option value="上海">上海</option>
+                        <option value="北京">北京</option>
+                        <option value="广州">广州</option>
+                        <option value="深圳">深圳</option>
+                        <option value="成都">成都</option>
+                        <option value="重庆">重庆</option>
+                        <option value="杭州">杭州</option>
+                        <option value="南京">南京</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>出发日期</label>
+                    <input type="date" id="date" class="form-input">
+                </div>
+                <button class="btn btn-primary" id="searchBtn">🔍 重新搜索</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 主要内容 -->
+    <main class="main-content">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 筛选条件 -->
+                <aside class="filter-sidebar">
+                    <div class="filter-section">
+                        <h3 class="filter-title">出发时间</h3>
+                        <div class="filter-options">
+                            <label class="filter-option">
+                                <input type="checkbox" value="06:00-12:00">
+                                <span>06:00-12:00</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="12:00-18:00">
+                                <span>12:00-18:00</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="18:00-24:00">
+                                <span>18:00-24:00</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="00:00-06:00">
+                                <span>00:00-06:00</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-section">
+                        <h3 class="filter-title">车次类型</h3>
+                        <div class="filter-options">
+                            <label class="filter-option">
+                                <input type="checkbox" value="G">
+                                <span>高铁(G)</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="D">
+                                <span>动车(D)</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="T">
+                                <span>特快(T)</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="K">
+                                <span>快速(K)</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-section">
+                        <h3 class="filter-title">座位类型</h3>
+                        <div class="filter-options">
+                            <label class="filter-option">
+                                <input type="checkbox" value="business">
+                                <span>商务座</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="first">
+                                <span>一等座</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="second">
+                                <span>二等座</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="sleeper">
+                                <span>卧铺</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-outline btn-block" id="resetFilters">重置筛选</button>
+                </aside>
+
+                <!-- 车次列表 -->
+                <div class="train-list-container">
+                    <div class="list-header">
+                        <h2>车次列表</h2>
+                        <div class="sort-options">
+                            <select id="sortBy" class="form-select">
+                                <option value="time">按时间排序</option>
+                                <option value="price">按价格排序</option>
+                                <option value="duration">按时长排序</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="train-list" id="trainList">
+                        <!-- 车次列表将通过JavaScript动态生成 -->
+                    </div>
+                    
+                    <div class="load-more">
+                        <button class="btn btn-outline" id="loadMoreBtn">加载更多</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 仿12306铁路票务系统. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/utils.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/train-search.js"></script>
+    <script src="js/floating-ai.js"></script>
+</body>
+</html>

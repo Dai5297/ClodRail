@@ -1,0 +1,804 @@
+/* 支付页面样式 */
+
+/* 主要内容 */
+.main-content {
+    padding: 24px 0;
+    min-height: calc(100vh - 64px - 80px);
+    background: #f5f5f5;
+}
+
+/* 进度指示器 */
+.progress-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+    padding: 24px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+.step-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    background: #f0f0f0;
+    color: #8c8c8c;
+    transition: all 0.3s ease;
+}
+
+.step-label {
+    font-size: 12px;
+    color: #8c8c8c;
+    white-space: nowrap;
+}
+
+.progress-step.completed .step-number {
+    background: #52c41a;
+    color: #fff;
+}
+
+.progress-step.completed .step-label {
+    color: #52c41a;
+}
+
+.progress-step.active .step-number {
+    background: #1890FF;
+    color: #fff;
+}
+
+.progress-step.active .step-label {
+    color: #1890FF;
+    font-weight: 500;
+}
+
+.progress-line {
+    width: 80px;
+    height: 2px;
+    background: #f0f0f0;
+    margin: 0 16px;
+}
+
+.progress-line.completed {
+    background: #52c41a;
+}
+
+/* 支付布局 */
+.payment-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 24px;
+}
+
+/* 信息卡片 */
+.info-card,
+.payment-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #262626;
+    font-weight: bold;
+}
+
+.card-content {
+    padding: 24px;
+}
+
+/* 车次信息 */
+.train-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.train-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1890FF;
+    text-align: center;
+}
+
+.train-route {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.route-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+}
+
+.route-item .station {
+    font-size: 18px;
+    font-weight: bold;
+    color: #262626;
+}
+
+.route-item .time {
+    font-size: 16px;
+    color: #1890FF;
+    font-weight: 500;
+}
+
+.route-item .date {
+    font-size: 12px;
+    color: #8c8c8c;
+}
+
+.route-arrow {
+    font-size: 20px;
+    color: #1890FF;
+    flex-shrink: 0;
+}
+
+.train-duration {
+    text-align: center;
+    font-size: 14px;
+    color: #8c8c8c;
+}
+
+/* 乘客信息 */
+.passenger-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.passenger-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #1890FF;
+}
+
+.passenger-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.passenger-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #262626;
+}
+
+.passenger-details {
+    font-size: 12px;
+    color: #8c8c8c;
+}
+
+.passenger-type {
+    font-size: 12px;
+    padding: 2px 8px;
+    background: #e6f7ff;
+    color: #1890FF;
+    border-radius: 12px;
+    align-self: flex-start;
+}
+
+/* 座位信息 */
+.seat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.seat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #52c41a;
+}
+
+.seat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.seat-number {
+    font-size: 16px;
+    font-weight: bold;
+    color: #262626;
+}
+
+.seat-details {
+    font-size: 12px;
+    color: #8c8c8c;
+}
+
+.seat-price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ff4d4f;
+}
+
+/* 费用明细 */
+.price-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.price-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.price-item .label {
+    color: #8c8c8c;
+}
+
+.price-item .value {
+    color: #262626;
+    font-weight: 500;
+}
+
+.price-item.total {
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.price-item.total .label {
+    color: #262626;
+}
+
+.price-item.total .value {
+    color: #ff4d4f;
+    font-size: 18px;
+}
+
+/* 支付方式 */
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.payment-method {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border: 2px solid #f0f0f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.payment-method:hover {
+    border-color: #1890FF;
+    background: #f8f9fa;
+}
+
+.payment-method.selected {
+    border-color: #1890FF;
+    background: #f0f8ff;
+}
+
+.method-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.payment-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.method-info {
+    flex: 1;
+}
+
+.method-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #262626;
+    margin-bottom: 4px;
+}
+
+.method-desc {
+    font-size: 12px;
+    color: #8c8c8c;
+}
+
+.method-radio {
+    position: relative;
+}
+
+.method-radio input[type="radio"] {
+    opacity: 0;
+    position: absolute;
+}
+
+.method-radio label {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d9d9d9;
+    border-radius: 50%;
+    display: block;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.method-radio input[type="radio"]:checked + label {
+    border-color: #1890FF;
+    background: #1890FF;
+}
+
+.method-radio input[type="radio"]:checked + label::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* 优惠券 */
+.coupon-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.coupon-input {
+    display: flex;
+    gap: 8px;
+}
+
+.coupon-input .form-control {
+    flex: 1;
+}
+
+.available-coupons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.coupon-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #fff2e8;
+    border: 1px solid #ffd591;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.coupon-item:hover {
+    background: #ffe7ba;
+}
+
+.coupon-item.selected {
+    background: #e6f7ff;
+    border-color: #1890FF;
+}
+
+.coupon-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.coupon-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #262626;
+}
+
+.coupon-desc {
+    font-size: 12px;
+    color: #8c8c8c;
+}
+
+.coupon-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ff4d4f;
+}
+
+/* 支付操作 */
+.payment-actions {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+}
+
+.payment-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.summary-text {
+    font-size: 16px;
+    color: #8c8c8c;
+}
+
+.summary-amount {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ff4d4f;
+}
+
+.btn-pay {
+    width: 100%;
+    height: 48px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* 支付倒计时 */
+.payment-timer {
+    text-align: center;
+    padding: 16px;
+    background: #fff2f0;
+    border: 1px solid #ffccc7;
+    border-radius: 6px;
+    color: #ff4d4f;
+    font-size: 14px;
+}
+
+#countdown {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* 支付模态框 */
+.payment-modal {
+    max-width: 500px;
+}
+
+.payment-confirm {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.confirm-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.security-icon {
+    width: 48px;
+    height: 48px;
+}
+
+.confirm-text {
+    flex: 1;
+}
+
+.confirm-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #262626;
+    margin-bottom: 8px;
+}
+
+.confirm-desc {
+    font-size: 14px;
+    color: #8c8c8c;
+    margin-bottom: 4px;
+}
+
+.confirm-method {
+    font-size: 14px;
+    color: #1890FF;
+}
+
+#confirmAmount {
+    color: #ff4d4f;
+    font-weight: bold;
+}
+
+/* 支付二维码 */
+.payment-qr {
+    text-align: center;
+    padding: 24px;
+}
+
+.qr-code {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 16px;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+}
+
+.qr-image {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+}
+
+.qr-text {
+    font-size: 14px;
+    color: #8c8c8c;
+}
+
+/* 支付处理中 */
+.payment-processing {
+    text-align: center;
+    padding: 48px 24px;
+}
+
+.processing-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #1890FF;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+
+.processing-text {
+    font-size: 16px;
+    color: #8c8c8c;
+}
+
+/* 支付成功模态框 */
+.success-modal {
+    max-width: 400px;
+}
+
+.success-content {
+    text-align: center;
+    padding: 24px;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: #52c41a;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: bold;
+    margin: 0 auto 24px;
+    animation: successPulse 0.6s ease-out;
+}
+
+@keyframes successPulse {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.success-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #262626;
+    margin-bottom: 12px;
+}
+
+.success-desc {
+    font-size: 14px;
+    color: #8c8c8c;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.order-number {
+    font-size: 14px;
+    color: #1890FF;
+    background: #f0f8ff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    .payment-layout {
+        grid-template-columns: 1fr 350px;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .payment-layout {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .progress-indicator {
+        padding: 16px;
+        overflow-x: auto;
+    }
+    
+    .progress-line {
+        width: 60px;
+        margin: 0 8px;
+    }
+    
+    .train-route {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .route-arrow {
+        transform: rotate(90deg);
+    }
+    
+    .passenger-item,
+    .seat-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .coupon-input {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 16px 0;
+    }
+    
+    .info-card,
+    .payment-card,
+    .payment-actions {
+        margin-left: -16px;
+        margin-right: -16px;
+        border-radius: 0;
+    }
+    
+    .card-content {
+        padding: 16px;
+    }
+    
+    .progress-step {
+        flex-shrink: 0;
+    }
+    
+    .step-label {
+        font-size: 10px;
+    }
+    
+    .payment-method {
+        padding: 12px;
+    }
+    
+    .method-name {
+        font-size: 14px;
+    }
+    
+    .qr-code {
+        width: 160px;
+        height: 160px;
+    }
+    
+    .qr-image {
+        width: 140px;
+        height: 140px;
+    }
+}
+
+/* 动画效果 */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.info-card,
+.payment-card {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.info-card:nth-child(1) { animation-delay: 0.1s; }
+.info-card:nth-child(2) { animation-delay: 0.2s; }
+.info-card:nth-child(3) { animation-delay: 0.3s; }
+
+/* 支付方式选中动画 */
+.payment-method {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.payment-method.selected {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.2);
+}
+
+/* 倒计时动画 */
+@keyframes countdownPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+#countdown {
+    animation: countdownPulse 1s ease-in-out infinite;
+}

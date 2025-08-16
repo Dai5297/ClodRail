@@ -1,0 +1,330 @@
+<template>
+  <div class="login-form-container">
+    <div class="login-form">
+      <div class="form-header">
+        <h2>用户登录</h2>
+        <p>请输入您的账号和密码</p>
+      </div>
+
+      <el-form
+        :model="loginForm"
+        :rules="loginRules"
+        ref="loginFormRef"
+        size="large"
+      >
+        <el-form-item prop="username">
+          <el-input
+            v-model="loginForm.username"
+            placeholder="请输入手机号或邮箱"
+            prefix-icon="User"
+          />
+        </el-form-item>
+
+        <el-form-item prop="password">
+          <el-input
+            v-model="loginForm.password"
+            type="password"
+            placeholder="请输入密码"
+            prefix-icon="Lock"
+            show-password
+            @keyup.enter="handleLogin"
+          />
+        </el-form-item>
+
+        <el-form-item v-if="showCaptcha" prop="captcha">
+          <div class="captcha-container">
+            <el-input
+              v-model="loginForm.captcha"
+              placeholder="请输入验证码"
+              @keyup.enter="handleLogin"
+            />
+            <div class="captcha-image" @click="refreshCaptcha">
+              <img :src="captchaUrl" alt="验证码" />
+            </div>
+          </div>
+        </el-form-item>
+
+        <div class="form-options">
+          <el-checkbox v-model="loginForm.rememberMe">记住我</el-checkbox>
+          <el-button type="text" @click="forgotPassword">忘记密码？</el-button>
+        </div>
+
+        <el-form-item class="login-button-item">
+          <el-button
+            type="primary"
+            :loading="loading"
+            @click="handleLogin"
+          >
+            登录
+          </el-button>
+        </el-form-item>
+      </el-form>
+
+      <div class="form-footer">
+        <div class="register-link">
+          还没有账号？
+          <el-button type="text" @click="goToRegister">立即注册</el-button>
+        </div>
+
+        <el-divider>其他登录方式</el-divider>
+
+        <div class="social-login">
+          <el-button circle @click="wechatLogin">
+            <el-icon><ChatDotRound /></el-icon>
+          </el-button>
+          <el-button circle @click="qqLogin">
+            <el-icon><User /></el-icon>
+          </el-button>
+          <el-button circle @click="alipayLogin">
+            <el-icon><CreditCard /></el-icon>
+          </el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
+import { ChatDotRound, User, CreditCard } from '@element-plus/icons-vue'
+import { login } from '@/api/auth'
+
+// 定义登录请求接口类型
+interface LoginRequest {
+  username: string;
+  password: string;
+  captcha?: string;
+  rememberMe: boolean;
+}
+
+const router = useRouter()
+const route = useRoute()
+
+// 状态
+const loading = ref(false)
+const showCaptcha = ref(false)
+const captchaUrl = ref('/api/captcha')
+const loginFormRef = ref<FormInstance>()
+
+// 登录表单
+const loginForm = reactive({
+  username: '',
+  password: '',
+  captcha: '',
+  rememberMe: false
+})
+
+// 登录表单验证规则
+const loginRules: FormRules = {
+  username: [
+    { required: true, message: '请输入手机号或邮箱', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
+  ],
+  captcha: [
+    { required: true, message: '请输入验证码', trigger: 'blur' }
+  ]
+}
+
+// 定义事件
+const emit = defineEmits(['forgot-password'])
+
+// 初始化
+onMounted(() => {
+  // 检查是否需要显示验证码
+  const failCount = localStorage.getItem('loginFailCount')
+  if (failCount && parseInt(failCount) >= 3) {
+    showCaptcha.value = true
+    refreshCaptcha()
+  }
+})
+
+// 处理登录
+const handleLogin = async () => {
+  if (!loginFormRef.value) return
+  
+  try {
+    await loginFormRef.value.validate()
+    
+    loading.value = true
+    
+    const loginData: LoginRequest = {
+      username: loginForm.username,
+      password: loginForm.password,
+      captcha: showCaptcha.value ? loginForm.captcha : undefined,
+      rememberMe: loginForm.rememberMe
+    }
+    
+    const response = await login(loginData)
+    
+    // 保存登录信息
+    localStorage.setItem('token', response.data.token)
+    localStorage.setItem('userInfo', JSON.stringify(response.data.userInfo))
+    
+    // 清除登录失败次数
+    localStorage.removeItem('loginFailCount')
+    
+    ElMessage.success('登录成功')
+    
+    // 跳转到目标页面或首页
+    const redirect = route.query.redirect as string
+    router.push(redirect || '/')
+  } catch (error: any) {
+    console.error('登录失败:', error)
+    
+    // 增加失败次数
+    const failCount = parseInt(localStorage.getItem('loginFailCount') || '0') + 1
+    localStorage.setItem('loginFailCount', failCount.toString())
+    
+    // 失败3次后显示验证码
+    if (failCount >= 3) {
+      showCaptcha.value = true
+      refreshCaptcha()
+    }
+    
+    ElMessage.error(error.message || '登录失败，请检查用户名和密码')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 刷新验证码
+const refreshCaptcha = () => {
+  captchaUrl.value = `/api/captcha?t=${Date.now()}`
+}
+
+// 忘记密码
+const forgotPassword = () => {
+  emit('forgot-password')
+}
+
+// 前往注册
+const goToRegister = () => {
+  router.push('/register')
+}
+
+// 第三方登录
+const wechatLogin = () => {
+  ElMessage.info('微信登录功能开发中，敬请期待')
+}
+
+const qqLogin = () => {
+  ElMessage.info('QQ登录功能开发中，敬请期待')
+}
+
+const alipayLogin = () => {
+  ElMessage.info('支付宝登录功能开发中，敬请期待')
+}
+</script>
+
+<style scoped>
+.login-form-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.login-form {
+  width: 100%;
+  max-width: 360px;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.form-header h2 {
+  font-size: 24px;
+  color: #262626;
+  margin-bottom: 8px;
+}
+
+.form-header p {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* 验证码容器 */
+.captcha-container {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.captcha-container .el-input {
+  flex: 1;
+}
+
+.captcha-image {
+  width: 100px;
+  height: 40px;
+  cursor: pointer;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.captcha-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 表单选项 */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+/* 表单底部 */
+.form-footer {
+  margin-top: 24px;
+}
+
+.register-link {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+.social-login {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.social-login .el-button {
+  width: 40px;
+  height: 40px;
+}
+
+/* 登录按钮样式 */
+.login-button-item {
+  text-align: center;
+}
+
+.login-button-item .el-button {
+  width: 100%;
+  height: 44px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .login-form-container {
+    padding: 24px;
+  }
+}
+</style>
