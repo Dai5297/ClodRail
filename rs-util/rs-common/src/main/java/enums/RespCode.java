@@ -3,6 +3,7 @@ package enums;
 public enum RespCode {
 
     SUCCESS(200, "操作成功"),
+    UNAUTHORIZED(401, "未授权"),
     ERROR(500, "操作失败"),
     SYSTEM_ERROR(501, "系统错误");
 

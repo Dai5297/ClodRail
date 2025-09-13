@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: rs-customer-api
+  cloud:
+    openfeign:
+      okhttp:
+        enabled: true

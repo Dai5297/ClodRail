@@ -5,16 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.dai</groupId>
-        <artifactId>RailwaySystem-Backend</artifactId>
+        <artifactId>rs-api</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>rs-service</artifactId>
-    <packaging>pom</packaging>
-    <description>微服务业务工程</description>
-    <modules>
-        <module>rs-customer</module>
-    </modules>
+    <artifactId>rs-customer-api</artifactId>
 
     <properties>
         <maven.compiler.source>24</maven.compiler.source>
@@ -23,17 +18,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.dai</groupId>
-            <artifactId>rs-service-dependence</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <type>pom</type>
-        </dependency>
 
-        <dependency>
-            <groupId>com.dai</groupId>
-            <artifactId>rs-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 </project>

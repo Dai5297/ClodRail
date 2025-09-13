@@ -12,6 +12,9 @@
     <artifactId>rs-api</artifactId>
     <packaging>pom</packaging>
     <description>微服务接口工程</description>
+    <modules>
+        <module>rs-customer-api</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>24</maven.compiler.source>
@@ -21,5 +24,27 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--OpenFeign-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <!--loadbalancer-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
+        <!--okHttp-->
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-okhttp</artifactId>
+        </dependency>
     </dependencies>
 </project>

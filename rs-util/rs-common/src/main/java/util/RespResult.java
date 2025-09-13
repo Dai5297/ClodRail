@@ -44,6 +44,12 @@ public class RespResult<T> implements Serializable {
         return secByError(message);
     }
 
+    public static <T> RespResult<T> error(RespCode respCode, String message) {
+        RespResult<T> result = secByError(message);
+        result.setCode(respCode);
+        return result;
+    }
+
     public static <T> RespResult<T> secByError(String message) {
         RespResult<T> respResult = new RespResult<>();
         respResult.setCode(RespCode.ERROR);

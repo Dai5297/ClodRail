@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: rs-gateway
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      discovery:
+        namespace: efd89d81-56ba-4471-80ff-51126578ef9d
+    gateway:
+      routes:
+        - id: customer-service
+          uri: lb://customer-service
+          predicates:
+            - Path=/user/**
+server:
+  port: 18080

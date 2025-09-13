@@ -16,10 +16,10 @@
     <description>RailwaySystem-Backend</description>
     <modules>
         <module>rs-api</module>
-        <module>rs-gateway</module>
         <module>rs-service</module>
         <module>rs-util</module>
         <module>rs-web</module>
+        <module>rs-gateway</module>
     </modules>
 
     <properties>
@@ -43,6 +43,11 @@
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.7.17</version>
         </dependency>
     </dependencies>
     <dependencyManagement>
