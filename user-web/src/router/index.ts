@@ -19,7 +19,7 @@ const router = createRouter({
         {
           path: 'search',
           name: 'train-search',
-          component: () => import('../views/TrainSearchView/index.vue'),
+          component: () => import('@/views/TrainSearchView/index.vue'),
         },
         {
           path: 'seat-selection',

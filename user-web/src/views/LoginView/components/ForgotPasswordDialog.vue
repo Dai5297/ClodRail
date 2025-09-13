@@ -10,11 +10,22 @@
         <el-input v-model="forgotForm.phone" placeholder="请输入注册手机号" />
       </el-form-item>
       
-      <el-form-item label="验证码" prop="code">
+      <el-form-item label="图形验证码" prop="captcha">
+        <div class="captcha-container">
+          <el-input v-model="forgotForm.captcha" placeholder="请输入图形验证码" />
+          <CaptchaDisplay 
+            :captcha-text="captchaCode"
+            @refresh="refreshCaptcha"
+            class="captcha-display"
+          />
+        </div>
+      </el-form-item>
+      
+      <el-form-item label="短信验证码" prop="code">
         <div class="sms-container">
-          <el-input v-model="forgotForm.code" placeholder="请输入验证码" />
+          <el-input v-model="forgotForm.code" placeholder="请输入短信验证码" />
           <el-button 
-            :disabled="smsCountdown > 0" 
+            :disabled="smsCountdown > 0 || !forgotForm.captcha" 
             @click="sendSmsCode"
             :loading="sendingSms"
           >

@@ -4,6 +4,8 @@ import api from './index'
 export interface LoginRequest {
   username: string
   password: string
+  captcha?: string
+  rememberMe?: boolean
 }
 
 export interface RegisterRequest {
@@ -68,4 +70,9 @@ export const sendCode = (data: { phone: string }) => {
 // 通过手机号重置密码
 export const resetPasswordByPhone = (data: { phone: string; code: string; newPassword: string }) => {
   return api.post('/user/reset-password', data)
+}
+
+// 获取验证码
+export const getCaptcha = () => {
+  return api.get('/user/captcha')
 }

@@ -166,7 +166,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
@@ -235,13 +235,13 @@ const handleLogout = async () => {
         type: 'warning'
       }
     )
-    
+
     // 清除登录状态
     isLoggedIn.value = false
     userInfo.value = { nickname: '', avatar: '' }
-    
+
     ElMessage.success('已退出登录')
-    
+
     // 跳转到首页
     router.push('/')
   } catch {
@@ -558,36 +558,36 @@ onMounted(() => {
   .header-container {
     padding: 0 16px;
   }
-  
+
   .logo-text {
     display: none;
   }
-  
+
   .nav-menu {
     display: none;
   }
-  
+
   .user-section {
     display: none;
   }
-  
+
   .mobile-menu-btn {
     display: block;
     margin-left: auto;
   }
-  
+
   .mobile-nav {
     display: block;
   }
-  
+
   .layout-main {
     min-height: calc(100vh - 64px - 100px);
   }
-  
+
   .footer-container {
     padding: 24px 16px 16px;
   }
-  
+
   .footer-content {
     grid-template-columns: 1fr;
     gap: 24px;
@@ -599,7 +599,7 @@ onMounted(() => {
   .header-container {
     height: 56px;
   }
-  
+
   .layout-main {
     min-height: calc(100vh - 56px - 100px);
   }

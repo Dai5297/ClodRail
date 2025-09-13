@@ -33,14 +33,16 @@
 
         <el-form-item v-if="showCaptcha" prop="captcha">
           <div class="captcha-container">
-            <el-input
-              v-model="loginForm.captcha"
-              placeholder="请输入验证码"
-              @keyup.enter="handleLogin"
-            />
-            <div class="captcha-image" @click="refreshCaptcha">
-              <img :src="captchaUrl" alt="验证码" />
-            </div>
+            <el-row>
+              <el-input
+                placeholder="请输入验证码"
+                v-model="loginForm.captcha"
+              ></el-input>
+              <div class="login-code" width="100%" @click="refreshCaptcha">
+                <!--验证码组件-->
+                <CaptchaDisplay v-model:identifyCode="captchaCode.value" class="captcha-display"></CaptchaDisplay>
+              </div>
+            </el-row>
           </div>
         </el-form-item>
 
@@ -70,13 +72,19 @@
 
         <div class="social-login">
           <el-button circle @click="wechatLogin">
-            <el-icon><ChatDotRound /></el-icon>
+            <el-icon>
+              <ChatDotRound/>
+            </el-icon>
           </el-button>
           <el-button circle @click="qqLogin">
-            <el-icon><User /></el-icon>
+            <el-icon>
+              <User/>
+            </el-icon>
           </el-button>
           <el-button circle @click="alipayLogin">
-            <el-icon><CreditCard /></el-icon>
+            <el-icon>
+              <CreditCard/>
+            </el-icon>
           </el-button>
         </div>
       </div>
@@ -85,12 +93,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import type { FormInstance, FormRules } from 'element-plus'
-import { ChatDotRound, User, CreditCard } from '@element-plus/icons-vue'
-import { login } from '@/api/auth'
+import {ref, reactive, onMounted} from 'vue'
+import {useRouter, useRoute} from 'vue-router'
+import {ElMessage} from 'element-plus'
+import type {FormInstance, FormRules} from 'element-plus'
+import {ChatDotRound, User, CreditCard} from '@element-plus/icons-vue'
+import {login, getCaptcha} from '@/api/auth'
+import {storageKeys, routeConfig} from '@/config'
+import CaptchaDisplay from '@/components/CaptchaDisplay.vue'
 
 // 定义登录请求接口类型
 interface LoginRequest {
@@ -106,7 +116,7 @@ const route = useRoute()
 // 状态
 const loading = ref(false)
 const showCaptcha = ref(false)
-const captchaUrl = ref('/api/captcha')
+const captchaCode = ref('')
 const loginFormRef = ref<FormInstance>()
 
 // 登录表单
@@ -120,14 +130,14 @@ const loginForm = reactive({
 // 登录表单验证规则
 const loginRules: FormRules = {
   username: [
-    { required: true, message: '请输入手机号或邮箱', trigger: 'blur' }
+    {required: true, message: '请输入手机号或邮箱', trigger: 'blur'}
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
+    {required: true, message: '请输入密码', trigger: 'blur'},
+    {min: 6, message: '密码长度不能少于6位', trigger: 'blur'}
   ],
   captcha: [
-    { required: true, message: '请输入验证码', trigger: 'blur' }
+    {required: true, message: '请输入验证码', trigger: 'blur'}
   ]
 }
 
@@ -137,7 +147,7 @@ const emit = defineEmits(['forgot-password'])
 // 初始化
 onMounted(() => {
   // 检查是否需要显示验证码
-  const failCount = localStorage.getItem('loginFailCount')
+  const failCount = localStorage.getItem(storageKeys.loginFailCount)
   if (failCount && parseInt(failCount) >= 3) {
     showCaptcha.value = true
     refreshCaptcha()
@@ -147,46 +157,46 @@ onMounted(() => {
 // 处理登录
 const handleLogin = async () => {
   if (!loginFormRef.value) return
-  
+
   try {
     await loginFormRef.value.validate()
-    
+
     loading.value = true
-    
+
     const loginData: LoginRequest = {
       username: loginForm.username,
       password: loginForm.password,
       captcha: showCaptcha.value ? loginForm.captcha : undefined,
       rememberMe: loginForm.rememberMe
     }
-    
+
     const response = await login(loginData)
-    
+
     // 保存登录信息
-    localStorage.setItem('token', response.data.token)
-    localStorage.setItem('userInfo', JSON.stringify(response.data.userInfo))
-    
+    localStorage.setItem(storageKeys.token, response.data.token)
+    localStorage.setItem(storageKeys.userInfo, JSON.stringify(response.data.userInfo))
+
     // 清除登录失败次数
-    localStorage.removeItem('loginFailCount')
-    
+    localStorage.removeItem(storageKeys.loginFailCount)
+
     ElMessage.success('登录成功')
-    
+
     // 跳转到目标页面或首页
-    const redirect = route.query.redirect as string
-    router.push(redirect || '/')
+    const redirect = route.query[routeConfig.redirectKey] as string
+    router.push(redirect || routeConfig.homePath)
   } catch (error: any) {
     console.error('登录失败:', error)
-    
+
     // 增加失败次数
-    const failCount = parseInt(localStorage.getItem('loginFailCount') || '0') + 1
-    localStorage.setItem('loginFailCount', failCount.toString())
-    
+    const failCount = parseInt(localStorage.getItem(storageKeys.loginFailCount) || '0') + 1
+    localStorage.setItem(storageKeys.loginFailCount, failCount.toString())
+
     // 失败3次后显示验证码
     if (failCount >= 3) {
       showCaptcha.value = true
       refreshCaptcha()
     }
-    
+
     ElMessage.error(error.message || '登录失败，请检查用户名和密码')
   } finally {
     loading.value = false
@@ -194,8 +204,14 @@ const handleLogin = async () => {
 }
 
 // 刷新验证码
-const refreshCaptcha = () => {
-  captchaUrl.value = `/api/captcha?t=${Date.now()}`
+const refreshCaptcha = async () => {
+  try {
+    const response = await getCaptcha()
+    captchaCode.value = response.data.captcha
+  } catch (error) {
+    console.error('获取验证码失败:', error)
+    ElMessage.error('获取验证码失败，请重试')
+  }
 }
 
 // 忘记密码
@@ -263,19 +279,36 @@ const alipayLogin = () => {
   flex: 1;
 }
 
-.captcha-image {
+.captcha-display {
   width: 100px;
   height: 40px;
   cursor: pointer;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f7fa;
+  position: relative;
 }
 
-.captcha-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.captcha-text {
+  font-size: 16px;
+  font-weight: bold;
+  color: #409eff;
+  letter-spacing: 2px;
+}
+
+.refresh-hint {
+  font-size: 10px;
+  color: #909399;
+  margin-top: 2px;
+}
+
+.captcha-display:hover {
+  background-color: #ecf5ff;
+  border-color: #409eff;
 }
 
 /* 表单选项 */

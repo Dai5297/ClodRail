@@ -21,16 +21,32 @@
           />
         </el-form-item>
 
+        <el-form-item prop="captcha">
+          <div class="captcha-container">
+            <el-input
+              v-model="registerForm.captcha"
+              placeholder="请输入图形验证码"
+              prefix-icon="Key"
+              clearable
+            />
+            <CaptchaDisplay 
+              :captcha-text="captchaText"
+              @refresh="refreshCaptcha"
+              class="captcha-display"
+            />
+          </div>
+        </el-form-item>
+
         <el-form-item prop="smsCode">
           <div class="sms-container">
             <el-input
               v-model="registerForm.smsCode"
-              placeholder="请输入验证码"
+              placeholder="请输入短信验证码"
               prefix-icon="Message"
               clearable
             />
             <el-button 
-              :disabled="smsCountdown > 0 || !isValidPhone" 
+              :disabled="smsCountdown > 0 || !isValidPhone || !registerForm.captcha" 
               @click="sendSmsCode"
               :loading="sendingSms"
             >
