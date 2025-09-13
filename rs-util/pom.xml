@@ -19,4 +19,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <modules>
+        <module>rs-common</module>
+        <module>rs-service-dependence</module>
+    </modules>
+
 </project>

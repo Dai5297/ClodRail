@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: customer-service
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      config:
+        namespace: efd89d81-56ba-4471-80ff-51126578ef9d
+        file-extension: yaml
+      discovery:
+        namespace: efd89d81-56ba-4471-80ff-51126578ef9d
+        enabled: true
+  config:
+    import:
+      - nacos:share-mysql.yaml       # 导入共享的MySQL配置
+
+  profiles:
+    active: dev
+
+  mysql:
+    db-name: rs-customer
+    host: localhost
+    port: 3306
+    username: root
+    password: 050815
+server:
+  port: 18081
+
+logging:
+  level:
+    com.alibaba.nacos: DEBUG
+    com.alibaba.cloud.nacos: DEBUG

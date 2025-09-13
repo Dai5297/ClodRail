@@ -12,6 +12,9 @@
     <artifactId>rs-service</artifactId>
     <packaging>pom</packaging>
     <description>微服务业务工程</description>
+    <modules>
+        <module>rs-customer</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>24</maven.compiler.source>
@@ -19,4 +22,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.dai</groupId>
+            <artifactId>rs-service-dependence</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <type>pom</type>
+        </dependency>
+    </dependencies>
 </project>

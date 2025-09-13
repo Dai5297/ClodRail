@@ -5,14 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.dai</groupId>
-        <artifactId>rs-util</artifactId>
+        <artifactId>rs-service</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>rs-common</artifactId>
-    <description>基础工程</description>
-
+    <artifactId>rs-customer</artifactId>
 
     <properties>
         <maven.compiler.source>24</maven.compiler.source>
@@ -20,15 +17,4 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip> <!-- 跳过repackage -->
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
