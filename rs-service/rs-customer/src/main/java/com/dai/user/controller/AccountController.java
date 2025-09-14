@@ -1,11 +1,11 @@
 package com.dai.user.controller;
 
+import com.dai.user.model.dto.request.UserNameLoginReqDTO;
+import com.dai.user.model.dto.response.UserLoginResDTO;
 import com.dai.user.service.AccountService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import util.RespResult;
+import org.springframework.web.bind.annotation.*;
+import com.dai.model.RespResult;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,8 +15,13 @@ public class AccountController {
     private final AccountService accountService;
 
     @GetMapping("/captcha")
-    public RespResult<String> captcha() {
-        return RespResult.ok(accountService.captcha());
+    public String captcha() {
+        return accountService.captcha();
+    }
+
+    @PostMapping("/login/username")
+    public UserLoginResDTO loginByUserName(@RequestBody UserNameLoginReqDTO reqDTO) {
+        return accountService.loginByUserName(reqDTO);
     }
 
 }

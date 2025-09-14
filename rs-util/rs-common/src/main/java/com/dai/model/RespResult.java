@@ -1,6 +1,6 @@
-package util;
+package com.dai.model;
 
-import enums.RespCode;
+import com.dai.enums.RespCode;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -10,19 +10,17 @@ public class RespResult<T> implements Serializable {
 
     private T data;
 
-    private RespCode code;
+    private Integer code;
 
     private String message;
 
     public RespResult(T data, RespCode code) {
         this.data = data;
-        this.code = code;
-        this.message = code.getMessage();
+        this.code = code.getCode();
     }
 
     public RespResult(RespCode code) {
-        this.code = code;
-        this.message = code.getMessage();
+        this.code = code.getCode();
     }
 
     public RespResult() {
@@ -46,13 +44,13 @@ public class RespResult<T> implements Serializable {
 
     public static <T> RespResult<T> error(RespCode respCode, String message) {
         RespResult<T> result = secByError(message);
-        result.setCode(respCode);
+        result.setCode(respCode.getCode());
         return result;
     }
 
     public static <T> RespResult<T> secByError(String message) {
         RespResult<T> respResult = new RespResult<>();
-        respResult.setCode(RespCode.ERROR);
+        respResult.setCode(RespCode.ERROR.getCode());
         respResult.setMessage(message);
         return respResult;
     }
