@@ -34,7 +34,7 @@ export interface UserInfo {
 
 // 用户登录
 export const login = (data: LoginRequest) => {
-  return api.post('/user/login', data)
+  return api.post('/user/login/username', data)
 }
 
 // 用户注册

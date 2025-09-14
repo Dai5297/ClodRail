@@ -15,7 +15,7 @@
         <el-form-item prop="username">
           <el-input
             v-model="loginForm.username"
-            placeholder="请输入手机号或邮箱"
+            placeholder="请输入用户名"
             prefix-icon="User"
           />
         </el-form-item>
@@ -33,22 +33,19 @@
 
         <el-form-item v-if="showCaptcha" prop="captcha">
           <div class="captcha-container">
-            <el-row>
-              <el-input
-                placeholder="请输入验证码"
-                v-model="loginForm.captcha"
-              ></el-input>
-              <div class="login-code" width="100%" @click="refreshCaptcha">
-                <!--验证码组件-->
-                <CaptchaDisplay v-model:identifyCode="captchaCode.value" class="captcha-display"></CaptchaDisplay>
-              </div>
-            </el-row>
+            <el-input
+              placeholder="请输入验证码"
+              v-model="loginForm.captcha"
+            ></el-input>
+            <div class="login-code" width="100%" @click="refreshCaptcha">
+              <!--验证码组件-->
+              <CaptchaDisplay :identifyCode="captchaCode" />            </div>
           </div>
         </el-form-item>
 
         <div class="form-options">
-          <el-checkbox v-model="loginForm.rememberMe">记住我</el-checkbox>
-          <el-button type="text" @click="forgotPassword">忘记密码？</el-button>
+          <div></div>
+          <el-button type="text" @click="forgotPassword" style="align-content: space-between">忘记密码？</el-button>
         </div>
 
         <el-form-item class="login-button-item">
@@ -106,8 +103,6 @@ import CaptchaDisplay from '@/components/CaptchaDisplay.vue'
 interface LoginRequest {
   username: string;
   password: string;
-  captcha?: string;
-  rememberMe: boolean;
 }
 
 const router = useRouter()
@@ -123,14 +118,12 @@ const loginFormRef = ref<FormInstance>()
 const loginForm = reactive({
   username: '',
   password: '',
-  captcha: '',
-  rememberMe: false
 })
 
 // 登录表单验证规则
 const loginRules: FormRules = {
   username: [
-    {required: true, message: '请输入手机号或邮箱', trigger: 'blur'}
+    {required: true, message: '请输入用户名', trigger: 'blur'}
   ],
   password: [
     {required: true, message: '请输入密码', trigger: 'blur'},
@@ -160,21 +153,30 @@ const handleLogin = async () => {
 
   try {
     await loginFormRef.value.validate()
+    if (showCaptcha === true && loginForm.captcha !== captchaCode.value){
+      ElMessage.error('验证码错误')
+      refreshCaptcha()
+      return
+    }
 
     loading.value = true
 
     const loginData: LoginRequest = {
       username: loginForm.username,
       password: loginForm.password,
-      captcha: showCaptcha.value ? loginForm.captcha : undefined,
-      rememberMe: loginForm.rememberMe
     }
 
     const response = await login(loginData)
 
+    if (response.code !== 200){
+      ElMessage.error(response.data.message)
+      refreshCaptcha()
+      return
+    }
+
     // 保存登录信息
-    localStorage.setItem(storageKeys.token, response.data.token)
-    localStorage.setItem(storageKeys.userInfo, JSON.stringify(response.data.userInfo))
+    // localStorage.setItem(storageKeys.token, response.data.token)
+    // localStorage.setItem(storageKeys.userInfo, JSON.stringify(response.data.userInfo))
 
     // 清除登录失败次数
     localStorage.removeItem(storageKeys.loginFailCount)
@@ -207,7 +209,7 @@ const handleLogin = async () => {
 const refreshCaptcha = async () => {
   try {
     const response = await getCaptcha()
-    captchaCode.value = response.data.captcha
+    captchaCode.value = response.data
   } catch (error) {
     console.error('获取验证码失败:', error)
     ElMessage.error('获取验证码失败，请重试')
@@ -291,6 +293,7 @@ const alipayLogin = () => {
   justify-content: center;
   background-color: #f5f7fa;
   position: relative;
+  padding-right: 10px;
 }
 
 .captcha-text {

@@ -7,143 +7,131 @@
     ></canvas>
   </div>
 </template>
-<script>
-export default {
-  name: "SIdentify",
-  props: {
-    identifyCode: {
-      // 默认注册码
-      type: String,
-      default: "aaaa",
-    },
-    fontSizeMin: {
-      // 字体最小值
-      type: Number,
-      default: 25,
-    },
-    fontSizeMax: {
-      // 字体最大值
-      type: Number,
-      default: 35,
-    },
-    backgroundColorMin: {
-      // 验证码图片背景色最小值
-      type: Number,
-      default: 200,
-    },
-    backgroundColorMax: {
-      // 验证码图片背景色最大值
-      type: Number,
-      default: 220,
-    },
-    dotColorMin: {
-      // 背景干扰点最小值
-      type: Number,
-      default: 60,
-    },
-    dotColorMax: {
-      // 背景干扰点最大值
-      type: Number,
-      default: 120,
-    },
-    contentWidth: {
-      // 容器宽度
-      type: Number,
-      default: 90,
-    },
-    contentHeight: {
-      // 容器高度
-      type: Number,
-      default: 38,
-    },
-  },
-  methods: {
-    // 生成一个随机数
-    randomNum(min, max) {
-      return Math.floor(Math.random() * (max - min) + min);
-    },
 
-    // 生成一个随机的颜色
-    randomColor(min, max) {
-      const r = this.randomNum(min, max);
-      const g = this.randomNum(min, max);
-      const b = this.randomNum(min, max);
-      return "rgb(" + r + "," + g + "," + b + ")";
-    },
-    //画图
-    drawPic() {
-      const canvas = document.getElementById("s-canvas");
-      //创建一个2D对象作为上下文。
-      const ctx = canvas.getContext("2d");
-      ctx.textBaseline = "bottom";
-      // 绘制背景
-      ctx.fillStyle = "#e6ecfd";
-      ctx.fillRect(0, 0, this.contentWidth, this.contentHeight);
-      // 绘制文字
-      for (let i = 0; i < this.identifyCode.length; i++) {
-        this.drawText(ctx, this.identifyCode[i], i);
-      }
-      this.drawLine(ctx);
-      this.drawDot(ctx);
-    },
-    //在画布上显示数据
-    drawText(ctx, txt, i) {
-      ctx.fillStyle = this.randomColor(50, 160); // 随机生成字体颜色
-      ctx.font =
-        this.randomNum(this.fontSizeMin, this.fontSizeMax) + "px SimHei"; // 随机生成字体大小
-      const x = (i + 1) * (this.contentWidth / (this.identifyCode.length + 1));
-      const y = this.randomNum(this.fontSizeMax, this.contentHeight - 5);
-      const deg = this.randomNum(-30, 30);
-      // 修改坐标原点和旋转角度
-      ctx.translate(x, y);
-      ctx.rotate((deg * Math.PI) / 180);
-      ctx.fillText(txt, 0, 0);
-      // 恢复坐标原点和旋转角度
-      ctx.rotate((-deg * Math.PI) / 180);
-      ctx.translate(-x, -y);
-    },
+<script setup lang="ts">
+import { onMounted, watch, defineProps } from "vue";
 
-    // 绘制干扰线
-    drawLine(ctx) {
-      for (let i = 0; i < 4; i++) {
-        ctx.strokeStyle = this.randomColor(100, 200);
-        ctx.beginPath();
-        ctx.moveTo(
-          this.randomNum(0, this.contentWidth),
-          this.randomNum(0, this.contentHeight)
-        );
-        ctx.lineTo(
-          this.randomNum(0, this.contentWidth),
-          this.randomNum(0, this.contentHeight)
-        );
-        ctx.stroke();
-      }
-    },
+const props = defineProps({
+  identifyCode: {
+    type: String,
+    default: "aaaa",
+    required: true,
+  },
+  fontSizeMin: {
+    type: Number,
+    default: 25,
+  },
+  fontSizeMax: {
+    type: Number,
+    default: 35,
+  },
+  backgroundColorMin: {
+    type: Number,
+    default: 200,
+  },
+  backgroundColorMax: {
+    type: Number,
+    default: 220,
+  },
+  dotColorMin: {
+    type: Number,
+    default: 60,
+  },
+  dotColorMax: {
+    type: Number,
+    default: 120,
+  },
+  contentWidth: {
+    type: Number,
+    default: 90,
+  },
+  contentHeight: {
+    type: Number,
+    default: 38,
+  },
+});
 
-    // 绘制干扰点
-    drawDot(ctx) {
-      for (let i = 0; i < 30; i++) {
-        ctx.fillStyle = this.randomColor(0, 255);
-        ctx.beginPath();
-        ctx.arc(
-          this.randomNum(0, this.contentWidth),
-          this.randomNum(0, this.contentHeight),
-          1,
-          0,
-          2 * Math.PI
-        );
-        ctx.fill();
-      }
-    },
-  },
-  watch: {
-    identifyCode() {
-      this.drawPic();
-    },
-  },
-  mounted() {
-    this.drawPic();
-  },
+const randomNum = (min, max) => {
+  return Math.floor(Math.random() * (max - min) + min);
 };
-</script>
 
+const randomColor = (min, max) => {
+  const r = randomNum(min, max);
+  const g = randomNum(min, max);
+  const b = randomNum(min, max);
+  return `rgb(${r},${g},${b})`;
+};
+
+const drawText = (ctx, txt, i) => {
+  ctx.fillStyle = randomColor(50, 160);
+  ctx.font = `${randomNum(props.fontSizeMin, props.fontSizeMax)}px SimHei`;
+  const x = (i + 1) * (props.contentWidth / (props.identifyCode.length + 1));
+  const y = randomNum(props.fontSizeMax, props.contentHeight - 5);
+  const deg = randomNum(-30, 30);
+
+  ctx.translate(x, y);
+  ctx.rotate((deg * Math.PI) / 180);
+  ctx.fillText(txt, 0, 0);
+  ctx.rotate((-deg * Math.PI) / 180);
+  ctx.translate(-x, -y);
+};
+
+const drawLine = (ctx) => {
+  for (let i = 0; i < 4; i++) {
+    ctx.strokeStyle = randomColor(100, 200);
+    ctx.beginPath();
+    ctx.moveTo(
+      randomNum(0, props.contentWidth),
+      randomNum(0, props.contentHeight)
+    );
+    ctx.lineTo(
+      randomNum(0, props.contentWidth),
+      randomNum(0, props.contentHeight)
+    );
+    ctx.stroke();
+  }
+};
+
+const drawDot = (ctx) => {
+  for (let i = 0; i < 30; i++) {
+    ctx.fillStyle = randomColor(0, 255);
+    ctx.beginPath();
+    ctx.arc(
+      randomNum(0, props.contentWidth),
+      randomNum(0, props.contentHeight),
+      1,
+      0,
+      2 * Math.PI
+    );
+    ctx.fill();
+  }
+};
+
+const drawPic = () => {
+  const canvas = document.getElementById("s-canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.textBaseline = "bottom";
+
+  // 绘制背景
+  ctx.fillStyle = "#e6ecfd";
+  ctx.fillRect(0, 0, props.contentWidth, props.contentHeight);
+
+  // 绘制文字
+  for (let i = 0; i < props.identifyCode.length; i++) {
+    drawText(ctx, props.identifyCode[i], i);
+  }
+
+  // 绘制干扰线和点
+  drawLine(ctx);
+  drawDot(ctx);
+};
+
+onMounted(() => {
+  console.log(props.identifyCode)
+  drawPic();
+});
+
+watch(() => props.identifyCode, () => {
+  drawPic();
+});
+</script>
