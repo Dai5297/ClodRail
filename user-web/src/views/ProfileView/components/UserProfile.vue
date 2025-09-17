@@ -1,23 +1,23 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
-import { 
-  ElCard, 
-  ElForm, 
-  ElFormItem, 
-  ElInput, 
-  ElSelect, 
-  ElOption, 
-  ElDatePicker, 
-  ElButton, 
-  ElAvatar, 
-  ElUpload, 
-  ElMessage, 
-  ElMessageBox, 
+import {
+  ElCard,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElSelect,
+  ElOption,
+  ElDatePicker,
+  ElButton,
+  ElAvatar,
+  ElUpload,
+  ElMessage,
+  ElMessageBox,
   ElSkeleton,
   ElIcon,
   ElDivider
 } from 'element-plus'
-import { 
+import {
   Edit,
   Camera,
   User,
@@ -30,21 +30,19 @@ import type { UploadProps, FormInstance, FormRules } from 'element-plus'
 
 // 定义用户信息接口
 interface UserInfo {
-  id: string
-  username: string
-  nickname: string
-  avatar: string
-  email: string
-  phone: string
-  gender: 'male' | 'female' | 'other'
-  birthday: string
-  realName: string
-  idCard: string
-  address: string
-  bio: string
-  registrationTime: string
-  lastLoginTime: string
-  isVerified: boolean
+  id: string,
+  username: string,
+  birthday: string,
+  address: string,
+  introduction: string,
+  icon: string,
+  email: string,
+  phone: string,
+  realName: string,
+  gender: string,
+  idCard: string,
+  createTime: string,
+  lastLoginTime: string,
 }
 
 // 定义属性
@@ -143,20 +141,24 @@ const maskPhone = (phone: string) => {
 // 开始编辑
 const startEdit = () => {
   if (!props.userInfo) return
-  
+
   // 复制用户信息到表单数据
   Object.assign(formData, {
-    nickname: props.userInfo.nickname,
-    email: props.userInfo.email,
-    phone: props.userInfo.phone,
-    gender: props.userInfo.gender,
-    birthday: props.userInfo.birthday,
-    realName: props.userInfo.realName,
-    idCard: props.userInfo.idCard,
-    address: props.userInfo.address,
-    bio: props.userInfo.bio
+    id: displayUserInfo.value.id,
+    username: displayUserInfo.value.username,
+    birthday: displayUserInfo.value.birthday,
+    address: displayUserInfo.value.address,
+    introduction: displayUserInfo.value.introduction,
+    icon: displayUserInfo.value.icon,
+    email: displayUserInfo.value.email,
+    phone: displayUserInfo.value.phone,
+    realName: displayUserInfo.value.realName,
+    gender: displayUserInfo.value.gender,
+    idCard: displayUserInfo.value.idCard,
+    createTime: displayUserInfo.value.createTime,
+    lastLoginTime: displayUserInfo.value.lastLoginTime,
   })
-  
+
   isEditing.value = true
 }
 
@@ -169,7 +171,7 @@ const cancelEdit = () => {
 // 保存编辑
 const saveEdit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     emit('updateProfile', { ...formData })
@@ -184,7 +186,7 @@ const saveEdit = async () => {
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (file) => {
   const isImage = file.type.startsWith('image/')
   const isLt2M = file.size / 1024 / 1024 < 2
-  
+
   if (!isImage) {
     ElMessage.error('只能上传图片文件!')
     return false
@@ -240,10 +242,10 @@ const handleUploadRequest = () => {
             <span class="header-title">个人信息</span>
           </div>
           <div class="header-right">
-            <ElButton 
-              v-if="!isEditing" 
-              type="primary" 
-              :icon="Edit" 
+            <ElButton
+              v-if="!isEditing"
+              type="primary"
+              :icon="Edit"
               @click="startEdit"
               :loading="loading"
             >
@@ -258,7 +260,7 @@ const handleUploadRequest = () => {
           </div>
         </div>
       </template>
-      
+
       <!-- 加载状态 -->
       <ElSkeleton v-if="loading" animated>
         <template #template>
@@ -272,22 +274,22 @@ const handleUploadRequest = () => {
           </div>
         </template>
       </ElSkeleton>
-      
+
       <!-- 个人信息内容 -->
       <div v-else class="profile-content">
         <!-- 头像区域 -->
         <div class="avatar-section">
           <div class="avatar-container">
-            <ElAvatar 
-              :size="100" 
-              :src="displayUserInfo.avatar" 
+            <ElAvatar
+              :size="100"
+              :src="displayUserInfo.icon"
               class="user-avatar"
             >
               <ElIcon :size="40">
                 <User />
               </ElIcon>
             </ElAvatar>
-            
+
             <!-- 头像操作 -->
             <div class="avatar-actions">
               <ElUpload
@@ -299,12 +301,12 @@ const handleUploadRequest = () => {
               >
                 <ElButton size="small" :icon="Camera" circle title="更换头像" />
               </ElUpload>
-              
-              <ElButton 
-                v-if="displayUserInfo.avatar"
-                size="small" 
-                type="danger" 
-                circle 
+
+              <ElButton
+                v-if="displayUserInfo.icon"
+                size="small"
+                type="danger"
+                circle
                 title="删除头像"
                 @click="confirmDeleteAvatar"
               >
@@ -312,27 +314,27 @@ const handleUploadRequest = () => {
               </ElButton>
             </div>
           </div>
-          
+
           <!-- 用户基本信息 -->
           <div class="basic-info">
-            <h3 class="username">{{ displayUserInfo.nickname || displayUserInfo.username }}</h3>
+            <h3 class="username">{{ displayUserInfo.realName}}</h3>
             <p class="user-id">ID: {{ displayUserInfo.id }}</p>
             <div class="verification-status">
-              <ElIcon 
-                :color="displayUserInfo.isVerified ? '#52c41a' : '#faad14'"
+              <ElIcon
+                :color="displayUserInfo.realName ? '#52c41a' : '#faad14'"
                 :size="16"
               >
-                <component :is="displayUserInfo.isVerified ? 'CircleCheck' : 'Warning'" />
+                <component :is="displayUserInfo.realName ? 'CircleCheck' : 'Warning'" />
               </ElIcon>
-              <span :class="['status-text', displayUserInfo.isVerified ? 'verified' : 'unverified']">
-                {{ displayUserInfo.isVerified ? '已实名认证' : '未实名认证' }}
+              <span :class="['status-text', displayUserInfo.realName ? 'verified' : 'unverified']">
+                {{ displayUserInfo.realName ? '已实名认证' : '未实名认证' }}
               </span>
             </div>
           </div>
         </div>
-        
+
         <ElDivider />
-        
+
         <!-- 详细信息 -->
         <div class="detail-info">
           <!-- 非编辑状态 -->
@@ -343,9 +345,9 @@ const handleUploadRequest = () => {
                   <ElIcon><User /></ElIcon>
                   昵称
                 </label>
-                <span class="info-value">{{ displayUserInfo.nickname || '-' }}</span>
+                <span class="info-value">{{ displayUserInfo.username || '-' }}</span>
               </div>
-              
+
               <div class="info-item">
                 <label class="info-label">
                   <ElIcon><Message /></ElIcon>
@@ -353,7 +355,7 @@ const handleUploadRequest = () => {
                 </label>
                 <span class="info-value">{{ displayUserInfo.email || '-' }}</span>
               </div>
-              
+
               <div class="info-item">
                 <label class="info-label">
                   <ElIcon><Phone /></ElIcon>
@@ -361,7 +363,7 @@ const handleUploadRequest = () => {
                 </label>
                 <span class="info-value">{{ maskPhone(displayUserInfo.phone) }}</span>
               </div>
-              
+
               <div class="info-item">
                 <label class="info-label">
                   <ElIcon><User /></ElIcon>
@@ -369,7 +371,7 @@ const handleUploadRequest = () => {
                 </label>
                 <span class="info-value">{{ getGenderText(displayUserInfo.gender) }}</span>
               </div>
-              
+
               <div class="info-item">
                 <label class="info-label">
                   <ElIcon><Calendar /></ElIcon>
@@ -377,7 +379,7 @@ const handleUploadRequest = () => {
                 </label>
                 <span class="info-value">{{ formatBirthday(displayUserInfo.birthday) }}</span>
               </div>
-              
+
               <div class="info-item">
                 <label class="info-label">
                   <ElIcon><User /></ElIcon>
@@ -385,7 +387,7 @@ const handleUploadRequest = () => {
                 </label>
                 <span class="info-value">{{ displayUserInfo.realName || '-' }}</span>
               </div>
-              
+
               <div class="info-item">
                 <label class="info-label">
                   <ElIcon><Document /></ElIcon>
@@ -393,7 +395,7 @@ const handleUploadRequest = () => {
                 </label>
                 <span class="info-value">{{ maskIdCard(displayUserInfo.idCard) }}</span>
               </div>
-              
+
               <div class="info-item">
                 <label class="info-label">
                   <ElIcon><Location /></ElIcon>
@@ -401,22 +403,22 @@ const handleUploadRequest = () => {
                 </label>
                 <span class="info-value">{{ displayUserInfo.address || '-' }}</span>
               </div>
-              
+
               <div class="info-item full-width">
                 <label class="info-label">
                   <ElIcon><Edit /></ElIcon>
                   个人简介
                 </label>
-                <span class="info-value">{{ displayUserInfo.bio || '-' }}</span>
+                <span class="info-value">{{ displayUserInfo.introduction || '-' }}</span>
               </div>
             </div>
-            
+
             <!-- 账户信息 -->
             <ElDivider content-position="left">账户信息</ElDivider>
             <div class="account-info">
               <div class="info-item">
                 <label class="info-label">注册时间</label>
-                <span class="info-value">{{ formatTime(displayUserInfo.registrationTime) }}</span>
+                <span class="info-value">{{ formatTime(displayUserInfo.createTime) }}</span>
               </div>
               <div class="info-item">
                 <label class="info-label">最后登录</label>
@@ -424,68 +426,68 @@ const handleUploadRequest = () => {
               </div>
             </div>
           </div>
-          
+
           <!-- 编辑状态 -->
-          <ElForm 
-            v-else 
-            ref="formRef" 
-            :model="formData" 
-            :rules="rules" 
+          <ElForm
+            v-else
+            ref="formRef"
+            :model="formData"
+            :rules="rules"
             label-width="100px"
             class="edit-form"
           >
             <div class="form-grid">
-              <ElFormItem label="昵称" prop="nickname">
-                <ElInput v-model="formData.nickname" placeholder="请输入昵称" />
+              <ElFormItem label="昵称" prop="username">
+                <ElInput v-model="formData.username" placeholder="请输入昵称" />
               </ElFormItem>
-              
+
               <ElFormItem label="邮箱" prop="email">
                 <ElInput v-model="formData.email" placeholder="请输入邮箱地址" />
               </ElFormItem>
-              
+
               <ElFormItem label="手机号" prop="phone">
                 <ElInput v-model="formData.phone" placeholder="请输入手机号码" />
               </ElFormItem>
-              
+
               <ElFormItem label="性别" prop="gender">
                 <ElSelect v-model="formData.gender" placeholder="请选择性别">
-                  <ElOption 
-                    v-for="option in genderOptions" 
-                    :key="option.value" 
-                    :label="option.label" 
-                    :value="option.value" 
+                  <ElOption
+                    v-for="option in genderOptions"
+                    :key="option.value"
+                    :label="option.label"
+                    :value="option.value"
                   />
                 </ElSelect>
               </ElFormItem>
-              
+
               <ElFormItem label="生日" prop="birthday">
-                <ElDatePicker 
-                  v-model="formData.birthday" 
-                  type="date" 
-                  placeholder="请选择生日" 
+                <ElDatePicker
+                  v-model="formData.birthday"
+                  type="date"
+                  placeholder="请选择生日"
                   style="width: 100%;"
                 />
               </ElFormItem>
-              
+
               <ElFormItem label="真实姓名" prop="realName">
                 <ElInput v-model="formData.realName" placeholder="请输入真实姓名" />
               </ElFormItem>
-              
+
               <ElFormItem label="身份证号" prop="idCard">
                 <ElInput v-model="formData.idCard" placeholder="请输入身份证号码" />
               </ElFormItem>
-              
+
               <ElFormItem label="地址" prop="address">
                 <ElInput v-model="formData.address" placeholder="请输入地址" />
               </ElFormItem>
             </div>
-            
+
             <ElFormItem label="个人简介" prop="bio" class="full-width">
-              <ElInput 
-                v-model="formData.bio" 
-                type="textarea" 
-                :rows="4" 
-                placeholder="请输入个人简介" 
+              <ElInput
+                v-model="formData.introduction"
+                type="textarea"
+                :rows="4"
+                placeholder="请输入个人简介"
                 maxlength="200"
                 show-word-limit
               />
@@ -671,17 +673,17 @@ const handleUploadRequest = () => {
     gap: 20px;
     text-align: center;
   }
-  
+
   .info-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .form-grid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .account-info {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -694,12 +696,12 @@ const handleUploadRequest = () => {
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .header-right {
     display: flex;
     justify-content: center;
   }
-  
+
   .username {
     font-size: 20px;
   }

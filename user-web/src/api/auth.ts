@@ -49,7 +49,7 @@ export const getUserInfo = () => {
 
 // 更新用户信息
 export const updateUserInfo = (data: Partial<UserInfo>) => {
-  return api.put('/user/info', data)
+  return api.post('/user/info/update', data)
 }
 
 // 修改密码

@@ -42,10 +42,10 @@
           <template v-if="isLoggedIn">
             <el-dropdown trigger="hover">
               <div class="user-info">
-                <el-avatar :size="32" :src="userInfo.avatar">
+                <el-avatar :size="32" :src="userInfo.icon">
                   <el-icon><User /></el-icon>
                 </el-avatar>
-                <span class="username">{{ userInfo.nickname || '用户' }}</span>
+                <span class="username">{{ userInfo.realName || '用户' }}</span>
                 <el-icon class="dropdown-icon"><ArrowDown /></el-icon>
               </div>
               <template #dropdown>
@@ -181,6 +181,7 @@ import {
   SwitchButton,
   Menu
 } from '@element-plus/icons-vue'
+import {getUserInfo} from "@/api/auth.ts";
 
 const router = useRouter()
 
@@ -190,8 +191,8 @@ const mobileMenuOpen = ref(false)
 // 用户登录状态（模拟）
 const isLoggedIn = ref(false)
 const userInfo = ref({
-  nickname: '张三',
-  avatar: ''
+  realName: '',
+  icon: ''
 })
 
 // 切换移动端菜单
@@ -238,27 +239,29 @@ const handleLogout = async () => {
 
     // 清除登录状态
     isLoggedIn.value = false
-    userInfo.value = { nickname: '', avatar: '' }
+    userInfo.value = { realName: '', icon:  ''}
+    localStorage.removeItem('token')
 
     ElMessage.success('已退出登录')
 
     // 跳转到首页
-    router.push('/')
+    router.push('/login')
   } catch {
     // 用户取消
   }
 }
 
 // 检查登录状态
-const checkLoginStatus = () => {
+const checkLoginStatus = async () => {
   // 这里应该从localStorage或API检查登录状态
   const token = localStorage.getItem('token')
   if (token) {
     isLoggedIn.value = true
     // 获取用户信息
-    const savedUserInfo = localStorage.getItem('userInfo')
-    if (savedUserInfo) {
-      userInfo.value = JSON.parse(savedUserInfo)
+    const savedUserInfo = await getUserInfo()
+    if (savedUserInfo.code === 200) {
+      userInfo.value.realName = savedUserInfo.data.realName
+      userInfo.value.icon = savedUserInfo.data.icon
     }
   }
 }

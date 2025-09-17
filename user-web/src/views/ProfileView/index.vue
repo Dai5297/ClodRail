@@ -12,27 +12,37 @@ import PersonalSettings from './components/PersonalSettings.vue'
 import OrderHistory from './components/OrderHistory.vue'
 import PointsInfo from './components/PointsInfo.vue'
 import ProfileTabs from './components/ProfileTabs.vue'
+import {getUserInfo, updateUserInfo} from "@/api/auth.ts";
 
 // 定义用户信息接口
 interface UserInfo {
-  id: string
-  username: string
-  nickname: string
-  email: string
-  phone: string
-  avatar: string
-  realName: string
-  idCard: string
-  birthday: string
-  gender: 'male' | 'female' | 'other'
-  address: string
-  bio: string
-  registrationTime: string
-  points: number
-  level: string
-  registerTime: string
-  lastLoginTime: string
-  isVerified: boolean
+  id: string,
+  username: string,
+  birthday: string,
+  address: string,
+  introduction: string,
+  icon: string,
+  email: string,
+  phone: string,
+  realName: string,
+  gender: string,
+  idCard: string,
+  createTime: string,
+  lastLoginTime: string,
+}
+
+interface UserInfoReq {
+  id: string,
+  username: string,
+  birthday: string,
+  address: string,
+  introduction: string,
+  icon: string,
+  email: string,
+  phone: string,
+  realName: string,
+  gender: string,
+  idCard: string,
 }
 
 // 定义属性
@@ -52,24 +62,19 @@ const router = useRouter()
 
 // 用户信息
 const userInfo = ref<UserInfo>({
-  id: '1',
-  username: 'user123',
-  nickname: '旅行达人',
-  email: 'user@example.com',
-  phone: '138****8888',
-  avatar: '',
-  realName: '张三',
-  idCard: '110101199001011234',
-  birthday: '1990-01-01',
-  gender: 'male',
-  address: '北京市朝阳区',
-  bio: '热爱旅行，喜欢探索未知的世界',
-  registrationTime: '2023-01-15T10:30:00',
-  points: 2580,
-  level: 'gold',
-  registerTime: '2023-01-15T10:30:00',
-  lastLoginTime: '2024-01-15T14:20:00',
-  isVerified: true
+  id: '',
+  username: '',
+  birthday: '',
+  address: '',
+  introduction: '',
+  icon: '',
+  email: '',
+  phone: '',
+  realName: '',
+  gender: '',
+  idCard: '',
+  createTime: '',
+  lastLoginTime: '',
 })
 
 // 积分信息
@@ -104,23 +109,23 @@ const personalSettings = ref({
   orderNotification: true,
   promotionNotification: false,
   systemNotification: true,
-  
+
   // 界面设置
   theme: 'light' as 'light' | 'dark' | 'auto',
   language: 'zh-CN' as 'zh-CN' | 'en-US',
   fontSize: 14,
   primaryColor: '#1890ff',
-  
+
   // 隐私设置
   profileVisible: true,
   onlineStatus: true,
   dataCollection: false,
-  
+
   // 功能设置
   autoLogin: true,
   rememberPassword: true,
   quickBooking: true,
-  
+
   // 提醒设置
   departureReminder: true,
   reminderTime: '30',
@@ -169,7 +174,7 @@ const tabConfig = [
 onMounted(async () => {
   console.log('ProfileView mounted')
   await loadUserInfo()
-  
+
   // 从路由参数获取活动标签
   const tab = route.query.tab as string
   if (tab && tabConfig.some(t => t.key === tab)) {
@@ -181,14 +186,14 @@ onMounted(async () => {
 const loadUserInfo = async () => {
   try {
     loading.value = true
-    
+
     // 模拟API调用
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     // 这里应该调用实际的API
-    // const response = await getUserInfo(props.userId || getCurrentUserId())
-    // userInfo.value = response.data
-    
+    const response = await getUserInfo()
+    userInfo.value = response.data
+
     console.log('用户信息加载完成:', userInfo.value)
   } catch (error) {
     console.error('加载用户信息失败:', error)
@@ -201,7 +206,7 @@ const loadUserInfo = async () => {
 // 处理标签切换
 const handleTabChange = (tabKey: string) => {
   activeTab.value = tabKey
-  
+
   // 更新路由查询参数
   router.push({
     query: { ...route.query, tab: tabKey }
@@ -209,20 +214,20 @@ const handleTabChange = (tabKey: string) => {
 }
 
 // 处理用户信息更新
-const handleUserInfoUpdate = async (updatedInfo: Partial<UserInfo>) => {
+const handleUserInfoUpdate = async (updatedInfo: Partial<UserInfoReq>) => {
   try {
     loading.value = true
-    
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     // 这里应该调用实际的API
-    // await updateUserInfo(updatedInfo)
-    
-    // 更新本地数据
-    Object.assign(userInfo.value, updatedInfo)
-    
-    ElMessage.success('个人信息更新成功')
+    const res = await updateUserInfo(updatedInfo);
+
+    console.log(res)
+    if (res.code === 200) {
+      ElMessage.success('个人信息更新成功')
+      userInfo.value = updatedInfo
+    }else {
+      ElMessage.error('更新失败,' + res.data)
+    }
   } catch (error) {
     console.error('更新用户信息失败:', error)
     ElMessage.error('更新失败，请重试')
@@ -235,21 +240,21 @@ const handleUserInfoUpdate = async (updatedInfo: Partial<UserInfo>) => {
 const handleAvatarUpload = async (file: File) => {
   try {
     loading.value = true
-    
+
     // 模拟文件上传
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     // 这里应该调用实际的上传API
     // const response = await uploadAvatar(file)
     // userInfo.value.avatar = response.data.url
-    
+
     // 模拟上传成功
     const reader = new FileReader()
     reader.onload = (e) => {
       userInfo.value.avatar = e.target?.result as string
     }
     reader.readAsDataURL(file)
-    
+
     ElMessage.success('头像上传成功')
   } catch (error) {
     console.error('头像上传失败:', error)
@@ -263,15 +268,15 @@ const handleAvatarUpload = async (file: File) => {
 const handleLoadPointsRecords = async (params: any) => {
   try {
     loading.value = true
-    
+
     // 模拟API调用
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     // 这里应该调用实际的API
     // const response = await getPointsRecords(params)
     // pointsRecords.value = response.data.records
     // pointsTotal.value = response.data.total
-    
+
     console.log('积分记录加载完成')
   } catch (error) {
     console.error('加载积分记录失败:', error)
@@ -290,15 +295,15 @@ const handleGoToMall = () => {
 const handleLoadOrders = async (params: any) => {
   try {
     loading.value = true
-    
+
     // 模拟API调用
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     // 这里应该调用实际的API
     // const response = await getOrders(params)
     // orders.value = response.data.orders
     // ordersTotal.value = response.data.total
-    
+
     console.log('订单记录加载完成')
   } catch (error) {
     console.error('加载订单记录失败:', error)
@@ -329,16 +334,16 @@ const handleDownloadTicket = async (orderId: string) => {
 const handleUpdateSettings = async (settings: any) => {
   try {
     loading.value = true
-    
+
     // 模拟API调用
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     // 这里应该调用实际的API
     // await updatePersonalSettings(settings)
-    
+
     // 更新本地数据
     Object.assign(personalSettings.value, settings)
-    
+
     ElMessage.success('设置更新成功')
   } catch (error) {
     console.error('更新设置失败:', error)
@@ -352,10 +357,10 @@ const handleUpdateSettings = async (settings: any) => {
 const handleResetSettings = async () => {
   try {
     loading.value = true
-    
+
     // 模拟API调用
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     // 重置为默认设置
     Object.assign(personalSettings.value, {
       // 通知设置
@@ -365,29 +370,29 @@ const handleResetSettings = async () => {
       orderNotification: true,
       promotionNotification: false,
       systemNotification: true,
-      
+
       // 界面设置
       theme: 'light',
       language: 'zh-CN',
       fontSize: 14,
       primaryColor: '#1890ff',
-      
+
       // 隐私设置
       profileVisible: true,
       onlineStatus: true,
       dataCollection: false,
-      
+
       // 功能设置
       autoLogin: true,
       rememberPassword: true,
       quickBooking: true,
-      
+
       // 提醒设置
       departureReminder: true,
       reminderTime: '30',
       reminderMethod: 'push'
     })
-    
+
     ElMessage.success('设置已重置为默认值')
   } catch (error) {
     console.error('重置设置失败:', error)
@@ -401,15 +406,15 @@ const handleResetSettings = async () => {
 const handleChangePassword = async (data: { oldPassword: string; newPassword: string }) => {
   try {
     loading.value = true
-    
+
     // 模拟API调用
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     // 这里应该调用实际的API
     // await changePassword(data)
-    
+
     securityInfo.value.lastPasswordChange = new Date().toISOString()
-    
+
     ElMessage.success('密码修改成功')
   } catch (error) {
     console.error('修改密码失败:', error)
@@ -422,12 +427,12 @@ const handleChangePassword = async (data: { oldPassword: string; newPassword: st
 const handleBindPhone = async (data: { phone: string; code: string }) => {
   try {
     loading.value = true
-    
+
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     securityInfo.value.phone = data.phone
     securityInfo.value.phoneVerified = true
-    
+
     ElMessage.success('手机号绑定成功')
   } catch (error) {
     console.error('绑定手机号失败:', error)
@@ -440,12 +445,12 @@ const handleBindPhone = async (data: { phone: string; code: string }) => {
 const handleBindEmail = async (data: { email: string; code: string }) => {
   try {
     loading.value = true
-    
+
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     securityInfo.value.email = data.email
     securityInfo.value.emailVerified = true
-    
+
     ElMessage.success('邮箱绑定成功')
   } catch (error) {
     console.error('绑定邮箱失败:', error)
@@ -458,13 +463,13 @@ const handleBindEmail = async (data: { email: string; code: string }) => {
 const handleRealNameAuth = async (data: { realName: string; idCard: string }) => {
   try {
     loading.value = true
-    
+
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     securityInfo.value.realName = data.realName
     securityInfo.value.idCard = data.idCard
     securityInfo.value.realNameVerified = true
-    
+
     ElMessage.success('实名认证成功')
   } catch (error) {
     console.error('实名认证失败:', error)
@@ -487,11 +492,11 @@ const handleSendVerifyCode = async (type: 'phone' | 'email', target: string) => 
 const handleLogoutDevice = async (deviceId: string) => {
   try {
     loading.value = true
-    
+
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     securityInfo.value.loginDevices = securityInfo.value.loginDevices.filter(device => device.id !== deviceId)
-    
+
     ElMessage.success('设备已下线')
   } catch (error) {
     console.error('设备下线失败:', error)
@@ -505,13 +510,13 @@ const handleLogoutDevice = async (deviceId: string) => {
 const handlePasswordChange = async (passwordData: any) => {
   try {
     loading.value = true
-    
+
     // 模拟API调用
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     // 这里应该调用实际的API
     // await changePassword(passwordData)
-    
+
     ElMessage.success('密码修改成功')
   } catch (error) {
     console.error('密码修改失败:', error)
@@ -525,13 +530,13 @@ const handlePasswordChange = async (passwordData: any) => {
 const handlePhoneBind = async (phoneData: any) => {
   try {
     loading.value = true
-    
+
     // 模拟API调用
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     // 这里应该调用实际的API
     // await bindPhone(phoneData)
-    
+
     userInfo.value.phone = phoneData.phone
     ElMessage.success('手机号绑定成功')
   } catch (error) {
@@ -546,13 +551,13 @@ const handlePhoneBind = async (phoneData: any) => {
 const handleEmailBind = async (emailData: any) => {
   try {
     loading.value = true
-    
+
     // 模拟API调用
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     // 这里应该调用实际的API
     // await bindEmail(emailData)
-    
+
     userInfo.value.email = emailData.email
     ElMessage.success('邮箱绑定成功')
   } catch (error) {
@@ -582,10 +587,10 @@ const refreshData = () => {
           <p class="page-subtitle">管理您的个人信息和账户设置</p>
         </div>
       </div>
-      
+
       <div class="header-actions">
-        <ElButton 
-          type="primary" 
+        <ElButton
+          type="primary"
           :loading="loading"
           @click="refreshData"
         >
@@ -593,7 +598,7 @@ const refreshData = () => {
         </ElButton>
       </div>
     </div>
-    
+
     <!-- 标签页导航 -->
     <ProfileTabs
       :active-tab="activeTab"
@@ -601,7 +606,7 @@ const refreshData = () => {
       :loading="loading"
       @tab-change="handleTabChange"
     />
-    
+
     <!-- 标签页内容 -->
     <div class="profile-content">
       <!-- 个人资料 -->
@@ -609,10 +614,10 @@ const refreshData = () => {
         v-if="activeTab === 'profile'"
         :user-info="userInfo"
         :loading="loading"
-        @update-info="handleUserInfoUpdate"
+        @updateProfile="handleUserInfoUpdate"
         @upload-avatar="handleAvatarUpload"
       />
-      
+
       <!-- 账户安全 -->
       <AccountSecurity
         v-else-if="activeTab === 'security'"
@@ -625,7 +630,7 @@ const refreshData = () => {
         @send-verify-code="handleSendVerifyCode"
         @logout-device="handleLogoutDevice"
       />
-      
+
       <!-- 个人设置 -->
       <PersonalSettings
         v-else-if="activeTab === 'settings'"
@@ -634,7 +639,7 @@ const refreshData = () => {
         @update-settings="handleUpdateSettings"
         @reset-settings="handleResetSettings"
       />
-      
+
       <!-- 订单记录 -->
       <OrderHistory
         v-else-if="activeTab === 'orders'"
@@ -645,7 +650,7 @@ const refreshData = () => {
         @view-order="handleViewOrder"
         @download-ticket="handleDownloadTicket"
       />
-      
+
       <!-- 积分信息 -->
       <PointsInfo
         v-else-if="activeTab === 'points'"
@@ -723,24 +728,24 @@ const refreshData = () => {
     align-items: flex-start;
     gap: 16px;
   }
-  
+
   .header-content {
     width: 100%;
   }
-  
+
   .header-actions {
     width: 100%;
     justify-content: flex-end;
   }
-  
+
   .page-title {
     font-size: 20px;
   }
-  
+
   .page-subtitle {
     font-size: 13px;
   }
-  
+
   .profile-content {
     padding: 16px 20px;
   }

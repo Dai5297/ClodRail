@@ -98,6 +98,7 @@ import {ChatDotRound, User, CreditCard} from '@element-plus/icons-vue'
 import {login, getCaptcha} from '@/api/auth'
 import {storageKeys, routeConfig} from '@/config'
 import CaptchaDisplay from '@/components/CaptchaDisplay.vue'
+import bcrypt from 'bcryptjs'
 
 // 定义登录请求接口类型
 interface LoginRequest {
@@ -118,6 +119,7 @@ const loginFormRef = ref<FormInstance>()
 const loginForm = reactive({
   username: '',
   password: '',
+  captcha: ''
 })
 
 // 登录表单验证规则
@@ -153,7 +155,7 @@ const handleLogin = async () => {
 
   try {
     await loginFormRef.value.validate()
-    if (showCaptcha === true && loginForm.captcha !== captchaCode.value){
+    if (showCaptcha.value === true && loginForm.captcha !== captchaCode.value){
       ElMessage.error('验证码错误')
       refreshCaptcha()
       return
@@ -168,15 +170,16 @@ const handleLogin = async () => {
 
     const response = await login(loginData)
 
+    console.log(response.token)
+
     if (response.code !== 200){
-      ElMessage.error(response.data.message)
+      ElMessage.error(response.message)
       refreshCaptcha()
       return
     }
 
     // 保存登录信息
-    // localStorage.setItem(storageKeys.token, response.data.token)
-    // localStorage.setItem(storageKeys.userInfo, JSON.stringify(response.data.userInfo))
+    localStorage.setItem(storageKeys.token, response.data.token)
 
     // 清除登录失败次数
     localStorage.removeItem(storageKeys.loginFailCount)

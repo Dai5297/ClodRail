@@ -67,7 +67,7 @@ const initializePage = () => {
   // 设置默认日期为今天
   const today = new Date()
   searchForm.value.date = today.toISOString().split('T')[0]
-  
+
   // 加载用户信息
   loadUserInfo()
 }
@@ -77,7 +77,7 @@ const loadUserInfo = async () => {
   try {
     loading.value = true
     const response = await getUserInfo()
-    userInfo.value = response.data
+    userInfo.value.name = response.data.username
   } catch (error) {
     console.error('获取用户信息失败:', error)
   } finally {
@@ -99,7 +99,7 @@ const handleSearch = (form: SearchForm) => {
     ElMessage.warning('出发地和目的地不能相同')
     return
   }
-  
+
   // 跳转到搜索页面
   router.push({
     name: 'train-search',
@@ -142,14 +142,14 @@ const updateSearchForm = (form: SearchForm) => {
         @search="handleSearch"
         @update="updateSearchForm"
       />
-      
+
       <!-- 热门线路推荐 -->
       <PopularRoutes
         :routes="popularRoutes"
         :loading="loading"
         @view-route="handleRouteView"
       />
-      
+
       <!-- 服务特色 -->
       <FeaturesSection />
     </main>
