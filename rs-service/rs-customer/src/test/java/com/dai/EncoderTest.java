@@ -1,6 +1,6 @@
 package com.dai;
 
-import com.dai.util.EncoderUtils;
+import com.dai.util.EncoderUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -10,8 +10,8 @@ public class EncoderTest {
     @Test
     public void test() {
         String rawPassword = "123456";
-        String encodedPassword = EncoderUtils.encrypt(rawPassword);
+        String encodedPassword = EncoderUtil.encrypt(rawPassword);
         System.out.println(encodedPassword);
-        System.out.println(EncoderUtils.matches(rawPassword, encodedPassword));
+        System.out.println(EncoderUtil.matches(rawPassword, encodedPassword));
     }
 }

@@ -1,4 +1,4 @@
-package com.dai.model;
+package com.dai.model.domain;
 
 import lombok.Data;
 

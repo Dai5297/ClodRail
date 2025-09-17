@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.dai</groupId>
-        <artifactId>rs-service</artifactId>
+        <artifactId>rs-util</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>rs-customer</artifactId>
+    <artifactId>rs-redis</artifactId>
 
     <properties>
         <maven.compiler.source>24</maven.compiler.source>
@@ -19,8 +19,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.dai</groupId>
-            <artifactId>rs-redis</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
     </dependencies>
+
 </project>

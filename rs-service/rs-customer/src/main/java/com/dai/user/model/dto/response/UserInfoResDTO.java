@@ -4,11 +4,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-/**
- * 登录返回结果
- */
 @Data
-public class UserLoginResDTO {
+public class UserInfoResDTO {
+
     /**
      * 用户id
      */
@@ -55,7 +53,22 @@ public class UserLoginResDTO {
     private String phone;
 
     /**
-     * 登录token
+     * 真实姓名
      */
-    private String token;
+    private String realName;
+
+    /**
+     * 身份证号码
+     */
+    private String idCard;
+
+    /**
+     * 创建时间
+     */
+    private LocalDateTime createTime;
+
+    /**
+     * 最后登录时间
+     */
+    private LocalDateTime lastLoginTime;
 }

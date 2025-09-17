@@ -1,11 +1,12 @@
-package com.dai.user.model.domain;
+package com.dai.model.domain;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import com.dai.model.BaseModel;
 import org.springframework.data.annotation.Id;
+
+import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -27,6 +28,26 @@ public class User extends BaseModel {
      * 密码
      */
     private String password;
+
+    /**
+     * 性别
+     */
+    private String gender;
+
+    /**
+     * 生日
+     */
+    private LocalDateTime birthday;
+
+    /**
+     *  地址
+     */
+    private String address;
+
+    /**
+     *  个性签名
+     */
+    private String introduction;
 
     /**
      * 头像

@@ -1,16 +1,12 @@
-package com.dai.user.model.dto.response;
+package com.dai.user.model.dto.request;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
-/**
- * 登录返回结果
- */
 @Data
-public class UserLoginResDTO {
+public class UserInfoReqDTO {
+
     /**
-     * 用户id
+     * Id
      */
     private Long id;
 
@@ -20,22 +16,17 @@ public class UserLoginResDTO {
     private String username;
 
     /**
-     * 性别
-     */
-    private String gender;
-
-    /**
      * 生日
      */
-    private LocalDateTime birthday;
+    private String birthday;
 
     /**
-     *  地址
+     * 地址
      */
     private String address;
 
     /**
-     *  个性签名
+     * 个人简介
      */
     private String introduction;
 
@@ -50,12 +41,22 @@ public class UserLoginResDTO {
     private String email;
 
     /**
-     * 手机号
+     * 手机号码
      */
     private String phone;
 
     /**
-     * 登录token
+     * 真实姓名
      */
-    private String token;
+    private String realName;
+
+    /**
+     * 性别
+     */
+    private String gender;
+
+    /**
+     * 身份证号
+     */
+    private String idCard;
 }

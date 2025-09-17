@@ -12,5 +12,7 @@ spring:
           uri: lb://customer-service
           predicates:
             - Path=/user/**
+  main:
+    web-application-type: reactive
 server:
   port: 18080

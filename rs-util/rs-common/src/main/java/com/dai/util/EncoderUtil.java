@@ -5,10 +5,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 /**
  * 密码加密工具类
  */
-public class EncoderUtils {
+public class EncoderUtil {
     private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder();
 
-    private EncoderUtils() {
+    private EncoderUtil() {
         // 工具类不允许实例化
         throw new IllegalStateException("工具类不允许实例化");
     }

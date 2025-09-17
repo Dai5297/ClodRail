@@ -1,7 +1,9 @@
 package com.dai.user.service;
 
 
+import com.dai.user.model.dto.request.UserInfoReqDTO;
 import com.dai.user.model.dto.request.UserNameLoginReqDTO;
+import com.dai.user.model.dto.response.UserInfoResDTO;
 import com.dai.user.model.dto.response.UserLoginResDTO;
 
 public interface AccountService {
@@ -18,4 +20,17 @@ public interface AccountService {
      * @return 登录结果
      */
     UserLoginResDTO loginByUserName(UserNameLoginReqDTO reqDTO);
+
+    /**
+     * 获取用户信息
+     * @return 用户信息
+     */
+    UserInfoResDTO info();
+
+    /**
+     * 修改用户信息
+     * @param reqDTO 修改参数
+     * @return 修改结果
+     */
+    UserInfoResDTO updateInfo(UserInfoReqDTO reqDTO);
 }

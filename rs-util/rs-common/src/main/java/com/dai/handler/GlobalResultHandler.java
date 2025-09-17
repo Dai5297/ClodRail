@@ -1,6 +1,6 @@
 package com.dai.handler;
 
-import com.dai.model.RespResult;
+import com.dai.model.domain.RespResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.MethodParameter;

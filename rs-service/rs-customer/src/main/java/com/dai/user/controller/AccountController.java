@@ -1,11 +1,12 @@
 package com.dai.user.controller;
 
+import com.dai.user.model.dto.request.UserInfoReqDTO;
 import com.dai.user.model.dto.request.UserNameLoginReqDTO;
+import com.dai.user.model.dto.response.UserInfoResDTO;
 import com.dai.user.model.dto.response.UserLoginResDTO;
 import com.dai.user.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import com.dai.model.RespResult;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +23,16 @@ public class AccountController {
     @PostMapping("/login/username")
     public UserLoginResDTO loginByUserName(@RequestBody UserNameLoginReqDTO reqDTO) {
         return accountService.loginByUserName(reqDTO);
+    }
+
+    @GetMapping("/info")
+    public UserInfoResDTO info() {
+        return accountService.info();
+    }
+
+    @PostMapping("/info/update")
+    public UserInfoResDTO updateInfo(@RequestBody UserInfoReqDTO reqDTO) {
+        return accountService.updateInfo(reqDTO);
     }
 
 }

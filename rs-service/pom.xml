@@ -20,6 +20,7 @@
         <maven.compiler.source>24</maven.compiler.source>
         <maven.compiler.target>24</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <rs-redis.version>0.0.1-SNAPSHOT</rs-redis.version>
     </properties>
 
     <dependencies>
@@ -36,4 +37,14 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.dai</groupId>
+                <artifactId>rs-redis</artifactId>
+                <version>${rs-redis.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

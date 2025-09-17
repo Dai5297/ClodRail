@@ -2,6 +2,7 @@ CREATE TABLE `user` (
                         `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '用户id',
                         `username` VARCHAR(50) NOT NULL COMMENT '用户名',
                         `password` VARCHAR(255) NOT NULL COMMENT '密码',
+                        `gender` varchar(2)NULL comment '性别',
                         `icon` VARCHAR(255) NULL COMMENT '头像',
                         `email` VARCHAR(100) NULL COMMENT '邮箱',
                         `phone` VARCHAR(20) NULL COMMENT '手机号',

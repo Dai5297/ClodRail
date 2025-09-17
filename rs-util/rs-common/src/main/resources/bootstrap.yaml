@@ -1,0 +1,8 @@
+rs:
+  auth:
+    exclude:
+      paths:
+      - /user/login/**
+      - /user/register/**
+      - /user/forget/**
+      - /user/captcha
