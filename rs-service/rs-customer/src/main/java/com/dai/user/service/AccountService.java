@@ -3,6 +3,7 @@ package com.dai.user.service;
 
 import com.dai.user.model.dto.request.UserInfoReqDTO;
 import com.dai.user.model.dto.request.UserNameLoginReqDTO;
+import com.dai.user.model.dto.request.UserRestPasswordReqDTO;
 import com.dai.user.model.dto.response.UserInfoResDTO;
 import com.dai.user.model.dto.response.UserLoginResDTO;
 
@@ -22,6 +23,11 @@ public interface AccountService {
     UserLoginResDTO loginByUserName(UserNameLoginReqDTO reqDTO);
 
     /**
+     * 登出
+     */
+    void logout(String authorization);
+
+    /**
      * 获取用户信息
      * @return 用户信息
      */
@@ -33,4 +39,10 @@ public interface AccountService {
      * @return 修改结果
      */
     UserInfoResDTO updateInfo(UserInfoReqDTO reqDTO);
+
+    /**
+     * 重置密码
+     * @param reqDTO 重置密码参数
+     */
+    void resetPassword(UserRestPasswordReqDTO reqDTO);
 }

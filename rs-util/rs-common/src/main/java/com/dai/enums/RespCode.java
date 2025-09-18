@@ -10,6 +10,7 @@ public enum RespCode {
     ERROR(500),
     SYSTEM_ERROR(501),
     DATA_NOT_EXIST(502),
+    DATA_NOT_CONSISTENT(503)
     ;
 
     private Integer code;

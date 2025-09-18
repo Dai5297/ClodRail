@@ -2,6 +2,7 @@ package com.dai.user.controller;
 
 import com.dai.user.model.dto.request.UserInfoReqDTO;
 import com.dai.user.model.dto.request.UserNameLoginReqDTO;
+import com.dai.user.model.dto.request.UserRestPasswordReqDTO;
 import com.dai.user.model.dto.response.UserInfoResDTO;
 import com.dai.user.model.dto.response.UserLoginResDTO;
 import com.dai.user.service.AccountService;
@@ -25,6 +26,11 @@ public class AccountController {
         return accountService.loginByUserName(reqDTO);
     }
 
+    @PostMapping("/logout")
+    public void logout(@RequestHeader(value = "Authorization", required = false) String authorization) {
+        accountService.logout(authorization);
+    }
+
     @GetMapping("/info")
     public UserInfoResDTO info() {
         return accountService.info();
@@ -33,6 +39,11 @@ public class AccountController {
     @PostMapping("/info/update")
     public UserInfoResDTO updateInfo(@RequestBody UserInfoReqDTO reqDTO) {
         return accountService.updateInfo(reqDTO);
+    }
+
+    @PostMapping("/password/reset")
+    public void resetPassword(@RequestBody UserRestPasswordReqDTO reqDTO) {
+        accountService.resetPassword(reqDTO);
     }
 
 }

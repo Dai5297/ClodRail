@@ -6,3 +6,4 @@ rs:
       - /user/register/**
       - /user/forget/**
       - /user/captcha
+      - /user/logout

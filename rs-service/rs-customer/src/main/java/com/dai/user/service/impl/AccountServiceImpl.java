@@ -1,6 +1,7 @@
 package com.dai.user.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
@@ -9,6 +10,7 @@ import com.dai.user.mapper.AccountMapper;
 import com.dai.model.domain.User;
 import com.dai.user.model.dto.request.UserInfoReqDTO;
 import com.dai.user.model.dto.request.UserNameLoginReqDTO;
+import com.dai.user.model.dto.request.UserRestPasswordReqDTO;
 import com.dai.user.model.dto.response.UserInfoResDTO;
 import com.dai.user.model.dto.response.UserLoginResDTO;
 import com.dai.user.service.AccountService;
@@ -70,6 +72,18 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
+     * 登出
+     */
+    @Override
+    public void logout(String authorization) {
+        String uuid = authorization.substring(7);
+        Boolean delete = stringRedisTemplate.delete(RedisKeyConstant.USER_LOGIN_TOKEN + uuid);
+        if (!BooleanUtil.isTrue(delete)) {
+            throw new CommonException(RespCode.SYSTEM_ERROR, "登出失败");
+        }
+    }
+
+    /**
      * 获取用户信息
      * @return 用户信息
      */
@@ -101,5 +115,15 @@ public class AccountServiceImpl implements AccountService {
         user.setUpdateTime(LocalDateTime.now());
         accountMapper.updateUserInfo(user);
         return BeanUtil.copyProperties(user, UserInfoResDTO.class);
+    }
+
+    @Override
+    public void resetPassword(UserRestPasswordReqDTO reqDTO) {
+        String password = accountMapper.queryPasswordById(UserContext.get());
+        if (!EncoderUtil.matches(reqDTO.getOldPassword(), password)) {
+            throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "旧密码错误");
+        }
+        String newPassword = EncoderUtil.encrypt(reqDTO.getNewPassword());
+        accountMapper.updatePassword(newPassword, UserContext.get());
     }
 }
