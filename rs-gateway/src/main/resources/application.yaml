@@ -11,7 +11,7 @@ spring:
         - id: customer-service
           uri: lb://customer-service
           predicates:
-            - Path=/user/**
+            - Path=/user/**， /customer-service/**
   main:
     web-application-type: reactive
 server:
