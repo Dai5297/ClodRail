@@ -5,14 +5,15 @@ spring:
     nacos:
       server-addr: 127.0.0.1:8848
       config:
-        namespace: efd89d81-56ba-4471-80ff-51126578ef9d
+        namespace: 83a90920-a536-4767-b536-3e99c506b1a0
         file-extension: yaml
       discovery:
-        namespace: efd89d81-56ba-4471-80ff-51126578ef9d
+        namespace: 83a90920-a536-4767-b536-3e99c506b1a0
         enabled: true
   config:
     import:
-      - nacos:share-mysql.yaml       # 导入共享的MySQL配置
+      - nacos:shared-mysql.yaml       # 导入共享的MySQL配置
+      - nacos:shared-knife4j.yaml
 
   profiles:
     active: dev
@@ -22,7 +23,19 @@ spring:
     host: localhost
     port: 3306
     username: root
-    password: 050815
+    password: 20050918
+
+  knife4j:
+    title: 用户服务
+    description: 用户服务接口文档
+    version: 1.0.0
+    path: com.dai.user.controller,com.dai.admin.controller
+    group: 用户服务
+    contact:
+      name: dai
+      url: https://github.com/Dai5297
+      email: 15160255297@163.com
+
 server:
   port: 18081
 

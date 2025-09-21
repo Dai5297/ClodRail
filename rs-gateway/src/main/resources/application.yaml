@@ -5,13 +5,13 @@ spring:
     nacos:
       server-addr: 127.0.0.1:8848
       discovery:
-        namespace: efd89d81-56ba-4471-80ff-51126578ef9d
+        namespace: 83a90920-a536-4767-b536-3e99c506b1a0
     gateway:
       routes:
         - id: customer-service
           uri: lb://customer-service
           predicates:
-            - Path=/user/**
+            - Path=/user/**, /account/**, /customer-service/**
   main:
     web-application-type: reactive
 server:

@@ -1,19 +1,12 @@
 package com.dai.user.service;
 
-
-import com.dai.user.model.dto.request.UserInfoReqDTO;
+import com.dai.user.model.dto.request.UserInfoUpdateReqDTO;
 import com.dai.user.model.dto.request.UserNameLoginReqDTO;
-import com.dai.user.model.dto.request.UserRestPasswordReqDTO;
+import com.dai.user.model.dto.request.UserResetPasswordReqDTO;
 import com.dai.user.model.dto.response.UserInfoResDTO;
 import com.dai.user.model.dto.response.UserLoginResDTO;
 
-public interface AccountService {
-
-    /**
-     * 获取账号密码登录验证码
-     * @return 验证码
-     */
-    String captcha();
+public interface UserService {
 
     /**
      * 账号密码登录
@@ -21,6 +14,7 @@ public interface AccountService {
      * @return 登录结果
      */
     UserLoginResDTO loginByUserName(UserNameLoginReqDTO reqDTO);
+
 
     /**
      * 登出
@@ -38,11 +32,17 @@ public interface AccountService {
      * @param reqDTO 修改参数
      * @return 修改结果
      */
-    UserInfoResDTO updateInfo(UserInfoReqDTO reqDTO);
+    UserInfoResDTO updateInfo(UserInfoUpdateReqDTO reqDTO);
+
+    /**
+     * 获取账号密码登录验证码
+     * @return 验证码
+     */
+    String captcha();
 
     /**
      * 重置密码
      * @param reqDTO 重置密码参数
      */
-    void resetPassword(UserRestPasswordReqDTO reqDTO);
+    void resetPassword(UserResetPasswordReqDTO reqDTO);
 }

@@ -9,6 +9,8 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 /**
@@ -24,7 +26,15 @@ public class GlobalResultHandler implements ResponseBodyAdvice<Object> {
      */
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return true; // 处理所有类型
+        // 👇 排除 OpenAPI 文档路径
+        String requestURI = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest().getRequestURI();
+
+        if (requestURI.startsWith("/v3/api-docs") || requestURI.startsWith("/swagger")) {
+            return false; // 不包装
+        }
+
+        return true;
     }
 
     /**

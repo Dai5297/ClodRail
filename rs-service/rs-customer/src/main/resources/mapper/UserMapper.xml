@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dai.user.mapper.AccountMapper">
+<mapper namespace="com.dai.user.mapper.UserMapper">
 
-    <update id="updateUserInfo">
+    <update id="updateUser">
         update user
         <set>
             <if test="username != null">
@@ -37,10 +37,26 @@
             <if test="idCard != null">
                 id_card = #{idCard},
             </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
             <if test="updateTime != null">
                 update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime},
+            </if>
+            <if test="createdBy != null">
+                created_by = #{createdBy},
             </if>
         </set>
         where id = #{id}
     </update>
+
+    <select id="queryPasswordById" resultType="java.lang.String">
+        select password from user where id = #{id}
+    </select>
 </mapper>

@@ -11,6 +11,7 @@ import com.dai.properties.ExcludeProperties;
 import com.dai.util.JWTUtil;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -25,6 +26,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AutoGlobalFilter implements GlobalFilter, Ordered {
@@ -70,9 +72,13 @@ public class AutoGlobalFilter implements GlobalFilter, Ordered {
         }
         User user = JSONUtil.toBean(userStr, User.class);
         // 续期redisKey
-        Long expire = stringRedisTemplate.getExpire(RedisKeyConstant.USER_LOGIN_TOKEN + uuid, TimeUnit.MICROSECONDS);
-        if (expire < RedisKeyConstant.USER_TOKEN_LEAST_TTL) {
-            stringRedisTemplate.expire(RedisKeyConstant.USER_LOGIN_TOKEN + uuid, RedisKeyConstant.USER_LOGIN_TOKEN_TTL, TimeUnit.MILLISECONDS);
+        Long expire = stringRedisTemplate.getExpire(RedisKeyConstant.USER_LOGIN_TOKEN + uuid, TimeUnit.SECONDS);
+
+        if (expire != null && expire > 0 && expire < RedisKeyConstant.USER_TOKEN_LEAST_TTL) {
+            // 使用秒为单位，与getExpire保持一致
+            stringRedisTemplate.expire(RedisKeyConstant.USER_LOGIN_TOKEN + uuid,
+                    RedisKeyConstant.USER_LOGIN_TOKEN_TTL, TimeUnit.SECONDS);
+            log.debug("用户token续期成功，uuid: {}", uuid);
         }
         // 添加用户信息
         ServerWebExchange swe = exchange.mutate()

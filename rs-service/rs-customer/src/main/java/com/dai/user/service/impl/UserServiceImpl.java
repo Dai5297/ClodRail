@@ -6,16 +6,16 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
 import com.dai.constant.RedisKeyConstant;
-import com.dai.user.mapper.AccountMapper;
-import com.dai.model.domain.User;
-import com.dai.user.model.dto.request.UserInfoReqDTO;
-import com.dai.user.model.dto.request.UserNameLoginReqDTO;
-import com.dai.user.model.dto.request.UserRestPasswordReqDTO;
-import com.dai.user.model.dto.response.UserInfoResDTO;
-import com.dai.user.model.dto.response.UserLoginResDTO;
-import com.dai.user.service.AccountService;
 import com.dai.enums.RespCode;
 import com.dai.exception.CommonException;
+import com.dai.model.domain.User;
+import com.dai.user.mapper.UserMapper;
+import com.dai.user.model.dto.request.UserInfoUpdateReqDTO;
+import com.dai.user.model.dto.request.UserNameLoginReqDTO;
+import com.dai.user.model.dto.request.UserResetPasswordReqDTO;
+import com.dai.user.model.dto.response.UserInfoResDTO;
+import com.dai.user.model.dto.response.UserLoginResDTO;
+import com.dai.user.service.UserService;
 import com.dai.util.EncoderUtil;
 import com.dai.util.JWTUtil;
 import com.dai.util.UserContext;
@@ -29,20 +29,11 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
-public class AccountServiceImpl implements AccountService {
+public class UserServiceImpl implements UserService {
 
-    private final AccountMapper accountMapper;
+    private final UserMapper userMapper;
 
     private final StringRedisTemplate stringRedisTemplate;
-
-    /**
-     * 获取账号密码登录验证码
-     * @return 验证码
-     */
-    @Override
-    public String captcha() {
-        return RandomUtil.randomString(4);
-    }
 
     /**
      * 账号密码登录
@@ -53,7 +44,7 @@ public class AccountServiceImpl implements AccountService {
     public UserLoginResDTO loginByUserName(UserNameLoginReqDTO reqDTO) {
         // 登录校验
         String userName = reqDTO.getUsername();
-        User user = accountMapper.findByUsername(userName);
+        User user = userMapper.findByUsername(userName);
         if (ObjectUtil.isEmpty(user)) {
             throw new CommonException(RespCode.DATA_NOT_EXIST, "用户不存在");
         }
@@ -90,7 +81,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public UserInfoResDTO info() {
         Long id = UserContext.get();
-        User user = accountMapper.findByUserId(id);
+        User user = userMapper.findByUserId(id);
         UserInfoResDTO userInfoResDTO = BeanUtil.toBean(user, UserInfoResDTO.class);
         String loginTime = stringRedisTemplate.opsForValue().get(RedisKeyConstant.USER_LOGIN_TIME + id);
         if (loginTime != null) {
@@ -106,24 +97,36 @@ public class AccountServiceImpl implements AccountService {
      * @return 修改结果
      */
     @Override
-    public UserInfoResDTO updateInfo(UserInfoReqDTO reqDTO) {
-        User user = accountMapper.findByUserId(reqDTO.getId());
+    public UserInfoResDTO updateInfo(UserInfoUpdateReqDTO reqDTO) {
+        User user = userMapper.findByUserId(reqDTO.getId());
         if (ObjectUtil.isEmpty(user)) {
             throw new CommonException(RespCode.DATA_NOT_EXIST, "用户不存在");
         }
         BeanUtil.copyProperties(reqDTO, user);
-        user.setUpdateTime(LocalDateTime.now());
-        accountMapper.updateUserInfo(user);
+        userMapper.updateUser(user);
         return BeanUtil.copyProperties(user, UserInfoResDTO.class);
     }
 
+    /**
+     * 获取账号密码登录验证码
+     * @return 验证码
+     */
     @Override
-    public void resetPassword(UserRestPasswordReqDTO reqDTO) {
-        String password = accountMapper.queryPasswordById(UserContext.get());
+    public String captcha() {
+        return RandomUtil.randomString(4);
+    }
+
+
+    @Override
+    public void resetPassword(UserResetPasswordReqDTO reqDTO) {
+        String password = userMapper.queryPasswordById(UserContext.get());
         if (!EncoderUtil.matches(reqDTO.getOldPassword(), password)) {
             throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "旧密码错误");
         }
         String newPassword = EncoderUtil.encrypt(reqDTO.getNewPassword());
-        accountMapper.updatePassword(newPassword, UserContext.get());
+        User user = new User();
+        user.setPassword(newPassword);
+        user.setId(UserContext.get());
+        userMapper.updateUser(user);
     }
 }
