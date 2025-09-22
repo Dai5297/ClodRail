@@ -1,11 +1,14 @@
 package com.dai.user.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.BooleanUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
+<<<<<<<< HEAD:rs-service/rs-customer/src/main/java/com/dai/user/service/impl/UserServiceImpl.java
 import cn.hutool.json.JSONUtil;
 import com.dai.constant.RedisKeyConstant;
+========
+import com.dai.user.mapper.AccountMapper;
+import com.dai.user.model.dto.request.UserRestPasswordReqDTO;
+import com.dai.user.service.AccountService;
+>>>>>>>> origin/master:rs-service/rs-customer/src/main/java/com/dai/user/service/impl/AccountServiceImpl.java
 import com.dai.enums.RespCode;
 import com.dai.exception.CommonException;
 import com.dai.model.domain.User;
@@ -17,15 +20,10 @@ import com.dai.user.model.dto.response.UserInfoResDTO;
 import com.dai.user.model.dto.response.UserLoginResDTO;
 import com.dai.user.service.UserService;
 import com.dai.util.EncoderUtil;
-import com.dai.util.JWTUtil;
 import com.dai.util.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -33,9 +31,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
 
-    private final StringRedisTemplate stringRedisTemplate;
-
     /**
+<<<<<<<< HEAD:rs-service/rs-customer/src/main/java/com/dai/user/service/impl/UserServiceImpl.java
      * 账号密码登录
      * @param reqDTO 登录参数
      * @return 登录结果
@@ -106,8 +103,7 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUser(user);
         return BeanUtil.copyProperties(user, UserInfoResDTO.class);
     }
-
-    /**
+========
      * 获取账号密码登录验证码
      * @return 验证码
      */
@@ -116,10 +112,27 @@ public class UserServiceImpl implements UserService {
         return RandomUtil.randomString(4);
     }
 
+>>>>>>>> origin/master:rs-service/rs-customer/src/main/java/com/dai/user/service/impl/AccountServiceImpl.java
+
+    /**
+     * 获取账号密码登录验证码
+     * @return 验证码
+     */
+    @Override
+<<<<<<<< HEAD:rs-service/rs-customer/src/main/java/com/dai/user/service/impl/UserServiceImpl.java
+    public String captcha() {
+        return RandomUtil.randomString(4);
+    }
+
 
     @Override
     public void resetPassword(UserResetPasswordReqDTO reqDTO) {
         String password = userMapper.queryPasswordById(UserContext.get());
+========
+    public void resetPassword(UserRestPasswordReqDTO reqDTO) {
+        // TODO 修该更新时间
+        String password = accountMapper.queryPasswordById(UserContext.get());
+>>>>>>>> origin/master:rs-service/rs-customer/src/main/java/com/dai/user/service/impl/AccountServiceImpl.java
         if (!EncoderUtil.matches(reqDTO.getOldPassword(), password)) {
             throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "旧密码错误");
         }

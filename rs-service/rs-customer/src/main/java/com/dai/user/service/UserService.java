@@ -1,14 +1,20 @@
 package com.dai.user.service;
 
+<<<<<<<< HEAD:rs-service/rs-customer/src/main/java/com/dai/user/service/UserService.java
 import com.dai.user.model.dto.request.UserInfoUpdateReqDTO;
 import com.dai.user.model.dto.request.UserNameLoginReqDTO;
 import com.dai.user.model.dto.request.UserResetPasswordReqDTO;
 import com.dai.user.model.dto.response.UserInfoResDTO;
 import com.dai.user.model.dto.response.UserLoginResDTO;
+========
+
+import com.dai.user.model.dto.request.UserRestPasswordReqDTO;
+>>>>>>>> origin/master:rs-service/rs-customer/src/main/java/com/dai/user/service/AccountService.java
 
 public interface UserService {
 
     /**
+<<<<<<<< HEAD:rs-service/rs-customer/src/main/java/com/dai/user/service/UserService.java
      * 账号密码登录
      * @param reqDTO 登录参数
      * @return 登录结果
@@ -41,6 +47,8 @@ public interface UserService {
     String captcha();
 
     /**
+========
+>>>>>>>> origin/master:rs-service/rs-customer/src/main/java/com/dai/user/service/AccountService.java
      * 重置密码
      * @param reqDTO 重置密码参数
      */
