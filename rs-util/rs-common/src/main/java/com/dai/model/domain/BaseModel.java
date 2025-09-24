@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 public class BaseModel {
 
     @CreateBy
-    private Long createdBy;
+    private Long createBy;
 
     @CreateTime
-    private LocalDateTime createdTime;
+    private LocalDateTime createTime;
 
     @UpdateBy
     private Long updateBy;

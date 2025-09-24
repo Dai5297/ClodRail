@@ -147,13 +147,13 @@ public class MybatisAutoFillInterceptor implements Interceptor {
                 }
                 // 如果字段的值是空的，则根据字段的名字来填充数据
                 switch (field.getName()) {
-                    case "createdBy", "updateBy" -> {
+                    case "createBy", "updateBy" -> {
                         // 设置为用户的loginId
                         field.set(parameter, loginId);
                         // 设置字段为不可访问
                         field.setAccessible(false);
                     }
-                    case "createdTime", "updateTime" -> {
+                    case "createTime", "updateTime" -> {
                         // 设置为当前时间
                         field.set(parameter, new Date());
                         // 设置字段为不可访问

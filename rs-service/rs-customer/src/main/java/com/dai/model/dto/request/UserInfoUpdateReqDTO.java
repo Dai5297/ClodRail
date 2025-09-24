@@ -1,15 +1,13 @@
-package com.dai.user.model.dto.response;
+package com.dai.model.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
-public class UserInfoResDTO {
+public class UserInfoUpdateReqDTO {
 
     /**
-     * 用户id
+     * Id
      */
     @Schema(description = "用户Id", example = "1")
     private Long id;
@@ -21,27 +19,21 @@ public class UserInfoResDTO {
     private String username;
 
     /**
-     * 性别
-     */
-    @Schema(description = "性别", example = "男")
-    private String gender;
-
-    /**
      * 生日
      */
     @Schema(description = "生日", example = "2020-01-01")
-    private LocalDateTime birthday;
+    private String birthday;
 
     /**
-     *  地址
+     * 地址
      */
     @Schema(description = "地址", example = "中国")
     private String address;
 
     /**
-     *  个性签名
+     * 个人简介
      */
-    @Schema(description = "个性签名", example = "程序员")
+    @Schema(description = "个人简介", example = "程序员")
     private String introduction;
 
     /**
@@ -57,7 +49,7 @@ public class UserInfoResDTO {
     private String email;
 
     /**
-     * 手机号
+     * 手机号码
      */
     @Schema(description = "手机号码", example = "15160255297")
     private String phone;
@@ -69,20 +61,14 @@ public class UserInfoResDTO {
     private String realName;
 
     /**
-     * 身份证号码
+     * 性别
+     */
+    @Schema(description = "性别", example = "男")
+    private String gender;
+
+    /**
+     * 身份证号
      */
     @Schema(description = "身份证号", example = "110101199001011234")
     private String idCard;
-
-    /**
-     * 创建时间
-     */
-    @Schema(description = "创建时间", example = "2020-01-01 00:00:00")
-    private LocalDateTime createTime;
-
-    /**
-     * 最后登录时间
-     */
-    @Schema(description = "最后登录时间", example = "2020-01-01 00:00:00")
-    private LocalDateTime lastLoginTime;
 }

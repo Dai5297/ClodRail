@@ -6,7 +6,7 @@ import com.dai.constant.CommonConstant;
 import com.dai.constant.RedisKeyConstant;
 import com.dai.enums.RespCode;
 import com.dai.exception.CommonException;
-import com.dai.model.domain.User;
+import com.dai.model.domain.customer.User;
 import com.dai.properties.ExcludeProperties;
 import com.dai.util.JWTUtil;
 import io.jsonwebtoken.Claims;

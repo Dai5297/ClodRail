@@ -2,8 +2,8 @@ rs:
   auth:
     exclude:
       paths:
-      - /user/login/**
-      - /user/register/**
-      - /user/forget/**
-      - /user/captcha
-      - /user/logout
+      - /account/login/**
+      - /account/register/**
+      - /account/forget/**
+      - /account/captcha
+      - /account/logout

@@ -1,4 +1,4 @@
-package com.dai.user.model.dto.response;
+package com.dai.model.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
