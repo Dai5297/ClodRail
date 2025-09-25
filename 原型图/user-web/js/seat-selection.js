@@ -27,7 +27,7 @@ class SeatSelection {
         if (!this.selectedTrain || !this.searchParams) {
             Utils.showMessage('未找到车次信息，请重新选择', 'error');
             setTimeout(() => {
-                window.location.href = 'train-search.html';
+                window.location.href = 'train-ticket.html';
             }, 2000);
             return;
         }
@@ -545,7 +545,7 @@ class SeatSelection {
         Utils.setLocalStorage('currentOrder', order);
         
         // 跳转到支付页面
-        window.location.href = 'payment.html';
+        window.location.href = 'mall-payment.html';
     }
 }
 

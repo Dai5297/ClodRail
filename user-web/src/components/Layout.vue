@@ -217,7 +217,7 @@ const goToRegister = () => {
 }
 
 const goToProfile = () => {
-  router.push('/profile')
+  router.push('/user')
 }
 
 const goToOrders = () => {
@@ -245,7 +245,7 @@ const handleLogout = async () => {
     ElMessage.success('已退出登录')
 
     // 跳转到首页
-    router.push('/login')
+    await router.push('/login')
   } catch {
     // 用户取消
   }
@@ -257,11 +257,12 @@ const checkLoginStatus = async () => {
   const token = localStorage.getItem('token')
   if (token) {
     isLoggedIn.value = true
-    // 获取用户信息
-    const savedUserInfo = await getUserInfo()
-    if (savedUserInfo.code === 200) {
-      userInfo.value.realName = savedUserInfo.data.realName
-      userInfo.value.icon = savedUserInfo.data.icon
+    // 只在非个人中心页面获取用户信息，避免重复请求
+    if (!router.currentRoute.value.path.startsWith('/user')) {
+      const savedUserInfo = await getUserInfo()
+      // 直接使用返回的用户信息，处理可能的undefined值
+      userInfo.value.realName = savedUserInfo.data.realName || ''
+      userInfo.value.icon = savedUserInfo.data.icon || ''
     }
   }
 }

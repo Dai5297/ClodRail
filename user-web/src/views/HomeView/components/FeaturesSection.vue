@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { ElIcon } from 'element-plus'
-import { 
-  TrendCharts, 
-  Lock, 
-  Iphone, 
+import {
+  TrendCharts,
+  Lock,
+  Iphone,
   ChatDotRound,
   Timer,
   Star,
@@ -39,7 +39,7 @@ const features = ref<Feature[]>([
     ]
   },
   {
-    id: 'secure-payment',
+    id: 'secure-mall-payment',
     icon: '🔒',
     title: '安全支付',
     description: '多重安全保障，支付更安心',
@@ -141,12 +141,12 @@ const getIconComponent = (iconName: string) => {
         </div>
         <p class="section-subtitle">专业的铁路出行服务，让每一次旅程都更美好</p>
       </div>
-      
+
       <!-- 主要特色功能 -->
       <div class="features-grid" :class="{ 'animate-in': isVisible }">
-        <div 
-          v-for="(feature, index) in features" 
-          :key="feature.id" 
+        <div
+          v-for="(feature, index) in features"
+          :key="feature.id"
           class="feature-card"
           :class="`feature-card-${index}`"
           :style="{ '--feature-color': feature.color, '--feature-bg': feature.bgColor }"
@@ -156,23 +156,23 @@ const getIconComponent = (iconName: string) => {
             <div class="decoration-circle"></div>
             <div class="decoration-dots"></div>
           </div>
-          
+
           <!-- 图标区域 -->
           <div class="feature-icon-wrapper">
             <div class="feature-icon">{{ feature.icon }}</div>
             <div class="icon-glow"></div>
           </div>
-          
+
           <!-- 内容区域 -->
           <div class="feature-content">
             <h3 class="feature-title">{{ feature.title }}</h3>
             <p class="feature-description">{{ feature.description }}</p>
-            
+
             <!-- 详细特点 -->
             <div class="feature-details">
-              <div 
-                v-for="(detail, detailIndex) in feature.details" 
-                :key="detailIndex" 
+              <div
+                v-for="(detail, detailIndex) in feature.details"
+                :key="detailIndex"
                 class="detail-item"
               >
                 <div class="detail-dot"></div>
@@ -180,19 +180,19 @@ const getIconComponent = (iconName: string) => {
               </div>
             </div>
           </div>
-          
+
           <!-- 悬浮效果 -->
           <div class="hover-overlay"></div>
         </div>
       </div>
-      
+
       <!-- 额外服务特色 -->
       <div class="extra-features">
         <h3 class="extra-title">更多贴心服务</h3>
         <div class="extra-grid">
-          <div 
-            v-for="(extra, index) in extraFeatures" 
-            :key="index" 
+          <div
+            v-for="(extra, index) in extraFeatures"
+            :key="index"
             class="extra-item"
           >
             <div class="extra-icon">
@@ -207,7 +207,7 @@ const getIconComponent = (iconName: string) => {
           </div>
         </div>
       </div>
-      
+
       <!-- 底部装饰 -->
       <div class="section-footer">
         <div class="footer-decoration">
@@ -567,12 +567,12 @@ const getIconComponent = (iconName: string) => {
   .container {
     padding: 0 16px;
   }
-  
+
   .features-grid {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 24px;
   }
-  
+
   .feature-card {
     padding: 24px;
   }
@@ -582,25 +582,25 @@ const getIconComponent = (iconName: string) => {
   .features-section {
     padding: 40px 0;
   }
-  
+
   .features-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .extra-grid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .section-title {
     font-size: 24px;
   }
-  
+
   .section-subtitle {
     font-size: 14px;
   }
-  
+
   .title-wrapper {
     flex-direction: column;
     gap: 8px;
@@ -611,24 +611,24 @@ const getIconComponent = (iconName: string) => {
   .container {
     padding: 0 12px;
   }
-  
+
   .feature-card {
     padding: 20px;
   }
-  
+
   .feature-icon {
     font-size: 40px;
   }
-  
+
   .feature-title {
     font-size: 18px;
   }
-  
+
   .extra-item {
     padding: 16px;
     gap: 12px;
   }
-  
+
   .extra-icon {
     width: 36px;
     height: 36px;

@@ -120,7 +120,7 @@ class Payment {
         });
 
         // 支付方式卡片点击
-        document.querySelectorAll('.payment-method').forEach(method => {
+        document.querySelectorAll('.mall-payment-method').forEach(method => {
             method.addEventListener('click', () => {
                 const radio = method.querySelector('input[type="radio"]');
                 if (radio) {
@@ -173,7 +173,7 @@ class Payment {
         this.selectedPaymentMethod = method;
         
         // 更新选中状态
-        document.querySelectorAll('.payment-method').forEach(item => {
+        document.querySelectorAll('.mall-payment-method').forEach(item => {
             item.classList.remove('selected');
         });
         

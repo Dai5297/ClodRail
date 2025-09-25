@@ -322,7 +322,7 @@ class DataTableManager {
         // 搜索栏
         if (this.options.searchable) {
             const searchBar = document.createElement('div');
-            searchBar.className = 'table-search-bar';
+            searchBar.className = 'table-ticket-bar';
             searchBar.innerHTML = `
                 <div class="search-bar">
                     <div class="form-group search-input">

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>车票查询列表 - 铁路系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav a:hover, .nav a.active {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .search-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2a5298, #1e3c72);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(42, 82, 152, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .filter-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-tag {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-tag:hover, .filter-tag.active {
+            background: #2a5298;
+            color: white;
+            border-color: #2a5298;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .results-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .results-count {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .sort-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .sort-btn {
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .sort-btn:hover, .sort-btn.active {
+            background: #2a5298;
+            color: white;
+            border-color: #2a5298;
+        }
+
+        .ticket-list {
+            padding: 0;
+        }
+
+        .ticket-item {
+            padding: 25px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.3s;
+        }
+
+        .ticket-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .ticket-item:last-child {
+            border-bottom: none;
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .train-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .train-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2a5298;
+        }
+
+        .train-type {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .ticket-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-available {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-few {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-sold-out {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .ticket-details {
+            display: grid;
+            grid-template-columns: 2fr 1fr 2fr 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .station-info {
+            text-align: center;
+        }
+
+        .station-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .station-time {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .duration-info {
+            text-align: center;
+            color: #888;
+        }
+
+        .duration {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .arrow {
+            font-size: 20px;
+            color: #ddd;
+        }
+
+        .seat-info {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .seat-type {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .seat-name {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .seat-price {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2a5298;
+        }
+
+        .seat-count {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .ticket-actions {
+            text-align: center;
+        }
+
+        .btn-book {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-book:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-book:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            padding: 20px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .page-btn:hover, .page-btn.active {
+            background: #2a5298;
+            color: white;
+            border-color: #2a5298;
+        }
+
+        .page-info {
+            margin: 0 15px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .ticket-details {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .seat-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🚄 铁路系统</div>
+            <nav class="nav">
+                <a href="#" class="active">车票查询</a>
+                <a href="#">我的订单</a>
+                <a href="#">个人中心</a>
+                <a href="#">联系人</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 搜索区域 -->
+        <section class="search-section">
+            <form class="search-form">
+                <div class="form-group">
+                    <label for="origin">出发地</label>
+                    <input type="text" id="origin" placeholder="请输入出发城市" value="北京">
+                </div>
+                <div class="form-group">
+                    <label for="destination">目的地</label>
+                    <input type="text" id="destination" placeholder="请输入到达城市" value="上海">
+                </div>
+                <div class="form-group">
+                    <label for="departure-date">出发日期</label>
+                    <input type="date" id="departure-date" value="2024-01-15">
+                </div>
+                <div class="form-group">
+                    <label for="return-date">返程日期</label>
+                    <input type="date" id="return-date">
+                </div>
+            </form>
+            <div class="search-buttons">
+                <button class="btn btn-primary" onclick="searchTickets()">🔍 查询车票</button>
+                <button class="btn btn-secondary" onclick="resetForm()">重置</button>
+            </div>
+        </section>
+
+        <!-- 筛选区域 -->
+        <section class="filter-section">
+            <div class="filter-title">🚅 列车类型</div>
+            <div class="filter-options">
+                <span class="filter-tag active" onclick="toggleFilter(this)">全部</span>
+                <span class="filter-tag" onclick="toggleFilter(this)">高速动车</span>
+                <span class="filter-tag" onclick="toggleFilter(this)">火车</span>
+            </div>
+            
+            <div class="filter-title" style="margin-top: 20px;">🎫 座位类型</div>
+            <div class="filter-options">
+                <span class="filter-tag active" onclick="toggleFilter(this)">全部</span>
+                <!-- 高速动车座位类型 -->
+                <span class="filter-tag" onclick="toggleFilter(this)" data-train-type="高速动车">商务座</span>
+                <span class="filter-tag" onclick="toggleFilter(this)" data-train-type="高速动车">一等座</span>
+                <span class="filter-tag" onclick="toggleFilter(this)" data-train-type="高速动车">二等座</span>
+                <!-- 火车座位类型 -->
+                <span class="filter-tag" onclick="toggleFilter(this)" data-train-type="火车">硬座</span>
+                <span class="filter-tag" onclick="toggleFilter(this)" data-train-type="火车">软座</span>
+                <span class="filter-tag" onclick="toggleFilter(this)" data-train-type="火车">硬卧</span>
+                <span class="filter-tag" onclick="toggleFilter(this)" data-train-type="火车">软卧</span>
+            </div>
+        </section>
+
+        <!-- 搜索结果 -->
+        <section class="results-section">
+            <div class="results-header">
+                <div class="results-count">找到 <strong>12</strong> 趟列车</div>
+                <div class="sort-options">
+                    <button class="sort-btn active" onclick="sortResults(this, 'time')">按时间</button>
+                    <button class="sort-btn" onclick="sortResults(this, 'price')">按价格</button>
+                    <button class="sort-btn" onclick="sortResults(this, 'duration')">按时长</button>
+                </div>
+            </div>
+
+            <div class="ticket-list">
+                <!-- 车票项目1 -->
+                <div class="ticket-item">
+                    <div class="ticket-header">
+                        <div class="train-info">
+                            <span class="train-number">G101</span>
+                            <span class="train-type">高速动车</span>
+                        </div>
+                        <div class="ticket-status">
+                            <span class="status-badge status-available">余票充足</span>
+                        </div>
+                    </div>
+                    <div class="ticket-details">
+                        <div class="station-info">
+                            <div class="station-name">北京南</div>
+                            <div class="station-time">08:00</div>
+                        </div>
+                        <div class="duration-info">
+                            <div class="duration">4小时28分</div>
+                            <div class="arrow">→</div>
+                        </div>
+                        <div class="station-info">
+                            <div class="station-name">上海虹桥</div>
+                            <div class="station-time">12:28</div>
+                        </div>
+                        <div class="ticket-actions">
+                            <button class="btn-book" onclick="bookTicket('G101')">预订</button>
+                        </div>
+                    </div>
+                    <div class="seat-info">
+                        <div class="seat-type">
+                            <div class="seat-name">商务座</div>
+                            <div class="seat-price">¥1748</div>
+                            <div class="seat-count">有票</div>
+                        </div>
+                        <div class="seat-type">
+                            <div class="seat-name">一等座</div>
+                            <div class="seat-price">¥933</div>
+                            <div class="seat-count">有票</div>
+                        </div>
+                        <div class="seat-type">
+                            <div class="seat-name">二等座</div>
+                            <div class="seat-price">¥553</div>
+                            <div class="seat-count">有票</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 车票项目2 -->
+                <div class="ticket-item">
+                    <div class="ticket-header">
+                        <div class="train-info">
+                            <span class="train-number">G103</span>
+                            <span class="train-type">高速动车</span>
+                        </div>
+                        <div class="ticket-status">
+                            <span class="status-badge status-few">余票紧张</span>
+                        </div>
+                    </div>
+                    <div class="ticket-details">
+                        <div class="station-info">
+                            <div class="station-name">北京南</div>
+                            <div class="station-time">09:00</div>
+                        </div>
+                        <div class="duration-info">
+                            <div class="duration">4小时18分</div>
+                            <div class="arrow">→</div>
+                        </div>
+                        <div class="station-info">
+                            <div class="station-name">上海虹桥</div>
+                            <div class="station-time">13:18</div>
+                        </div>
+                        <div class="ticket-actions">
+                            <button class="btn-book" onclick="bookTicket('G103')">预订</button>
+                        </div>
+                    </div>
+                    <div class="seat-info">
+                        <div class="seat-type">
+                            <div class="seat-name">商务座</div>
+                            <div class="seat-price">¥1748</div>
+                            <div class="seat-count">3张</div>
+                        </div>
+                        <div class="seat-type">
+                            <div class="seat-name">一等座</div>
+                            <div class="seat-price">¥933</div>
+                            <div class="seat-count">无票</div>
+                        </div>
+                        <div class="seat-type">
+                            <div class="seat-name">二等座</div>
+                            <div class="seat-price">¥553</div>
+                            <div class="seat-count">15张</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 车票项目3 -->
+                <div class="ticket-item">
+                    <div class="ticket-header">
+                        <div class="train-info">
+                            <span class="train-number">D311</span>
+                            <span class="train-type">动车</span>
+                        </div>
+                        <div class="ticket-status">
+                            <span class="status-badge status-sold-out">已售完</span>
+                        </div>
+                    </div>
+                    <div class="ticket-details">
+                        <div class="station-info">
+                            <div class="station-name">北京</div>
+                            <div class="station-time">10:15</div>
+                        </div>
+                        <div class="duration-info">
+                            <div class="duration">5小时42分</div>
+                            <div class="arrow">→</div>
+                        </div>
+                        <div class="station-info">
+                            <div class="station-name">上海</div>
+                            <div class="station-time">15:57</div>
+                        </div>
+                        <div class="ticket-actions">
+                            <button class="btn-book" disabled>已售完</button>
+                        </div>
+                    </div>
+                    <div class="seat-info">
+                        <div class="seat-type">
+                            <div class="seat-name">一等座</div>
+                            <div class="seat-price">¥778</div>
+                            <div class="seat-count">无票</div>
+                        </div>
+                        <div class="seat-type">
+                            <div class="seat-name">二等座</div>
+                            <div class="seat-price">¥463</div>
+                            <div class="seat-count">无票</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分页 -->
+            <div class="pagination">
+                <button class="page-btn" onclick="changePage(1)">首页</button>
+                <button class="page-btn" onclick="changePage('prev')">上一页</button>
+                <button class="page-btn active" onclick="changePage(1)">1</button>
+                <button class="page-btn" onclick="changePage(2)">2</button>
+                <button class="page-btn" onclick="changePage(3)">3</button>
+                <span class="page-info">共 3 页</span>
+                <button class="page-btn" onclick="changePage('next')">下一页</button>
+                <button class="page-btn" onclick="changePage(3)">末页</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 搜索车票
+        function searchTickets() {
+            const origin = document.getElementById('origin').value;
+            const destination = document.getElementById('destination').value;
+            const departureDate = document.getElementById('departure-date').value;
+            
+            if (!origin || !destination || !departureDate) {
+                alert('请填写完整的搜索信息');
+                return;
+            }
+            
+            alert(`正在搜索 ${origin} → ${destination} 的车票...`);
+            // 这里可以添加实际的搜索逻辑
+        }
+
+        // 重置表单
+        function resetForm() {
+            document.getElementById('origin').value = '';
+            document.getElementById('destination').value = '';
+            document.getElementById('departure-date').value = '';
+            document.getElementById('return-date').value = '';
+        }
+
+        // 切换筛选标签
+        function toggleFilter(element) {
+            const parent = element.parentElement;
+            const siblings = parent.querySelectorAll('.filter-tag');
+            
+            if (element.textContent === '全部') {
+                siblings.forEach(tag => tag.classList.remove('active'));
+                element.classList.add('active');
+            } else {
+                parent.querySelector('.filter-tag').classList.remove('active');
+                element.classList.toggle('active');
+            }
+        }
+
+        // 排序结果
+        function sortResults(element, type) {
+            const buttons = document.querySelectorAll('.sort-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            
+            alert(`按${type === 'time' ? '时间' : type === 'price' ? '价格' : '时长'}排序`);
+        }
+
+        // 预订车票
+        function bookTicket(trainNumber) {
+            alert(`正在跳转到 ${trainNumber} 的预订页面...`);
+            // 这里可以添加跳转到预订页面的逻辑
+        }
+
+        // 分页
+        function changePage(page) {
+            if (typeof page === 'number') {
+                const buttons = document.querySelectorAll('.page-btn');
+                buttons.forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+            }
+            alert(`跳转到第 ${page} 页`);
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置默认日期为今天
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('departure-date').value = today;
+            
+            console.log('车票查询列表页面已加载');
+        });
+    </script>
+</body>
+</html>

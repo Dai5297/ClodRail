@@ -18,12 +18,12 @@ const router = createRouter({
         },
         {
           path: 'search',
-          name: 'train-search',
+          name: 'train-ticket',
           component: () => import('@/views/TrainSearchView/index.vue'),
         },
         {
-          path: 'seat-selection',
-          name: 'seat-selection',
+          path: 'ticket-search',
+          name: 'ticket-search',
           component: () => import('@/views/SeatSelectionView/index.vue'),
         },
         {
@@ -52,18 +52,18 @@ const router = createRouter({
           component: () => import('@/views/OrderDetailView/index.vue'),
         },
         {
-          path: 'points-mall',
-          name: 'points-mall',
+          path: 'mall',
+          name: 'mall',
           component: () => import('@/views/PointsMallView/index.vue'),
         },
         {
-          path: 'ai-assistant',
-          name: 'ai-assistant',
+          path: 'assistant',
+          name: 'assistant',
           component: () => import('@/views/AIAssistantView/index.vue'),
         },
         {
-          path: 'profile',
-          name: 'profile',
+          path: 'user',
+          name: 'user',
           component: () => import('@/views/ProfileView/index.vue'),
         },
       ],
@@ -75,10 +75,14 @@ const router = createRouter({
       component: () => import('@/views/LoginView/index.vue'),
     },
     {
-      path: '/register',
-      name: 'register',
-      component: () => import('@/views/RegisterView/index.vue'),
-    },
+    path: '/register',
+    name: 'register',
+    component: () => import('@/views/RegisterView/index.vue'),
+    meta: {
+      title: '用户注册',
+      requiresAuth: false
+    }
+  },
   ],
 })
 

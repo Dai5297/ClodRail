@@ -36,9 +36,9 @@ const SearchApp = {
     updateSearchHeader() {
         const { from, to, departDate } = this.data.searchParams;
         
-        const fromElement = document.querySelector('.search-from');
-        const toElement = document.querySelector('.search-to');
-        const dateElement = document.querySelector('.search-date');
+        const fromElement = document.querySelector('.ticket-from');
+        const toElement = document.querySelector('.ticket-to');
+        const dateElement = document.querySelector('.ticket-date');
         
         if (fromElement) fromElement.textContent = from;
         if (toElement) toElement.textContent = to;
@@ -62,7 +62,7 @@ const SearchApp = {
         }
         
         // 搜索头部点击重新搜索
-        const searchHeader = document.querySelector('.search-header');
+        const searchHeader = document.querySelector('.ticket-header');
         if (searchHeader) {
             searchHeader.addEventListener('click', () => {
                 window.location.href = 'index.html';

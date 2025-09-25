@@ -33,7 +33,7 @@ const OrderApp = {
         if (!Auth.isLoggedIn()) {
             Toast.error('请先登录');
             setTimeout(() => {
-                window.location.href = 'profile.html';
+                window.location.href = 'user.html';
             }, 1500);
             return;
         }
@@ -374,7 +374,7 @@ const OrderApp = {
         });
         
         // 搜索输入
-        const searchInput = document.querySelector('.search-input');
+        const searchInput = document.querySelector('.ticket-input');
         if (searchInput) {
             searchInput.addEventListener('input', Utils.debounce((e) => {
                 this.data.searchKeyword = e.target.value.trim();
@@ -384,7 +384,7 @@ const OrderApp = {
         }
         
         // 搜索清除
-        const clearBtn = document.querySelector('.search-clear');
+        const clearBtn = document.querySelector('.ticket-clear');
         if (clearBtn) {
             clearBtn.addEventListener('click', () => {
                 searchInput.value = '';

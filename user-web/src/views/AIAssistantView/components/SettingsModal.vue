@@ -34,7 +34,7 @@ const handleClose = () => {
 // 保存设置
 const saveSettings = () => {
   // 这里可以保存设置到本地存储或发送到服务器
-  localStorage.setItem('ai-assistant-settings', JSON.stringify(settings.value))
+  localStorage.setItem('assistant-settings', JSON.stringify(settings.value))
   handleClose()
 }
 
@@ -70,7 +70,7 @@ const speedOptions = [
       <!-- 语音设置 -->
       <div class="setting-section">
         <h4 class="section-title">语音设置</h4>
-        
+
         <div class="setting-item">
           <div class="setting-info">
             <span class="setting-label">语音播报</span>
@@ -78,17 +78,17 @@ const speedOptions = [
           </div>
           <el-switch v-model="settings.voicePlayback" />
         </div>
-        
+
         <div class="setting-item">
           <div class="setting-info">
             <span class="setting-label">语音音量</span>
             <span class="setting-desc">调节语音播报的音量大小</span>
           </div>
           <div class="volume-control">
-            <el-slider 
-              v-model="settings.voiceVolume" 
-              :min="0" 
-              :max="100" 
+            <el-slider
+              v-model="settings.voiceVolume"
+              :min="0"
+              :max="100"
               :disabled="!settings.voicePlayback"
               style="width: 120px;"
             />
@@ -100,7 +100,7 @@ const speedOptions = [
       <!-- 交互设置 -->
       <div class="setting-section">
         <h4 class="section-title">交互设置</h4>
-        
+
         <div class="setting-item">
           <div class="setting-info">
             <span class="setting-label">自动建议</span>
@@ -108,7 +108,7 @@ const speedOptions = [
           </div>
           <el-switch v-model="settings.autoSuggestion" />
         </div>
-        
+
         <div class="setting-item">
           <div class="setting-info">
             <span class="setting-label">响应速度</span>
@@ -116,15 +116,15 @@ const speedOptions = [
           </div>
           <div class="speed-control">
             <div class="speed-options">
-              <label 
-                v-for="option in speedOptions" 
+              <label
+                v-for="option in speedOptions"
                 :key="option.value"
                 class="speed-option"
                 :class="{ active: settings.responseSpeed === option.value }"
               >
-                <input 
-                  v-model="settings.responseSpeed" 
-                  type="radio" 
+                <input
+                  v-model="settings.responseSpeed"
+                  type="radio"
                   :value="option.value"
                   style="display: none;"
                 >
@@ -138,7 +138,7 @@ const speedOptions = [
       <!-- 通知设置 -->
       <div class="setting-section">
         <h4 class="section-title">通知设置</h4>
-        
+
         <div class="setting-item">
           <div class="setting-info">
             <span class="setting-label">消息提醒</span>
@@ -151,7 +151,7 @@ const speedOptions = [
       <!-- 隐私设置 -->
       <div class="setting-section">
         <h4 class="section-title">隐私设置</h4>
-        
+
         <div class="setting-item">
           <div class="setting-info">
             <span class="setting-label">对话历史保存</span>

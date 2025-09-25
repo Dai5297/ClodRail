@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { ElTabs, ElTabPane, ElIcon, ElSkeleton } from 'element-plus'
-import { 
+import {
   User,
   Lock,
   Setting,
@@ -29,7 +29,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  activeTab: 'profile',
+  activeTab: 'user',
   tabConfig: () => [],
   loading: false
 })
@@ -72,20 +72,20 @@ const getTabClass = (tabKey: string) => {
     <ElSkeleton v-if="loading" animated>
       <template #template>
         <div class="tabs-skeleton">
-          <el-skeleton-item 
-            v-for="i in 5" 
+          <el-skeleton-item
+            v-for="i in 5"
             :key="i"
-            variant="rect" 
-            style="width: 120px; height: 40px; margin-right: 16px; display: inline-block;" 
+            variant="rect"
+            style="width: 120px; height: 40px; margin-right: 16px; display: inline-block;"
           />
         </div>
       </template>
     </ElSkeleton>
-    
+
     <!-- 标签页内容 -->
     <div v-else class="tabs-container">
-      <ElTabs 
-        :model-value="activeTab" 
+      <ElTabs
+        :model-value="activeTab"
         class="custom-tabs"
         @tab-click="(pane) => handleTabClick(pane.paneName as string)"
       >
@@ -229,28 +229,28 @@ const getTabClass = (tabKey: string) => {
   .tabs-container {
     padding: 0 20px;
   }
-  
+
   .tabs-skeleton {
     padding: 12px 20px;
   }
-  
+
   :deep(.el-tabs__nav-wrap) {
     padding: 12px 0;
   }
-  
+
   :deep(.el-tabs__nav) {
     gap: 4px;
   }
-  
+
   .tab-item {
     padding: 10px 12px;
     gap: 6px;
   }
-  
+
   .tab-icon {
     font-size: 14px;
   }
-  
+
   .tab-label {
     font-size: 13px;
   }
@@ -260,17 +260,17 @@ const getTabClass = (tabKey: string) => {
   :deep(.el-tabs__nav-scroll) {
     -webkit-overflow-scrolling: touch;
   }
-  
+
   :deep(.el-tabs__nav) {
     flex-wrap: nowrap;
     min-width: max-content;
   }
-  
+
   .tab-item {
     padding: 8px 10px;
     min-width: max-content;
   }
-  
+
   .tab-label {
     font-size: 12px;
   }

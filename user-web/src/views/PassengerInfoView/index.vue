@@ -2,25 +2,25 @@
   <div class="passenger-info-page">
     <!-- 订单信息栏 -->
     <OrderInfoBar :order-info="orderInfo" />
-    
+
     <!-- 乘客信息表单 -->
-    <PassengerForm 
+    <PassengerForm
       ref="passengerFormRef"
       v-model="passengerForm"
       :order-info="orderInfo"
     />
-    
+
     <!-- 联系人信息 -->
-    <ContactForm 
+    <ContactForm
       ref="contactFormRef"
       v-model="contactForm"
     />
-    
+
     <!-- 增值服务 -->
     <ServiceOptions v-model="selectedServices" :passenger-count="orderInfo.passengers" />
-    
+
     <!-- 底部操作栏 -->
-    <BottomBar 
+    <BottomBar
       :order-info="orderInfo"
       :service-price="servicePrice"
       :final-price="finalPrice"
@@ -88,7 +88,7 @@ const submitting = ref(false)
 // 初始化
 onMounted(() => {
   const query = route.query
-  
+
   orderInfo.value = {
     trainId: query.trainId as string,
     trainNumber: query.trainNumber as string,
@@ -101,7 +101,7 @@ onMounted(() => {
     totalPrice: Number(query.totalPrice) || 0,
     passengers: Number(query.passengers) || 1
   }
-  
+
   // 初始化乘客信息
   passengerForm.value.passengers = Array.from({ length: orderInfo.value.passengers }, () => ({
     name: '',
@@ -120,7 +120,7 @@ onMounted(() => {
 const servicePrice = computed(() => {
   let price = 0
   const passengerCount = orderInfo.value.passengers
-  
+
   if (selectedServices.value.includes('insurance')) {
     price += 20 * passengerCount
   }
@@ -130,7 +130,7 @@ const servicePrice = computed(() => {
   if (selectedServices.value.includes('priority')) {
     price += 10 * passengerCount
   }
-  
+
   return price
 })
 
@@ -149,12 +149,12 @@ const submitOrder = async () => {
   // 验证表单
   const passengerValid = await passengerFormRef.value?.validate().catch(() => false)
   const contactValid = await contactFormRef.value?.validate().catch(() => false)
-  
+
   if (!passengerValid || !contactValid) {
     ElMessage.error('请完善必填信息')
     return
   }
-  
+
   // 确认提交
   try {
     await ElMessageBox.confirm(
@@ -169,9 +169,9 @@ const submitOrder = async () => {
   } catch {
     return
   }
-  
+
   submitting.value = true
-  
+
   try {
     const orderData: CreateOrderRequest = {
       trainId: Number(orderInfo.value.trainId),
@@ -184,14 +184,14 @@ const submitOrder = async () => {
         price: orderInfo.value.totalPrice / orderInfo.value.passengers
       }))
     }
-    
+
     const response = await createOrder(orderData)
-    
+
     ElMessage.success('订单创建成功')
-    
+
     // 跳转到支付页面
     router.push({
-      path: '/payment',
+      path: '/mall-payment',
       query: {
         orderId: response.orderId,
         orderNumber: response.orderNo,

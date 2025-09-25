@@ -29,7 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 // 定义事件
-const emit = defineEmits(['tabChange', 'search'])
+const emit = defineEmits(['tabChange', 'ticket'])
 
 // 搜索关键词
 const searchKeyword = ref('')
@@ -80,7 +80,7 @@ const clearSearch = () => {
         </ElInput>
       </div>
     </div>
-    
+
     <!-- 状态标签 -->
     <div class="tabs-wrapper">
       <div class="tabs-container">
@@ -217,16 +217,16 @@ const clearSearch = () => {
   .search-section {
     padding: 15px;
   }
-  
+
   .tab-item {
     min-width: 100px;
     padding: 12px 8px;
   }
-  
+
   .tab-icon {
     font-size: 18px;
   }
-  
+
   .tab-label {
     font-size: 12px;
   }

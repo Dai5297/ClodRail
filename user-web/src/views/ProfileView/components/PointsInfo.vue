@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
-import { 
-  ElCard, 
-  ElTable, 
-  ElTableColumn, 
-  ElPagination, 
-  ElButton, 
-  ElTag, 
-  ElDatePicker, 
-  ElSelect, 
-  ElOption, 
+import {
+  ElCard,
+  ElTable,
+  ElTableColumn,
+  ElPagination,
+  ElButton,
+  ElTag,
+  ElDatePicker,
+  ElSelect,
+  ElOption,
   ElSkeleton,
   ElIcon,
   ElEmpty,
@@ -18,7 +18,7 @@ import {
   ElProgress,
   ElTooltip
 } from 'element-plus'
-import { 
+import {
   Star,
   TrendCharts,
   Calendar,
@@ -208,7 +208,7 @@ const handleSizeChange = (size: number) => {
 // 前往积分商城
 const goToPointsMall = () => {
   emit('goToMall')
-  router.push('/points-mall')
+  router.push('/mall')
 }
 
 // 查看订单详情
@@ -238,7 +238,7 @@ loadRecords()
           </ElButton>
         </div>
       </template>
-      
+
       <!-- 加载状态 -->
       <ElSkeleton v-if="loading" animated>
         <template #template>
@@ -250,14 +250,14 @@ loadRecords()
           </div>
         </template>
       </ElSkeleton>
-      
+
       <!-- 积分统计 -->
       <div v-else class="overview-content">
         <div class="points-stats">
           <div class="stat-item main-stat">
-            <ElStatistic 
-              title="可用积分" 
-              :value="displayPointsInfo.availablePoints" 
+            <ElStatistic
+              title="可用积分"
+              :value="displayPointsInfo.availablePoints"
               :precision="0"
               class="points-statistic"
             >
@@ -266,34 +266,34 @@ loadRecords()
               </template>
             </ElStatistic>
           </div>
-          
+
           <div class="stat-item">
-            <ElStatistic 
-              title="累计获得" 
-              :value="displayPointsInfo.totalPoints" 
+            <ElStatistic
+              title="累计获得"
+              :value="displayPointsInfo.totalPoints"
               :precision="0"
             />
           </div>
-          
+
           <div class="stat-item">
-            <ElStatistic 
-              title="已使用" 
-              :value="displayPointsInfo.usedPoints" 
+            <ElStatistic
+              title="已使用"
+              :value="displayPointsInfo.usedPoints"
               :precision="0"
             />
           </div>
-          
+
           <div class="stat-item">
-            <ElStatistic 
-              title="已过期" 
-              :value="displayPointsInfo.expiredPoints" 
+            <ElStatistic
+              title="已过期"
+              :value="displayPointsInfo.expiredPoints"
               :precision="0"
             />
           </div>
         </div>
-        
+
         <ElDivider />
-        
+
         <!-- 会员等级和即将过期提醒 -->
         <div class="additional-info">
           <div class="level-info">
@@ -310,16 +310,16 @@ loadRecords()
                 </ElIcon>
               </ElTooltip>
             </div>
-            
+
             <div v-if="currentLevelConfig.nextLevel" class="level-progress">
               <div class="progress-info">
                 <span class="progress-text">
-                  距离{{ levelConfig[currentLevelConfig.nextLevel].text }}还需 
+                  距离{{ levelConfig[currentLevelConfig.nextLevel].text }}还需
                   <strong>{{ displayPointsInfo.nextLevelPoints }}</strong> 积分
                 </span>
               </div>
-              <ElProgress 
-                :percentage="displayPointsInfo.levelProgress" 
+              <ElProgress
+                :percentage="displayPointsInfo.levelProgress"
                 :color="currentLevelConfig.color"
                 :stroke-width="8"
                 class="level-progress-bar"
@@ -331,7 +331,7 @@ loadRecords()
               </ElTag>
             </div>
           </div>
-          
+
           <div class="expiring-info">
             <div v-if="displayPointsInfo.expiringPoints > 0" class="expiring-alert">
               <ElIcon :size="16" color="#faad14">
@@ -346,7 +346,7 @@ loadRecords()
                 </div>
               </div>
             </div>
-            
+
             <div class="year-stats">
               <div class="year-stat">
                 <span class="stat-label">今年获得：</span>
@@ -361,7 +361,7 @@ loadRecords()
         </div>
       </div>
     </ElCard>
-    
+
     <!-- 积分记录卡片 -->
     <ElCard class="records-card" shadow="hover">
       <template #header>
@@ -375,22 +375,22 @@ loadRecords()
           </div>
         </div>
       </template>
-      
+
       <!-- 搜索区域 -->
       <div class="search-section">
         <div class="search-form">
           <div class="search-item">
             <label class="search-label">记录类型：</label>
             <ElSelect v-model="searchForm.type" placeholder="全部类型" style="width: 120px;">
-              <ElOption 
-                v-for="option in typeOptions" 
-                :key="option.value" 
-                :label="option.label" 
-                :value="option.value" 
+              <ElOption
+                v-for="option in typeOptions"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
               />
             </ElSelect>
           </div>
-          
+
           <div class="search-item">
             <label class="search-label">记录日期：</label>
             <ElDatePicker
@@ -404,7 +404,7 @@ loadRecords()
               value-format="YYYY-MM-DD"
             />
           </div>
-          
+
           <div class="search-actions">
             <ElButton type="primary" @click="searchRecords" :loading="loading">
               搜索
@@ -415,7 +415,7 @@ loadRecords()
           </div>
         </div>
       </div>
-      
+
       <!-- 记录表格 -->
       <div class="table-section">
         <!-- 加载状态 -->
@@ -426,19 +426,19 @@ loadRecords()
             </div>
           </template>
         </ElSkeleton>
-        
+
         <!-- 记录表格 -->
-        <ElTable 
+        <ElTable
           v-else
-          :data="displayRecords" 
-          stripe 
+          :data="displayRecords"
+          stripe
           class="records-table"
           empty-text="暂无积分记录"
         >
           <ElTableColumn label="类型" width="100" align="center">
             <template #default="{ row }">
-              <ElTag 
-                :color="getTypeConfig(row.type).bgColor" 
+              <ElTag
+                :color="getTypeConfig(row.type).bgColor"
                 :style="{ color: getTypeConfig(row.type).color, border: `1px solid ${getTypeConfig(row.type).color}` }"
                 size="small"
               >
@@ -449,7 +449,7 @@ loadRecords()
               </ElTag>
             </template>
           </ElTableColumn>
-          
+
           <ElTableColumn label="积分变动" width="120" align="right">
             <template #default="{ row }">
               <div class="points-change" :class="row.type">
@@ -458,11 +458,11 @@ loadRecords()
               </div>
             </template>
           </ElTableColumn>
-          
+
           <ElTableColumn prop="description" label="说明" min-width="200" show-overflow-tooltip />
-          
+
           <ElTableColumn prop="source" label="来源" width="120" show-overflow-tooltip />
-          
+
           <ElTableColumn label="时间" width="160">
             <template #default="{ row }">
               <div class="record-time">
@@ -473,13 +473,13 @@ loadRecords()
               </div>
             </template>
           </ElTableColumn>
-          
+
           <ElTableColumn label="操作" width="100" align="center">
             <template #default="{ row }">
-              <ElButton 
+              <ElButton
                 v-if="row.orderId"
-                type="primary" 
-                link 
+                type="primary"
+                link
                 size="small"
                 @click="viewOrderDetail(row.orderId)"
               >
@@ -489,13 +489,13 @@ loadRecords()
             </template>
           </ElTableColumn>
         </ElTable>
-        
+
         <!-- 空状态 -->
         <div v-if="!loading && displayRecords.length === 0" class="empty-state">
           <ElEmpty description="暂无积分记录" />
         </div>
       </div>
-      
+
       <!-- 分页 -->
       <div v-if="total > 0" class="pagination-section">
         <ElPagination
@@ -829,7 +829,7 @@ loadRecords()
     grid-template-columns: 1fr 1fr;
     gap: 16px;
   }
-  
+
   .additional-info {
     grid-template-columns: 1fr;
     gap: 24px;
@@ -841,27 +841,27 @@ loadRecords()
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  
+
   .search-form {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .search-item {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
   }
-  
+
   .search-label {
     min-width: 80px;
   }
-  
+
   .search-actions {
     justify-content: center;
     margin-top: 16px;
   }
-  
+
   .records-table {
     font-size: 12px;
   }
@@ -873,22 +873,22 @@ loadRecords()
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .search-item {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .search-label {
     min-width: auto;
   }
-  
+
   .year-stat {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
   }
-  
+
   :deep(.el-table__body-wrapper) {
     overflow-x: auto;
   }

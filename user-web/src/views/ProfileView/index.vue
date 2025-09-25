@@ -1,9 +1,9 @@
 <script setup lang="ts">
 // ProfileView - 个人中心页面主文件
-import { ref, onMounted, computed, withDefaults } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ElMessage, ElButton, ElIcon } from 'element-plus'
-import { User } from '@element-plus/icons-vue'
+import {ref, onMounted, computed, withDefaults} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
+import {ElMessage, ElButton, ElIcon} from 'element-plus'
+import {User} from '@element-plus/icons-vue'
 
 // 导入子组件
 import UserProfile from './components/UserProfile.vue'
@@ -12,7 +12,8 @@ import PersonalSettings from './components/PersonalSettings.vue'
 import OrderHistory from './components/OrderHistory.vue'
 import PointsInfo from './components/PointsInfo.vue'
 import ProfileTabs from './components/ProfileTabs.vue'
-import {getUserInfo, updateUserInfo} from "@/api/auth.ts";
+import {getUserInfo, resetPassword, updateUserInfo, type UserInfoReq} from "@/api/auth.ts";
+import type {SecurityInfo} from "@/views/ProfileView/components/AccountSecurity.vue";
 
 // 定义用户信息接口
 interface UserInfo {
@@ -27,22 +28,8 @@ interface UserInfo {
   realName: string,
   gender: string,
   idCard: string,
-  createTime: string,
-  lastLoginTime: string,
-}
-
-interface UserInfoReq {
-  id: string,
-  username: string,
-  birthday: string,
-  address: string,
-  introduction: string,
-  icon: string,
-  email: string,
-  phone: string,
-  realName: string,
-  gender: string,
-  idCard: string,
+  createTime: Date,
+  lastLoginTime: Date
 }
 
 // 定义属性
@@ -56,7 +43,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 // 页面状态
 const loading = ref(false)
-const activeTab = ref('profile')
+const activeTab = ref('user')
 const route = useRoute()
 const router = useRouter()
 
@@ -73,8 +60,8 @@ const userInfo = ref<UserInfo>({
   realName: '',
   gender: '',
   idCard: '',
-  createTime: '',
-  lastLoginTime: '',
+  createTime: new Date(),
+  lastLoginTime: new Date(),
 })
 
 // 积分信息
@@ -133,41 +120,24 @@ const personalSettings = ref({
 })
 
 // 安全信息
-const securityInfo = ref({
-  hasPassword: true,
-  phoneVerified: true,
+const securityInfo = ref<SecurityInfo>({
+  hasPassword: false,
+  phoneVerified: false,
   emailVerified: false,
-  realNameVerified: true,
-  phone: '138****8888',
-  email: 'user@example.com',
-  realName: '张三',
-  idCard: '110101199001011234',
-  lastPasswordChange: '2024-01-01T10:00:00',
-  loginDevices: [
-    {
-      id: '1',
-      deviceName: 'Windows PC - Chrome',
-      location: '北京市朝阳区',
-      lastLogin: '2024-01-15T14:20:00',
-      isCurrent: true
-    },
-    {
-      id: '2',
-      deviceName: 'iPhone 15 - Safari',
-      location: '北京市海淀区',
-      lastLogin: '2024-01-14T09:30:00',
-      isCurrent: false
-    }
-  ]
+  realNameVerified: false,
+  phone: userInfo.value.phone,
+  email: userInfo.value.email,
+  realName: userInfo.value.realName,
+  idCard: userInfo.value.idCard,
 })
 
 // 标签页配置
 const tabConfig = [
-  { key: 'profile', label: '个人资料', icon: 'User' },
-  { key: 'security', label: '账户安全', icon: 'Lock' },
-  { key: 'settings', label: '个人设置', icon: 'Setting' },
-  { key: 'orders', label: '订单记录', icon: 'Document' },
-  { key: 'points', label: '积分信息', icon: 'Star' }
+  {key: 'user', label: '个人资料', icon: 'User'},
+  {key: 'security', label: '账户安全', icon: 'Lock'},
+  {key: 'settings', label: '个人设置', icon: 'Setting'},
+  {key: 'orders', label: '订单记录', icon: 'Document'},
+  {key: 'points', label: '积分信息', icon: 'Star'}
 ]
 
 // 页面初始化
@@ -192,7 +162,14 @@ const loadUserInfo = async () => {
 
     // 这里应该调用实际的API
     const response = await getUserInfo()
-    userInfo.value = response.data
+
+    // 检查响应数据是否存在
+    if (response) {
+      userInfo.value = response.data
+    } else {
+      console.warn('用户信息数据为空:', response)
+      ElMessage.warning('用户信息获取异常，请重新登录')
+    }
 
     console.log('用户信息加载完成:', userInfo.value)
   } catch (error) {
@@ -209,7 +186,7 @@ const handleTabChange = (tabKey: string) => {
 
   // 更新路由查询参数
   router.push({
-    query: { ...route.query, tab: tabKey }
+    query: {...route.query, tab: tabKey}
   })
 }
 
@@ -224,8 +201,8 @@ const handleUserInfoUpdate = async (updatedInfo: Partial<UserInfoReq>) => {
     console.log(res)
     if (res.code === 200) {
       ElMessage.success('个人信息更新成功')
-      userInfo.value = updatedInfo
-    }else {
+      userInfo.value = updatedInfo as UserInfo;
+    } else {
       ElMessage.error('更新失败,' + res.data)
     }
   } catch (error) {
@@ -288,7 +265,7 @@ const handleLoadPointsRecords = async (params: any) => {
 
 // 处理跳转积分商城
 const handleGoToMall = () => {
-  router.push('/points-mall')
+  router.push('/mall')
 }
 
 // 处理订单记录加载
@@ -407,15 +384,11 @@ const handleChangePassword = async (data: { oldPassword: string; newPassword: st
   try {
     loading.value = true
 
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    // 这里应该调用实际的API
-    // await changePassword(data)
-
-    securityInfo.value.lastPasswordChange = new Date().toISOString()
-
-    ElMessage.success('密码修改成功')
+    const res = await resetPassword(data)
+    if (res.code !== 200) {
+      ElMessage.error("修改密码失败：" + res.message)
+      return
+    }
   } catch (error) {
     console.error('修改密码失败:', error)
     ElMessage.error('修改密码失败，请重试')
@@ -506,68 +479,6 @@ const handleLogoutDevice = async (deviceId: string) => {
   }
 }
 
-// 处理密码修改
-const handlePasswordChange = async (passwordData: any) => {
-  try {
-    loading.value = true
-
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    // 这里应该调用实际的API
-    // await changePassword(passwordData)
-
-    ElMessage.success('密码修改成功')
-  } catch (error) {
-    console.error('密码修改失败:', error)
-    ElMessage.error('密码修改失败，请重试')
-  } finally {
-    loading.value = false
-  }
-}
-
-// 处理手机号绑定
-const handlePhoneBind = async (phoneData: any) => {
-  try {
-    loading.value = true
-
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    // 这里应该调用实际的API
-    // await bindPhone(phoneData)
-
-    userInfo.value.phone = phoneData.phone
-    ElMessage.success('手机号绑定成功')
-  } catch (error) {
-    console.error('手机号绑定失败:', error)
-    ElMessage.error('手机号绑定失败，请重试')
-  } finally {
-    loading.value = false
-  }
-}
-
-// 处理邮箱绑定
-const handleEmailBind = async (emailData: any) => {
-  try {
-    loading.value = true
-
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    // 这里应该调用实际的API
-    // await bindEmail(emailData)
-
-    userInfo.value.email = emailData.email
-    ElMessage.success('邮箱绑定成功')
-  } catch (error) {
-    console.error('邮箱绑定失败:', error)
-    ElMessage.error('邮箱绑定失败，请重试')
-  } finally {
-    loading.value = false
-  }
-}
-
 // 刷新页面数据
 const refreshData = () => {
   loadUserInfo()
@@ -580,7 +491,7 @@ const refreshData = () => {
     <div class="profile-header">
       <div class="header-content">
         <ElIcon :size="24" color="#1890ff">
-          <User />
+          <User/>
         </ElIcon>
         <div class="header-text">
           <h1 class="page-title">个人中心</h1>
@@ -611,8 +522,8 @@ const refreshData = () => {
     <div class="profile-content">
       <!-- 个人资料 -->
       <UserProfile
-        v-if="activeTab === 'profile'"
-        :user-info="userInfo"
+        v-if="activeTab === 'user'"
+        :userInfo="userInfo"
         :loading="loading"
         @updateProfile="handleUserInfoUpdate"
         @upload-avatar="handleAvatarUpload"
@@ -621,9 +532,9 @@ const refreshData = () => {
       <!-- 账户安全 -->
       <AccountSecurity
         v-else-if="activeTab === 'security'"
-        :security-info="securityInfo"
+        :securityInfo="securityInfo"
         :loading="loading"
-        @change-password="handleChangePassword"
+        @changePassword="handleChangePassword"
         @bind-phone="handleBindPhone"
         @bind-email="handleBindEmail"
         @real-name-auth="handleRealNameAuth"

@@ -325,17 +325,17 @@ const TicketApp = {
     // 绑定支付弹窗事件
     bindPaymentModalEvents() {
         // 关闭按钮
-        const closeBtn = document.querySelector('.payment-modal .close-btn');
+        const closeBtn = document.querySelector('.mall-payment-modal .close-btn');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
-                Modal.hide('.payment-modal');
+                Modal.hide('.mall-payment-modal');
             });
         }
         
         // 支付方式选择
-        document.querySelectorAll('.payment-option').forEach(option => {
+        document.querySelectorAll('.mall-payment-option').forEach(option => {
             option.addEventListener('click', (e) => {
-                document.querySelectorAll('.payment-option').forEach(opt => {
+                document.querySelectorAll('.mall-payment-option').forEach(opt => {
                     opt.classList.remove('selected');
                 });
                 e.currentTarget.classList.add('selected');
@@ -547,7 +547,7 @@ const TicketApp = {
     
     // 显示支付弹窗
     showPaymentModal() {
-        const modal = document.querySelector('.payment-modal');
+        const modal = document.querySelector('.mall-payment-modal');
         if (!modal) return;
         
         // 更新支付信息
@@ -587,18 +587,18 @@ const TicketApp = {
             `;
         }
         
-        Modal.show('.payment-modal');
+        Modal.show('.mall-payment-modal');
     },
     
     // 处理支付
     async processPayment() {
-        const selectedPayment = document.querySelector('.payment-option.selected');
+        const selectedPayment = document.querySelector('.mall-payment-option.selected');
         if (!selectedPayment) {
             Toast.error('请选择支付方式');
             return;
         }
         
-        const paymentMethod = selectedPayment.getAttribute('data-payment');
+        const paymentMethod = selectedPayment.getAttribute('data-mall-payment');
         
         Loading.show('正在处理支付...');
         
@@ -633,7 +633,7 @@ const TicketApp = {
             Storage.set('orders', orders);
             
             Loading.hide();
-            Modal.hide('.payment-modal');
+            Modal.hide('.mall-payment-modal');
             
             Toast.success('支付成功！');
             

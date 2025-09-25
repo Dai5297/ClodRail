@@ -67,22 +67,6 @@ const initializePage = () => {
   // 设置默认日期为今天
   const today = new Date()
   searchForm.value.date = today.toISOString().split('T')[0]
-
-  // 加载用户信息
-  loadUserInfo()
-}
-
-// 加载用户信息
-const loadUserInfo = async () => {
-  try {
-    loading.value = true
-    const response = await getUserInfo()
-    userInfo.value.name = response.data.username
-  } catch (error) {
-    console.error('获取用户信息失败:', error)
-  } finally {
-    loading.value = false
-  }
 }
 
 // 处理搜索
@@ -102,7 +86,7 @@ const handleSearch = (form: SearchForm) => {
 
   // 跳转到搜索页面
   router.push({
-    name: 'train-search',
+    name: 'train-ticket',
     query: {
       departure: form.departure,
       arrival: form.destination,
@@ -116,7 +100,7 @@ const handleSearch = (form: SearchForm) => {
 const handleRouteView = (route: PopularRoute) => {
   const [departure, arrival] = route.name.split(' → ')
   router.push({
-    name: 'train-search',
+    name: 'train-ticket',
     query: {
       departure,
       arrival,

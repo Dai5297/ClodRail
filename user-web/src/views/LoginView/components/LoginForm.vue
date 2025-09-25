@@ -96,44 +96,63 @@ import {ElMessage} from 'element-plus'
 import type {FormInstance, FormRules} from 'element-plus'
 import {ChatDotRound, User, CreditCard} from '@element-plus/icons-vue'
 import {login, getCaptcha} from '@/api/auth'
+import type {LoginRequest, LoginResponse} from '@/api/auth'
 import {storageKeys, routeConfig} from '@/config'
 import CaptchaDisplay from '@/components/CaptchaDisplay.vue'
 import bcrypt from 'bcryptjs'
 
-// 定义登录请求接口类型
-interface LoginRequest {
-  username: string;
-  password: string;
-}
-
 const router = useRouter()
 const route = useRoute()
 
-// 状态
+// 状态管理
 const loading = ref(false)
 const showCaptcha = ref(false)
 const captchaCode = ref('')
+
+// 表单引用
 const loginFormRef = ref<FormInstance>()
 
-// 登录表单
+// 登录表单数据
 const loginForm = reactive({
   username: '',
   password: '',
-  captcha: ''
+  captcha: '',
+  rememberMe: false
 })
 
-// 登录表单验证规则
+// 表单验证规则
 const loginRules: FormRules = {
   username: [
-    {required: true, message: '请输入用户名', trigger: 'blur'}
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' }
   ],
   password: [
-    {required: true, message: '请输入密码', trigger: 'blur'},
-    {min: 6, message: '密码长度不能少于6位', trigger: 'blur'}
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度在 6 到 20 个字符', trigger: 'blur' }
   ],
   captcha: [
-    {required: true, message: '请输入验证码', trigger: 'blur'}
+    { 
+      required: true, 
+      message: '请输入验证码', 
+      trigger: 'blur',
+      validator: (rule: any, value: string, callback: any) => {
+        if (showCaptcha.value && !value) {
+          callback(new Error('请输入验证码'))
+        } else {
+          callback()
+        }
+      }
+    }
   ]
+}
+
+// 检查是否需要显示验证码
+const checkShowCaptcha = () => {
+  const failCount = parseInt(localStorage.getItem(storageKeys.loginFailCount) || '0')
+  showCaptcha.value = failCount >= 3
+  if (showCaptcha.value) {
+    refreshCaptcha()
+  }
 }
 
 // 定义事件
@@ -165,21 +184,15 @@ const handleLogin = async () => {
 
     const loginData: LoginRequest = {
       username: loginForm.username,
-      password: loginForm.password,
+      password: loginForm.password, // 不需要加密，后端会处理
+      captcha: showCaptcha.value ? loginForm.captcha : undefined,
+      rememberMe: false
     }
 
-    const response = await login(loginData)
-
-    console.log(response.token)
-
-    if (response.code !== 200){
-      ElMessage.error(response.message)
-      refreshCaptcha()
-      return
-    }
+    const response: LoginResponse = await login(loginData)
 
     // 保存登录信息
-    localStorage.setItem(storageKeys.token, response.data.token)
+    localStorage.setItem(storageKeys.token, response.token)
 
     // 清除登录失败次数
     localStorage.removeItem(storageKeys.loginFailCount)
@@ -202,7 +215,19 @@ const handleLogin = async () => {
       refreshCaptcha()
     }
 
-    ElMessage.error(error.message || '登录失败，请检查用户名和密码')
+    // 优化错误消息处理
+    let errorMessage = '登录失败'
+    if (error.response?.status === 401) {
+      errorMessage = '用户名或密码错误'
+    } else if (error.response?.status === 429) {
+      errorMessage = '请求过于频繁，请稍后再试'
+    } else if (error.response?.status === 500) {
+      errorMessage = '服务器错误，请稍后再试'
+    } else if (error.message) {
+      errorMessage = error.message
+    }
+
+    ElMessage.error(errorMessage)
   } finally {
     loading.value = false
   }
@@ -211,8 +236,8 @@ const handleLogin = async () => {
 // 刷新验证码
 const refreshCaptcha = async () => {
   try {
-    const response = await getCaptcha()
-    captchaCode.value = response.data
+    const response: string = await getCaptcha()
+    captchaCode.value = response
   } catch (error) {
     console.error('获取验证码失败:', error)
     ElMessage.error('获取验证码失败，请重试')

@@ -36,7 +36,7 @@ const trainList = ref<TrainInfo[]>([])
 // 筛选后的车次列表
 const filteredTrains = computed(() => {
   let result = trainList.value
-  
+
   // 按车次类型筛选
   if (filters.value.trainTypes.length > 0) {
     result = result.filter(train => {
@@ -44,7 +44,7 @@ const filteredTrains = computed(() => {
       return filters.value.trainTypes.includes(trainType)
     })
   }
-  
+
   // 按出发时间筛选
   if (filters.value.departureTime.length > 0) {
     result = result.filter(train => {
@@ -60,16 +60,16 @@ const filteredTrains = computed(() => {
       })
     })
   }
-  
+
   // 按座位类型筛选
   if (filters.value.seatTypes.length > 0) {
     result = result.filter(train => {
-      return train.seats.some(seat => 
+      return train.seats.some(seat =>
         filters.value.seatTypes.includes(seat.type) && seat.available > 0
       )
     })
   }
-  
+
   return result
 })
 
@@ -79,25 +79,25 @@ const handleSearch = async (searchParams: typeof searchForm.value) => {
     ElMessage.warning('请填写完整的搜索条件')
     return
   }
-  
+
   if (searchParams.departure === searchParams.destination) {
     ElMessage.warning('出发地和目的地不能相同')
     return
   }
-  
+
   loading.value = true
   searched.value = true
-  
+
   try {
     const request: TrainSearchRequest = {
       departure: searchParams.departure,
       arrival: searchParams.destination,
       date: searchParams.date
     }
-    
+
     const response = await searchTrains(request)
     trainList.value = response.trains || []
-    
+
     if (trainList.value.length === 0) {
       ElMessage.info('未找到符合条件的车次')
     }
@@ -119,7 +119,7 @@ const handleFilterChange = (newFilters: typeof filters.value) => {
 const handleTrainSelect = (train: TrainInfo) => {
   // 将选中的车次信息存储到路由参数中
   router.push({
-    name: 'seat-selection',
+    name: 'ticket-search',
     query: {
       trainId: train.id.toString(),
       trainNumber: train.number,
@@ -155,7 +155,7 @@ onMounted(() => {
       date: query.date as string,
       passengers: parseInt(query.passengers as string) || 1
     }
-    
+
     // 自动执行搜索
     handleSearch(searchForm.value)
   }
@@ -170,14 +170,14 @@ onMounted(() => {
       :loading="loading"
       @search="handleSearch"
     />
-    
+
     <!-- 筛选条件 -->
     <FilterBar
       v-if="trainList.length > 0"
       v-model="filters"
       @change="handleFilterChange"
     />
-    
+
     <!-- 车次列表 -->
     <TrainList
       :trains="filteredTrains"

@@ -153,7 +153,7 @@ function initPopularRoutes() {
             document.getElementById('destination').value = destination;
             
             // 滚动到搜索区域
-            document.querySelector('.search-section').scrollIntoView({
+            document.querySelector('.ticket-section').scrollIntoView({
                 behavior: 'smooth'
             });
             

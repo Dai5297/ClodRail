@@ -74,13 +74,13 @@ const startCountdown = () => {
   if (countdownInterval.value) {
     clearInterval(countdownInterval.value)
   }
-  
+
   countdownInterval.value = setInterval(() => {
     paymentCountdown.value--
     if (paymentCountdown.value <= 0) {
       clearInterval(countdownInterval.value!)
       ElMessage.error('支付超时，请重新下单')
-      router.push('/search')
+      router.push('/ticket')
     }
   }, 1000)
 }
@@ -101,7 +101,7 @@ const handlePayment = () => {
     ElMessage.warning('请选择支付方式')
     return
   }
-  
+
   showConfirmModal.value = true
 }
 
@@ -109,12 +109,12 @@ const handlePayment = () => {
 const confirmPayment = () => {
   showConfirmModal.value = false
   loading.value = true
-  
+
   // 模拟支付处理
   setTimeout(() => {
     loading.value = false
     showSuccessModal.value = true
-    
+
     // 清除倒计时
     if (countdownInterval.value) {
       clearInterval(countdownInterval.value)
@@ -150,7 +150,7 @@ onBeforeUnmount(() => {
     <div class="container">
       <!-- 进度指示器 -->
       <ProgressIndicator :current-step="2" />
-      
+
       <!-- 支付倒计时 -->
       <div class="countdown-bar">
         <div class="countdown-content">
@@ -159,16 +159,16 @@ onBeforeUnmount(() => {
           <span class="countdown-text">内完成支付</span>
         </div>
       </div>
-      
+
       <div class="payment-content">
         <!-- 订单信息 -->
         <div class="left-section">
           <OrderInfo :order="orderInfo" />
         </div>
-        
+
         <!-- 支付区域 -->
         <div class="right-section">
-          <PaymentMethods 
+          <PaymentMethods
             :selected-method="selectedPaymentMethod"
             :available-coupons="availableCoupons"
             :selected-coupon="selectedCoupon"
@@ -180,18 +180,18 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
-    
+
     <!-- 支付确认模态框 -->
-    <PaymentConfirmModal 
+    <PaymentConfirmModal
       :visible="showConfirmModal"
       :payment-method="selectedPaymentMethod"
       :amount="finalAmount"
       :loading="loading"
       @confirm="confirmPayment"
     />
-    
+
     <!-- 支付成功模态框 -->
-    <PaymentSuccessModal 
+    <PaymentSuccessModal
       :visible="showSuccessModal"
       :order-number="'202401150001'"
       @action="handlePaymentSuccess"
@@ -268,7 +268,7 @@ onBeforeUnmount(() => {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .right-section {
     position: static;
   }
@@ -278,12 +278,12 @@ onBeforeUnmount(() => {
   .container {
     padding: 0 16px;
   }
-  
+
   .countdown-content {
     flex-direction: column;
     gap: 4px;
   }
-  
+
   .countdown-time {
     font-size: 20px;
   }

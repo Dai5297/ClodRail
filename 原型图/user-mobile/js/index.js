@@ -221,7 +221,7 @@ const IndexApp = {
         }
         
         // 查询按钮
-        const searchBtn = document.querySelector('.search-btn');
+        const searchBtn = document.querySelector('.ticket-btn');
         if (searchBtn) {
             searchBtn.addEventListener('click', () => this.searchTickets());
         }
@@ -373,7 +373,7 @@ const IndexApp = {
         });
         
         // 搜索功能
-        const searchInput = document.querySelector('.station-search');
+        const searchInput = document.querySelector('.station-ticket');
         if (searchInput) {
             searchInput.addEventListener('input', Utils.debounce((e) => {
                 this.filterStations(e.target.value);
@@ -459,7 +459,7 @@ const IndexApp = {
         // 跳转到查询结果页
         Toast.success('正在查询车次信息...');
         setTimeout(() => {
-            window.location.href = 'search.html';
+            window.location.href = 'ticket.html';
         }, 1000);
     },
     
@@ -519,7 +519,7 @@ const IndexApp = {
         Toast.success(`已选择 ${from} → ${to}`);
         
         // 滚动到查询表单
-        const searchForm = document.querySelector('.search-form');
+        const searchForm = document.querySelector('.ticket-form');
         if (searchForm) {
             searchForm.scrollIntoView({ behavior: 'smooth' });
         }

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
-import { 
-  ElCard, 
-  ElForm, 
-  ElFormItem, 
-  ElInput, 
-  ElButton, 
-  ElDialog, 
-  ElMessage, 
-  ElMessageBox, 
+import {
+  ElCard,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElButton,
+  ElDialog,
+  ElMessage,
+  ElMessageBox,
   ElSkeleton,
   ElIcon,
   ElDivider,
@@ -17,7 +17,7 @@ import {
   ElStep,
   ElTag
 } from 'element-plus'
-import { 
+import {
   Lock,
   Phone,
   Message,
@@ -28,9 +28,11 @@ import {
   Hide
 } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
+import { resetPassword, resetPasswordByPhone, sendCode as sendSmsCode, getCaptcha } from '@/api/auth'
+import type { SmsResponse, CaptchaResponse } from '@/api/auth'
 
 // 定义安全信息接口
-interface SecurityInfo {
+export interface SecurityInfo {
   hasPassword: boolean
   phoneVerified: boolean
   emailVerified: boolean
@@ -39,14 +41,6 @@ interface SecurityInfo {
   email: string
   realName: string
   idCard: string
-  lastPasswordChange: string
-  loginDevices: Array<{
-    id: string
-    deviceName: string
-    location: string
-    lastLogin: string
-    isCurrent: boolean
-  }>
 }
 
 // 定义属性
@@ -200,13 +194,13 @@ const displaySecurityInfo = computed(() => props.securityInfo || {
 // 安全等级计算
 const securityLevel = computed(() => {
   if (!props.securityInfo) return { level: 0, text: '未知', color: '#d9d9d9' }
-  
+
   let score = 0
   if (props.securityInfo.hasPassword) score += 25
   if (props.securityInfo.phoneVerified) score += 25
   if (props.securityInfo.emailVerified) score += 25
   if (props.securityInfo.realNameVerified) score += 25
-  
+
   if (score >= 100) return { level: score, text: '高', color: '#52c41a' }
   if (score >= 75) return { level: score, text: '中高', color: '#1890ff' }
   if (score >= 50) return { level: score, text: '中', color: '#faad14' }
@@ -230,7 +224,7 @@ const maskPhone = (phone: string) => {
 const maskEmail = (email: string) => {
   if (!email) return '-'
   const [username, domain] = email.split('@')
-  const maskedUsername = username.length > 2 
+  const maskedUsername = username.length > 2
     ? username.substring(0, 2) + '*'.repeat(username.length - 2)
     : username
   return `${maskedUsername}@${domain}`
@@ -245,7 +239,7 @@ const maskIdCard = (idCard: string) => {
 // 打开对话框
 const openDialog = (type: keyof typeof dialogVisible.value) => {
   dialogVisible.value[type] = true
-  
+
   // 重置表单
   if (type === 'password') {
     Object.assign(passwordForm, { oldPassword: '', newPassword: '', confirmPassword: '' })
@@ -267,15 +261,15 @@ const closeDialog = (type: keyof typeof dialogVisible.value) => {
 // 发送验证码
 const sendCode = async (type: 'phone' | 'email') => {
   const target = type === 'phone' ? phoneForm.phone : emailForm.email
-  
+
   if (!target) {
     ElMessage.error(`请先输入${type === 'phone' ? '手机号' : '邮箱地址'}`)
     return
   }
-  
+
   try {
     emit('sendVerifyCode', type, target)
-    
+
     // 开始倒计时
     countdown.value[type] = 60
     const timer = setInterval(() => {
@@ -284,7 +278,7 @@ const sendCode = async (type: 'phone' | 'email') => {
         clearInterval(timer)
       }
     }, 1000)
-    
+
     ElMessage.success('验证码发送成功')
   } catch (error) {
     console.error('发送验证码失败:', error)
@@ -294,7 +288,7 @@ const sendCode = async (type: 'phone' | 'email') => {
 // 修改密码
 const changePassword = async () => {
   if (!passwordFormRef.value) return
-  
+
   try {
     await passwordFormRef.value.validate()
     emit('changePassword', {
@@ -311,7 +305,7 @@ const changePassword = async () => {
 // 绑定手机号
 const bindPhone = async () => {
   if (!phoneFormRef.value) return
-  
+
   try {
     await phoneFormRef.value.validate()
     emit('bindPhone', {
@@ -328,7 +322,7 @@ const bindPhone = async () => {
 // 绑定邮箱
 const bindEmail = async () => {
   if (!emailFormRef.value) return
-  
+
   try {
     await emailFormRef.value.validate()
     emit('bindEmail', {
@@ -345,7 +339,7 @@ const bindEmail = async () => {
 // 实名认证
 const realNameAuth = async () => {
   if (!realNameFormRef.value) return
-  
+
   try {
     await realNameFormRef.value.validate()
     emit('realNameAuth', {
@@ -403,7 +397,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
           </div>
         </div>
       </template>
-      
+
       <!-- 加载状态 -->
       <ElSkeleton v-if="loading" animated>
         <template #template>
@@ -412,7 +406,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
           </div>
         </template>
       </ElSkeleton>
-      
+
       <!-- 安全设置内容 -->
       <div v-else class="security-content">
         <!-- 安全提醒 -->
@@ -425,7 +419,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
           :closable="false"
           class="security-alert"
         />
-        
+
         <!-- 安全设置列表 -->
         <div class="security-list">
           <!-- 登录密码 -->
@@ -453,7 +447,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
               </ElButton>
             </div>
           </div>
-          
+
           <!-- 手机号验证 -->
           <div class="security-item">
             <div class="item-left">
@@ -478,7 +472,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
               </ElButton>
             </div>
           </div>
-          
+
           <!-- 邮箱验证 -->
           <div class="security-item">
             <div class="item-left">
@@ -503,7 +497,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
               </ElButton>
             </div>
           </div>
-          
+
           <!-- 实名认证 -->
           <div class="security-item">
             <div class="item-left">
@@ -523,8 +517,8 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
                   <component :is="displaySecurityInfo.realNameVerified ? CircleCheck : Warning" />
                 </ElIcon>
               </div>
-              <ElButton 
-                type="primary" 
+              <ElButton
+                type="primary"
                 @click="openDialog('realName')"
                 :disabled="displaySecurityInfo.realNameVerified"
               >
@@ -532,7 +526,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
               </ElButton>
             </div>
           </div>
-          
+
           <!-- 登录设备 -->
           <div class="security-item">
             <div class="item-left">
@@ -555,7 +549,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
         </div>
       </div>
     </ElCard>
-    
+
     <!-- 修改密码对话框 -->
     <ElDialog
       v-model="dialogVisible.password"
@@ -589,7 +583,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
           />
         </ElFormItem>
       </ElForm>
-      
+
       <template #footer>
         <div class="dialog-footer">
           <ElButton @click="closeDialog('password')">取消</ElButton>
@@ -599,7 +593,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
         </div>
       </template>
     </ElDialog>
-    
+
     <!-- 绑定手机号对话框 -->
     <ElDialog
       v-model="dialogVisible.phone"
@@ -624,7 +618,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
           </div>
         </ElFormItem>
       </ElForm>
-      
+
       <template #footer>
         <div class="dialog-footer">
           <ElButton @click="closeDialog('phone')">取消</ElButton>
@@ -634,7 +628,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
         </div>
       </template>
     </ElDialog>
-    
+
     <!-- 绑定邮箱对话框 -->
     <ElDialog
       v-model="dialogVisible.email"
@@ -659,7 +653,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
           </div>
         </ElFormItem>
       </ElForm>
-      
+
       <template #footer>
         <div class="dialog-footer">
           <ElButton @click="closeDialog('email')">取消</ElButton>
@@ -669,7 +663,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
         </div>
       </template>
     </ElDialog>
-    
+
     <!-- 实名认证对话框 -->
     <ElDialog
       v-model="dialogVisible.realName"
@@ -681,7 +675,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
         <ElStep title="填写信息" />
         <ElStep title="提交审核" />
       </ElSteps>
-      
+
       <div v-if="realNameStep === 0" class="auth-form">
         <ElAlert
           title="实名认证说明"
@@ -695,7 +689,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
             <p>• 认证信息一经提交不可修改</p>
           </template>
         </ElAlert>
-        
+
         <ElForm ref="realNameFormRef" :model="realNameForm" :rules="realNameRules" label-width="100px">
           <ElFormItem label="真实姓名" prop="realName">
             <ElInput v-model="realNameForm.realName" placeholder="请输入真实姓名" />
@@ -705,7 +699,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
           </ElFormItem>
         </ElForm>
       </div>
-      
+
       <div v-else class="auth-success">
         <div class="success-icon">
           <ElIcon :size="60" color="#52c41a">
@@ -715,14 +709,14 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
         <h3>提交成功</h3>
         <p>您的实名认证信息已提交，我们将在1-3个工作日内完成审核。</p>
       </div>
-      
+
       <template #footer>
         <div class="dialog-footer">
           <ElButton @click="closeDialog('realName')">取消</ElButton>
-          <ElButton 
+          <ElButton
             v-if="realNameStep === 0"
-            type="primary" 
-            @click="realNameAuth" 
+            type="primary"
+            @click="realNameAuth"
             :loading="loading"
           >
             提交认证
@@ -730,7 +724,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
         </div>
       </template>
     </ElDialog>
-    
+
     <!-- 登录设备管理对话框 -->
     <ElDialog
       v-model="dialogVisible.devices"
@@ -738,9 +732,9 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
       width="700px"
     >
       <div class="devices-list">
-        <div 
-          v-for="device in displaySecurityInfo.loginDevices" 
-          :key="device.id" 
+        <div
+          v-for="device in displaySecurityInfo.loginDevices"
+          :key="device.id"
           class="device-item"
         >
           <div class="device-info">
@@ -754,9 +748,9 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
             </div>
           </div>
           <div class="device-actions">
-            <ElButton 
+            <ElButton
               v-if="!device.isCurrent"
-              type="danger" 
+              type="danger"
               size="small"
               @click="logoutDevice(device.id, device.deviceName)"
             >
@@ -764,7 +758,7 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
             </ElButton>
           </div>
         </div>
-        
+
         <div v-if="!displaySecurityInfo.loginDevices?.length" class="empty-devices">
           <p>暂无登录设备</p>
         </div>
@@ -1003,31 +997,31 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
     gap: 12px;
     align-items: stretch;
   }
-  
+
   .security-level {
     justify-content: center;
   }
-  
+
   .security-item {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
   }
-  
+
   .item-left {
     gap: 12px;
   }
-  
+
   .item-right {
     justify-content: space-between;
   }
-  
+
   .device-item {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
   }
-  
+
   .device-details {
     flex-direction: row;
     gap: 16px;
@@ -1038,11 +1032,11 @@ const logoutDevice = async (deviceId: string, deviceName: string) => {
   .code-input {
     flex-direction: column;
   }
-  
+
   .code-btn {
     min-width: auto;
   }
-  
+
   .device-details {
     flex-direction: column;
     gap: 2px;

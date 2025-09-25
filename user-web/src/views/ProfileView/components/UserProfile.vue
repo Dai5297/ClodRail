@@ -2,48 +2,22 @@
 import { ref, reactive, computed } from 'vue'
 import {
   ElCard,
-  ElForm,
-  ElFormItem,
-  ElInput,
-  ElSelect,
-  ElOption,
-  ElDatePicker,
-  ElButton,
   ElAvatar,
-  ElUpload,
   ElMessage,
-  ElMessageBox,
   ElSkeleton,
   ElIcon,
   ElDivider
 } from 'element-plus'
 import {
   Edit,
-  Camera,
   User,
   Phone,
   Message,
   Calendar,
-  Location
+  Location,
+  Document
 } from '@element-plus/icons-vue'
-import type { UploadProps, FormInstance, FormRules } from 'element-plus'
-
-// 定义用户信息接口
-interface UserInfo {
-  id: string,
-  username: string,
-  birthday: string,
-  address: string,
-  introduction: string,
-  icon: string,
-  email: string,
-  phone: string,
-  realName: string,
-  gender: string,
-  idCard: string,
-  createTime: string,
-  lastLoginTime: string,
-}
+import type { UserInfo } from '@/api/auth'
 
 // 定义属性
 interface Props {
@@ -64,15 +38,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>()
 
-// 表单引用
-const formRef = ref<FormInstance>()
-
-// 编辑状态
-const isEditing = ref(false)
-
-// 表单数据
-const formData = reactive<Partial<UserInfo>>({})
-
 // 性别选项
 const genderOptions = [
   { label: '男', value: 'male' },
@@ -80,60 +45,35 @@ const genderOptions = [
   { label: '其他', value: 'other' }
 ]
 
-// 表单验证规则
-const rules: FormRules = {
-  nickname: [
-    { required: true, message: '请输入昵称', trigger: 'blur' },
-    { min: 2, max: 20, message: '昵称长度在 2 到 20 个字符', trigger: 'blur' }
-  ],
-  email: [
-    { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
-  ],
-  phone: [
-    { required: true, message: '请输入手机号码', trigger: 'blur' },
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
-  ],
-  realName: [
-    { min: 2, max: 10, message: '真实姓名长度在 2 到 10 个字符', trigger: 'blur' }
-  ],
-  idCard: [
-    { pattern: /^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/, message: '请输入正确的身份证号码', trigger: 'blur' }
-  ],
-  bio: [
-    { max: 200, message: '个人简介不能超过 200 个字符', trigger: 'blur' }
-  ]
-}
-
 // 计算属性
 const displayUserInfo = computed(() => props.userInfo || {} as UserInfo)
 
 // 格式化时间
-const formatTime = (time: string) => {
+const formatTime = (time?: string) => {
   if (!time) return '-'
   return new Date(time).toLocaleString('zh-CN')
 }
 
 // 格式化生日
-const formatBirthday = (birthday: string) => {
+const formatBirthday = (birthday?: string) => {
   if (!birthday) return '-'
   return new Date(birthday).toLocaleDateString('zh-CN')
 }
 
 // 获取性别显示文本
-const getGenderText = (gender: string) => {
+const getGenderText = (gender?: string) => {
   const option = genderOptions.find(opt => opt.value === gender)
   return option?.label || '-'
 }
 
 // 脱敏处理身份证号
-const maskIdCard = (idCard: string) => {
+const maskIdCard = (idCard?: string) => {
   if (!idCard) return '-'
   return idCard.replace(/(\d{6})\d{8}(\d{4})/, '$1********$2')
 }
 
 // 脱敏处理手机号
-const maskPhone = (phone: string) => {
+const maskPhone = (phone?: string) => {
   if (!phone) return '-'
   return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
 }
@@ -156,7 +96,7 @@ const startEdit = () => {
     gender: displayUserInfo.value.gender,
     idCard: displayUserInfo.value.idCard,
     createTime: displayUserInfo.value.createTime,
-    lastLoginTime: displayUserInfo.value.lastLoginTime,
+    lastLoginAt: displayUserInfo.value.lastLoginAt,
   })
 
   isEditing.value = true
@@ -241,23 +181,6 @@ const handleUploadRequest = () => {
             </ElIcon>
             <span class="header-title">个人信息</span>
           </div>
-          <div class="header-right">
-            <ElButton
-              v-if="!isEditing"
-              type="primary"
-              :icon="Edit"
-              @click="startEdit"
-              :loading="loading"
-            >
-              编辑资料
-            </ElButton>
-            <div v-else class="edit-actions">
-              <ElButton @click="cancelEdit">取消</ElButton>
-              <ElButton type="primary" @click="saveEdit" :loading="loading">
-                保存
-              </ElButton>
-            </div>
-          </div>
         </div>
       </template>
 
@@ -282,37 +205,13 @@ const handleUploadRequest = () => {
           <div class="avatar-container">
             <ElAvatar
               :size="100"
-              :src="displayUserInfo.icon"
+              :src="displayUserInfo.avatar"
               class="user-avatar"
             >
               <ElIcon :size="40">
                 <User />
               </ElIcon>
             </ElAvatar>
-
-            <!-- 头像操作 -->
-            <div class="avatar-actions">
-              <ElUpload
-                :show-file-list="false"
-                :before-upload="beforeAvatarUpload"
-                :http-request="handleUploadRequest"
-                accept="image/*"
-                @change="(file: any) => handleAvatarUpload(file.raw)"
-              >
-                <ElButton size="small" :icon="Camera" circle title="更换头像" />
-              </ElUpload>
-
-              <ElButton
-                v-if="displayUserInfo.icon"
-                size="small"
-                type="danger"
-                circle
-                title="删除头像"
-                @click="confirmDeleteAvatar"
-              >
-                <ElIcon><Delete /></ElIcon>
-              </ElButton>
-            </div>
           </div>
 
           <!-- 用户基本信息 -->
@@ -411,88 +310,18 @@ const handleUploadRequest = () => {
                 </label>
                 <span class="info-value">{{ displayUserInfo.introduction || '-' }}</span>
               </div>
-            </div>
 
-            <!-- 账户信息 -->
-            <ElDivider content-position="left">账户信息</ElDivider>
-            <div class="account-info">
               <div class="info-item">
                 <label class="info-label">注册时间</label>
                 <span class="info-value">{{ formatTime(displayUserInfo.createTime) }}</span>
               </div>
+
               <div class="info-item">
                 <label class="info-label">最后登录</label>
-                <span class="info-value">{{ formatTime(displayUserInfo.lastLoginTime) }}</span>
+                <span class="info-value">{{ displayUserInfo.lastLoginTime ? formatTime(displayUserInfo.lastLoginTime) : '-' }}</span>
               </div>
             </div>
           </div>
-
-          <!-- 编辑状态 -->
-          <ElForm
-            v-else
-            ref="formRef"
-            :model="formData"
-            :rules="rules"
-            label-width="100px"
-            class="edit-form"
-          >
-            <div class="form-grid">
-              <ElFormItem label="昵称" prop="username">
-                <ElInput v-model="formData.username" placeholder="请输入昵称" />
-              </ElFormItem>
-
-              <ElFormItem label="邮箱" prop="email">
-                <ElInput v-model="formData.email" placeholder="请输入邮箱地址" />
-              </ElFormItem>
-
-              <ElFormItem label="手机号" prop="phone">
-                <ElInput v-model="formData.phone" placeholder="请输入手机号码" />
-              </ElFormItem>
-
-              <ElFormItem label="性别" prop="gender">
-                <ElSelect v-model="formData.gender" placeholder="请选择性别">
-                  <ElOption
-                    v-for="option in genderOptions"
-                    :key="option.value"
-                    :label="option.label"
-                    :value="option.value"
-                  />
-                </ElSelect>
-              </ElFormItem>
-
-              <ElFormItem label="生日" prop="birthday">
-                <ElDatePicker
-                  v-model="formData.birthday"
-                  type="date"
-                  placeholder="请选择生日"
-                  style="width: 100%;"
-                />
-              </ElFormItem>
-
-              <ElFormItem label="真实姓名" prop="realName">
-                <ElInput v-model="formData.realName" placeholder="请输入真实姓名" />
-              </ElFormItem>
-
-              <ElFormItem label="身份证号" prop="idCard">
-                <ElInput v-model="formData.idCard" placeholder="请输入身份证号码" />
-              </ElFormItem>
-
-              <ElFormItem label="地址" prop="address">
-                <ElInput v-model="formData.address" placeholder="请输入地址" />
-              </ElFormItem>
-            </div>
-
-            <ElFormItem label="个人简介" prop="bio" class="full-width">
-              <ElInput
-                v-model="formData.introduction"
-                type="textarea"
-                :rows="4"
-                placeholder="请输入个人简介"
-                maxlength="200"
-                show-word-limit
-              />
-            </ElFormItem>
-          </ElForm>
         </div>
       </div>
     </ElCard>
