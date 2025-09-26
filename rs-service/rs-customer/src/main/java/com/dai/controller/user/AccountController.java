@@ -1,8 +1,6 @@
 package com.dai.controller.user;
 
-import com.dai.model.dto.request.UserNameLoginReqDTO;
-import com.dai.model.dto.request.UserRegisterReqDTO;
-import com.dai.model.dto.request.UserResetPasswordReqDTO;
+import com.dai.model.dto.request.*;
 import com.dai.model.dto.response.UserLoginResDTO;
 import com.dai.model.dto.response.UserRegisterResDTO;
 import com.dai.service.AccountService;
@@ -37,6 +35,12 @@ public class AccountController {
         return accountService.captcha();
     }
 
+    @GetMapping("/captcha/phone")
+    @Operation(summary = "手机验证码登录获取验证码")
+    public void captchaPhone(@RequestParam String phone) {
+        accountService.captchaPhone(phone);
+    }
+
     @PostMapping("/password/reset")
     @Operation(summary = "重置密码")
     public void resetPassword(@RequestBody UserResetPasswordReqDTO reqDTO) {
@@ -47,5 +51,23 @@ public class AccountController {
     @Operation(summary = "注册")
     public UserRegisterResDTO register(@RequestBody UserRegisterReqDTO reqDTO) {
         return accountService.register(reqDTO);
+    }
+
+    @PostMapping("/phone/change")
+    @Operation(summary = "更换手机号")
+    public void changePhone(@RequestBody UserPhoneChangeReqDTO userPhoneChangeReqDTO) {
+        accountService.changePhone(userPhoneChangeReqDTO);
+    }
+
+    @PostMapping("/email/change/code")
+    @Operation(summary = "获取更换邮箱验证码")
+    public void emailChangeCode(@RequestParam String email) {
+        accountService.emailChangeCode(email);
+    }
+
+    @PostMapping("/email/change")
+    @Operation(summary = "更换邮箱")
+    public void changeEmail(@RequestBody UserEmailChangeReqDTO userEmailChangeReqDTO) {
+        accountService.changeEmail(userEmailChangeReqDTO);
     }
 }

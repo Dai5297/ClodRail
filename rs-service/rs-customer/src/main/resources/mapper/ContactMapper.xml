@@ -31,6 +31,41 @@
         values (#{userId}, #{name}, #{idCard}, #{phone}, #{email}, #{passengerType}, #{isDefault}, #{remark})
     </insert>
 
+    <update id="updateContact">
+        update contact
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="idCard != null">
+                id_card = #{idCard},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+            <if test="passengerType != null">
+                passenger_type = #{passengerType},
+            </if>
+            <if test="isDefault != null">
+                is_default = #{isDefault},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from contact where id = #{id}
+    </delete>
+
     <select id="queryContacts" resultMap="ContactPageResDTOMap">
         select id,
         name,

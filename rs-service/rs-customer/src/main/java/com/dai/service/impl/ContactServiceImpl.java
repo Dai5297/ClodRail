@@ -5,7 +5,8 @@ import com.dai.enums.RespCode;
 import com.dai.exception.CommonException;
 import com.dai.mapper.ContactMapper;
 import com.dai.model.PageResult;
-import com.dai.model.dto.request.ContactAddReqDTO;
+import com.dai.model.domain.customer.Contact;
+import com.dai.model.dto.request.ContactReqDTO;
 import com.dai.model.dto.response.ContactAddResDTO;
 import com.dai.model.dto.response.ContactDetailResDTO;
 import com.dai.model.dto.response.ContactPageResDTO;
@@ -59,7 +60,7 @@ public class ContactServiceImpl implements ContactService {
      * @return 添加结果
      */
     @Override
-    public ContactAddResDTO add(ContactAddReqDTO contactAddReqDTO) {
+    public ContactAddResDTO add(ContactReqDTO contactAddReqDTO) {
         ContactAddResDTO contact = BeanUtil.copyProperties(contactAddReqDTO, ContactAddResDTO.class);
         contact.setUserId(UserContext.get());
         if (contact.getIsDefault() == 1) {
@@ -71,5 +72,38 @@ public class ContactServiceImpl implements ContactService {
             return contact;
         }
         return null;
+    }
+
+    /**
+     * 修改联系人
+     *
+     * @param contactUpdateReqDTO 联系人信息
+     * @return 修改结果
+     */
+    @Override
+    public ContactDetailResDTO update(ContactReqDTO contactUpdateReqDTO) {
+        Contact contact = BeanUtil.copyProperties(contactUpdateReqDTO, Contact.class);
+        if (contact.getId() ==  null) {
+            throw new CommonException(RespCode.ERROR, "用户id不能为空");
+        }
+        if (contact.getIsDefault() == 1) {
+            if (contactMapper.getDefaultCount(contact.getUserId()) > 1) {
+                throw new CommonException(RespCode.ERROR, "已存在默认联系人");
+            }
+        }
+        if (contactMapper.updateContact(contact)) {
+            return contactMapper.queryContactDetail(contact.getId());
+        }
+        return null;
+    }
+
+    /**
+     * 删除联系人
+     *
+     * @param id 联系人id
+     */
+    @Override
+    public void delete(Long id) {
+        contactMapper.deleteById(id);
     }
 }

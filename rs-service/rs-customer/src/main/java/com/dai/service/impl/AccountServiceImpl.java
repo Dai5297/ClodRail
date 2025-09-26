@@ -10,9 +10,7 @@ import com.dai.enums.RespCode;
 import com.dai.exception.CommonException;
 import com.dai.mapper.AccountMapper;
 import com.dai.model.domain.customer.User;
-import com.dai.model.dto.request.UserNameLoginReqDTO;
-import com.dai.model.dto.request.UserRegisterReqDTO;
-import com.dai.model.dto.request.UserResetPasswordReqDTO;
+import com.dai.model.dto.request.*;
 import com.dai.model.dto.response.UserLoginResDTO;
 import com.dai.model.dto.response.UserRegisterResDTO;
 import com.dai.service.AccountService;
@@ -20,17 +18,20 @@ import com.dai.util.EncoderUtil;
 import com.dai.util.JWTUtil;
 import com.dai.util.UserContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
-    
+
     private final AccountMapper accountMapper;
     private final StringRedisTemplate stringRedisTemplate;
 
@@ -76,6 +77,7 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * 获取账号密码登录验证码
+     *
      * @return 验证码
      */
     @Override
@@ -85,6 +87,7 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * 重置密码
+     *
      * @param reqDTO 重置密码参数
      */
     @Override
@@ -102,16 +105,61 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * 注册
+     *
      * @param reqDTO 注册参数
      * @return 注册结果
      */
     @Override
     public UserRegisterResDTO register(UserRegisterReqDTO reqDTO) {
-        // TODO 校验Redis中存放的手机验证码
+        if (!Objects.equals(reqDTO.getCode(), stringRedisTemplate.opsForValue().get(RedisKeyConstant.USER_PHONE_CAPTCHA + reqDTO.getPhone()))) {
+            throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "验证码错误");
+        }
         User user = new User();
         BeanUtil.copyProperties(reqDTO, user);
         user.setPassword(EncoderUtil.encrypt(reqDTO.getPassword()));
         accountMapper.registerUser(user);
         return BeanUtil.copyProperties(user, UserRegisterResDTO.class);
+    }
+
+    @Override
+    public void captchaPhone(String phone) {
+        int captcha = RandomUtil.randomInt(100000, 999999);
+        log.info("手机验证码：{}", captcha);
+        String key = RedisKeyConstant.USER_PHONE_CAPTCHA + phone;
+        stringRedisTemplate.opsForValue().set(key, String.valueOf(captcha), RedisKeyConstant.USER_PHONE_CAPTCHA_TTL, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 修改手机号
+     *
+     * @param userPhoneChangeReqDTO 修改手机号参数
+     */
+    @Override
+    public void changePhone(UserPhoneChangeReqDTO userPhoneChangeReqDTO) {
+        if (!Objects.equals(userPhoneChangeReqDTO.getCode(), stringRedisTemplate.opsForValue().get(RedisKeyConstant.USER_PHONE_CAPTCHA + userPhoneChangeReqDTO.getNewPhone()))) {
+            throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "验证码错误");
+        }
+        Long userId = UserContext.get();
+        accountMapper.updatePhone(userId, userPhoneChangeReqDTO.getNewPhone());
+    }
+
+    /**
+     * 获取邮箱修改验证码
+     *
+     * @param email 邮箱
+     */
+    @Override
+    public void emailChangeCode(String email) {
+        int code = RandomUtil.randomInt(100000, 999999);
+        log.info("邮箱验证码：{}", code);
+        stringRedisTemplate.opsForValue().set(RedisKeyConstant.USER_EMAIL_CODE + email, String.valueOf(code), RedisKeyConstant.USER_EMAIL_CHANGE_CODE_TTL, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void changeEmail(UserEmailChangeReqDTO userEmailChangeReqDTO) {
+        if (!Objects.equals(userEmailChangeReqDTO.getCode(), stringRedisTemplate.opsForValue().get(RedisKeyConstant.USER_EMAIL_CODE + userEmailChangeReqDTO.getNewEmail()))) {
+            throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "验证码错误");
+        }
+        accountMapper.updateEmail(UserContext.get(), userEmailChangeReqDTO.getNewEmail());
     }
 }

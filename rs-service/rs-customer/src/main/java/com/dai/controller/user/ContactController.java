@@ -1,7 +1,7 @@
 package com.dai.controller.user;
 
 import com.dai.model.PageResult;
-import com.dai.model.dto.request.ContactAddReqDTO;
+import com.dai.model.dto.request.ContactReqDTO;
 import com.dai.model.dto.response.ContactAddResDTO;
 import com.dai.model.dto.response.ContactDetailResDTO;
 import com.dai.model.dto.response.ContactPageResDTO;
@@ -35,7 +35,17 @@ public class ContactController {
     }
 
     @PostMapping("/add")
-    public ContactAddResDTO add(@RequestBody ContactAddReqDTO contactAddReqDTO) {
+    public ContactAddResDTO add(@RequestBody ContactReqDTO contactAddReqDTO) {
         return contactService.add(contactAddReqDTO);
+    }
+
+    @PutMapping("/update")
+    public ContactDetailResDTO update(@RequestBody ContactReqDTO contactUpdateReqDTO) {
+        return contactService.update(contactUpdateReqDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        contactService.delete(id);
     }
 }

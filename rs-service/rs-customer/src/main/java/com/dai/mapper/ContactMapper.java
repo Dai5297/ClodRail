@@ -1,5 +1,6 @@
 package com.dai.mapper;
 
+import com.dai.model.domain.customer.Contact;
 import com.dai.model.dto.response.ContactAddResDTO;
 import com.dai.model.dto.response.ContactDetailResDTO;
 import com.dai.model.dto.response.ContactPageResDTO;
@@ -17,4 +18,8 @@ public interface ContactMapper {
     boolean addContact(ContactAddResDTO contact);
 
     Integer getDefaultCount(Long userId);
+
+    boolean updateContact(Contact contact);
+
+    void deleteById(Long id);
 }

@@ -1,7 +1,7 @@
 package com.dai.service;
 
 import com.dai.model.PageResult;
-import com.dai.model.dto.request.ContactAddReqDTO;
+import com.dai.model.dto.request.ContactReqDTO;
 import com.dai.model.dto.response.ContactAddResDTO;
 import com.dai.model.dto.response.ContactDetailResDTO;
 import com.dai.model.dto.response.ContactPageResDTO;
@@ -34,5 +34,20 @@ public interface ContactService {
      * @param contactAddReqDTO 联系人信息
      * @return 添加结果
      */
-    ContactAddResDTO add(ContactAddReqDTO contactAddReqDTO);
+    ContactAddResDTO add(ContactReqDTO contactAddReqDTO);
+
+    /**
+     * 修改联系人
+     *
+     * @param contactUpdateReqDTO 联系人信息
+     * @return 修改结果
+     */
+    ContactDetailResDTO update(ContactReqDTO contactUpdateReqDTO);
+
+    /**
+     * 删除联系人
+     *
+     * @param id 联系人id
+     */
+    void delete(Long id);
 }

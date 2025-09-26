@@ -66,10 +66,22 @@
         where id = #{id}
     </update>
 
+    <update id="updatePhone">
+        update user
+        set phone = #{newPhone}
+        where id = #{id}
+    </update>
+
+    <update id="updateEmail">
+        update user
+        set email = #{newEmail}
+        where id = #{id}
+    </update>
+
     <!-- 注册用户 -->
     <insert id="registerUser" useGeneratedKeys="true" keyProperty="id">
-        insert into user (username, password, email, phone, real_name, id_card, create_time, update_time)
-        values (#{username}, #{password}, #{email}, #{phone}, #{realName}, #{idCard}, now(), now())
+        insert into user (username, password, email, phone, real_name, id_card)
+        values (#{username}, #{password}, #{email}, #{phone}, #{realName}, #{idCard})
     </insert>
 
 </mapper>

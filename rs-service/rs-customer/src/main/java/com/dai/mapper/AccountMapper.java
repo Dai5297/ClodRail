@@ -31,4 +31,18 @@ public interface AccountMapper {
      * @param user 用户信息
      */
     void registerUser(User user);
+
+    /**
+     * 更新用户手机号
+     * @param id 用户ID
+     * @param newPhone 新手机号
+     */
+    void updatePhone(Long id, String newPhone);
+
+    /**
+     * 更新用户邮箱
+     * @param id 用户ID
+     * @param newEmail 新邮箱
+     */
+    void updateEmail(Long id, String newEmail);
 }

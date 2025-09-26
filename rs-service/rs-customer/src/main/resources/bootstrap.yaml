@@ -29,7 +29,7 @@ spring:
     title: 用户服务
     description: 用户服务接口文档
     version: 1.0.0
-    path: com.dai.user.controller,com.dai.admin.controller
+    path: com.dai.controller
     group: 用户服务
     contact:
       name: dai

@@ -1,9 +1,12 @@
 package com.dai.model.dto.response;
 
+import com.dai.model.domain.BaseModel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class ContactDetailResDTO {
+@EqualsAndHashCode(callSuper = true)
+public class ContactDetailResDTO extends BaseModel {
 
     /**
      * 主键id

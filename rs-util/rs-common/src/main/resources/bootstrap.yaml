@@ -5,5 +5,5 @@ rs:
       - /account/login/**
       - /account/register/**
       - /account/forget/**
-      - /account/captcha
+      - /account/captcha/**
       - /account/logout

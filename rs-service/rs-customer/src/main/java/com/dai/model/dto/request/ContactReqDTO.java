@@ -3,7 +3,12 @@ package com.dai.model.dto.request;
 import lombok.Data;
 
 @Data
-public class ContactAddReqDTO {
+public class ContactReqDTO {
+
+    /**
+     * 主键id
+     */
+    private Long id;
 
     /**
      * 联系人姓名
