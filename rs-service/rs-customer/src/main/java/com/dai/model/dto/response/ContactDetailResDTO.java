@@ -1,6 +1,6 @@
 package com.dai.model.dto.response;
 
-import com.dai.model.domain.BaseModel;
+import com.dai.model.BaseModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -3,7 +3,7 @@ package com.dai.handler;
 import com.dai.enums.RespCode;
 import com.dai.exception.CommonException;
 import lombok.extern.slf4j.Slf4j;
-import com.dai.model.domain.RespResult;
+import com.dai.model.RespResult;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;

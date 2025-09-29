@@ -1,6 +1,6 @@
 package com.dai.mapper;
 
-import com.dai.model.domain.customer.User;
+import com.dai.model.customer.User;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

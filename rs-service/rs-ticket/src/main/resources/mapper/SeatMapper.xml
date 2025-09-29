@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dai.mapper.SeatMapper">
+
+
+    <select id="querySeatTypes" resultType="com.dai.model.domain.SeatInfo">
+        select s.seat_type       as type,
+               case seat_type
+                   when 1 then '一等座'
+                   when 2 then '二等座'
+                   end
+                                 as name,
+               s.price           as price,
+               sum(s.status = 0) as remaining_seats
+        from seat s
+        where s.ticket_id = 7
+        group by s.seat_type, s.price
+    </select>
+
+</mapper>

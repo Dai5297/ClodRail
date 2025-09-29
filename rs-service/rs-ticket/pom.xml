@@ -9,19 +9,13 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>rs-customer</artifactId>
-    <description>账号服务</description>
+    <artifactId>rs-ticket</artifactId>
+    <description>售票服务</description>
 
     <properties>
-        <maven.compiler.source>24</maven.compiler.source>
-        <maven.compiler.target>24</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.dai</groupId>
-            <artifactId>rs-redis</artifactId>
-        </dependency>
-    </dependencies>
 </project>

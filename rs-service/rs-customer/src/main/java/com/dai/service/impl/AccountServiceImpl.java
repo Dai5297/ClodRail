@@ -9,7 +9,7 @@ import com.dai.constant.RedisKeyConstant;
 import com.dai.enums.RespCode;
 import com.dai.exception.CommonException;
 import com.dai.mapper.AccountMapper;
-import com.dai.model.domain.customer.User;
+import com.dai.model.customer.User;
 import com.dai.model.dto.request.*;
 import com.dai.model.dto.response.UserLoginResDTO;
 import com.dai.model.dto.response.UserRegisterResDTO;

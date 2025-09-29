@@ -1,6 +1,6 @@
 package com.dai.mapper;
 
-import com.dai.model.domain.customer.Contact;
+import com.dai.model.customer.Contact;
 import com.dai.model.dto.response.ContactAddResDTO;
 import com.dai.model.dto.response.ContactDetailResDTO;
 import com.dai.model.dto.response.ContactPageResDTO;

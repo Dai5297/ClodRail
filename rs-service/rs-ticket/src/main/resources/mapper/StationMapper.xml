@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dai.mapper.StationMapper">
+
+    <resultMap id="StationResultMap" type="com.dai.model.dto.response.StationResDTO">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="city" column="city"/>
+        <result property="province" column="province"/>
+        <result property="isHot" column="is_hot"/>
+    </resultMap>
+
+    <select id="getAllStations" resultType="com.dai.model.dto.response.StationResDTO">
+        select id, name, code, city, province, is_hot
+        from station;
+    </select>
+
+    <select id="getStationinfo" resultType="com.dai.model.domain.StationInfo">
+        select id, name, code
+        from station
+        where id = #{originStationId};
+    </select>
+</mapper>

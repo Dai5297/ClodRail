@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.dai.enums.RespCode;
 import com.dai.exception.CommonException;
-import com.dai.model.domain.customer.User;
+import com.dai.model.customer.User;
 import com.dai.mapper.UserMapper;
 import com.dai.model.dto.request.UserInfoUpdateReqDTO;
 import com.dai.model.dto.response.UserInfoResDTO;

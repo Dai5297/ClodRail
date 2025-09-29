@@ -1,4 +1,4 @@
-package com.dai.model.domain;
+package com.dai.model;
 
 import com.dai.enums.RespCode;
 import lombok.Data;

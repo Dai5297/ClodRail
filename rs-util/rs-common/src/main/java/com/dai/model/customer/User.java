@@ -1,6 +1,6 @@
-package com.dai.model.domain.customer;
+package com.dai.model.customer;
 
-import com.dai.model.domain.BaseModel;
+import com.dai.model.BaseModel;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import lombok.Data;

@@ -5,7 +5,7 @@ import com.dai.enums.RespCode;
 import com.dai.exception.CommonException;
 import com.dai.mapper.ContactMapper;
 import com.dai.model.PageResult;
-import com.dai.model.domain.customer.Contact;
+import com.dai.model.customer.Contact;
 import com.dai.model.dto.request.ContactReqDTO;
 import com.dai.model.dto.response.ContactAddResDTO;
 import com.dai.model.dto.response.ContactDetailResDTO;

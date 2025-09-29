@@ -5,7 +5,7 @@
 <mapper namespace="com.dai.mapper.AccountMapper">
 
     <!-- 基础ResultMap映射 -->
-    <resultMap id="BaseResultMap" type="com.dai.model.domain.customer.User">
+    <resultMap id="BaseResultMap" type="com.dai.model.customer.User">
         <!-- 主键 -->
         <id column="id" property="id" jdbcType="BIGINT"/>
 

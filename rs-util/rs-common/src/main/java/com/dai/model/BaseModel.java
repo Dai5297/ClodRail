@@ -1,4 +1,4 @@
-package com.dai.model.domain;
+package com.dai.model;
 
 import com.dai.annotation.CreateBy;
 import com.dai.annotation.CreateTime;

@@ -12,6 +12,10 @@ spring:
           uri: lb://customer-service
           predicates:
             - Path=/user/**, /account/**, /contact/**, /customer-service/**
+        - id: ticket-service
+          uri: lb://ticket-service
+          predicates:
+            - Path=/tickets/**, /stations/**
   main:
     web-application-type: reactive
 server:
