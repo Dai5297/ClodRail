@@ -12,6 +12,16 @@ class Profile {
     }
 
     init() {
+        // 检查用户是否已登录
+        const currentUser = Utils.getLocalStorage('currentUser');
+        const userToken = Utils.getLocalStorage('userToken');
+        
+        if (!currentUser && !userToken) {
+            // 用户未登录，跳转到首页
+            window.location.href = 'index.html';
+            return;
+        }
+        
         this.loadUserData();
         this.bindEvents();
         this.showSection('orders');
@@ -577,19 +587,37 @@ class Profile {
         }
 
         // 模拟密码修改
-        Utils.showMessage('密码修改成功', 'success');
+        Utils.showMessage('密码修改成功，即将退出登录', 'success');
         this.hideChangePasswordModal();
+        
+        // 密码修改成功后自动退出登录
+        setTimeout(() => {
+            this.logout();
+        }, 2000);
     }
 
     logout() {
         if (confirm('确定要退出登录吗？')) {
-            Utils.removeLocalStorage('currentUser');
-            Utils.removeLocalStorage('userToken');
-            Utils.showMessage('已退出登录', 'success');
-            
-            setTimeout(() => {
+            try {
+                // 清除用户数据
+                Utils.removeLocalStorage('currentUser');
+                Utils.removeLocalStorage('userToken');
+                Utils.removeLocalStorage('userInfo');
+                Utils.removeLocalStorage('userPoints');
+                Utils.removeLocalStorage('userOrders');
+                Utils.removeLocalStorage('userPassengers');
+                Utils.removeLocalStorage('userCoupons');
+                
+                Utils.showMessage('已退出登录', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } catch (error) {
+                console.error('退出登录时发生错误:', error);
+                // 即使出错也要跳转到首页
                 window.location.href = 'index.html';
-            }, 1000);
+            }
         }
     }
 

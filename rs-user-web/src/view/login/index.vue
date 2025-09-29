@@ -105,6 +105,9 @@ const handleLoginFailed = (error) => {
 const handleRegisterSuccess = (userData) => {
   console.log('注册成功:', userData)
   
+  // 显示注册成功提示
+  ElMessage.success(userData.message || '注册成功！')
+  
   // 注册成功后自动切换到登录页面
   switchToLogin()
   

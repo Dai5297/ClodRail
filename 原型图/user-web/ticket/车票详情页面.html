@@ -346,8 +346,132 @@
             color: #999;
         }
         
-        /* 详细信息 */
-        .detail-info {
+        /* 停靠站点信息 */
+        .stops-info {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stops-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stops-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stops-toggle {
+            background: #1890ff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .stops-list {
+            display: none;
+        }
+
+        .stops-list.show {
+            display: block;
+        }
+
+        .stop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .stop-item:last-child {
+            border-bottom: none;
+        }
+
+        .stop-station {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .stop-times {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .stop-duration {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 列车服务信息 */
+        .service-info {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .service-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .service-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .service-tag {
+            background: #f0f8ff;
+            color: #1890ff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* 价格趋势图 */
+        .price-trend {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .trend-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .trend-chart {
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        
+        .detail-section {
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -519,58 +643,55 @@
         <div class="ticket-card">
             <div class="ticket-header">
                 <div class="train-info">
-                    <div class="train-number">G101</div>
-                    <div class="train-type">高速动车</div>
+                    <div class="train-number" id="trainCode">G101</div>
+                    <div class="train-type" id="trainType">高速动车组</div>
+                    <div class="train-name" id="trainName">复兴号</div>
                 </div>
                 <div class="route-info">
                     <div class="station">
-                        <div class="station-name">北京南</div>
-                        <div class="station-time">08:00</div>
+                        <div class="station-name" id="originStationName">北京南</div>
+                        <div class="station-code" id="originStationCode">VNP</div>
+                        <div class="station-time" id="startTime">08:00</div>
                     </div>
                     <div class="route-line">
-                        <div class="duration">4小时30分</div>
+                        <div class="duration" id="duration">4小时30分</div>
                     </div>
                     <div class="station">
-                        <div class="station-name">上海虹桥</div>
-                        <div class="station-time">12:30</div>
+                        <div class="station-name" id="destinationStationName">上海虹桥</div>
+                        <div class="station-code" id="destinationStationCode">AOH</div>
+                        <div class="station-time" id="endTime">12:30</div>
                     </div>
                 </div>
             </div>
             
             <div class="seat-info">
                 <h3>座位类型及票价</h3>
-                <div class="seat-grid">
-                    <div class="seat-type available">
+                <div class="seat-grid" id="seatTypesContainer">
+                    <!-- 座位类型将通过JavaScript动态加载 -->
+                    <div class="seat-type available" data-seat-type="0">
                         <div class="seat-name">商务座</div>
-                        <div class="seat-price">¥933</div>
-                        <div class="seat-status available">有票</div>
+                        <div class="seat-price">¥1748</div>
+                        <div class="seat-count">余票: <span class="remaining-seats">10</span></div>
+                        <div class="seat-status available">充足</div>
                     </div>
-                    <div class="seat-type available">
+                    <div class="seat-type available" data-seat-type="1">
                         <div class="seat-name">一等座</div>
-                        <div class="seat-price">¥553</div>
-                        <div class="seat-status available">有票</div>
+                        <div class="seat-price">¥933</div>
+                        <div class="seat-count">余票: <span class="remaining-seats">45</span></div>
+                        <div class="seat-status available">充足</div>
                     </div>
-                    <div class="seat-type limited">
+                    <div class="seat-type limited" data-seat-type="2">
                         <div class="seat-name">二等座</div>
-                        <div class="seat-price">¥348</div>
-                        <div class="seat-status limited">余票紧张</div>
-                    </div>
-                    <div class="seat-type unavailable">
-                        <div class="seat-name">硬卧</div>
-                        <div class="seat-price">--</div>
-                        <div class="seat-status unavailable">无此座位</div>
-                    </div>
-                    <div class="seat-type unavailable">
-                        <div class="seat-name">软卧</div>
-                        <div class="seat-price">--</div>
-                        <div class="seat-status unavailable">无此座位</div>
+                        <div class="seat-price">¥553</div>
+                        <div class="seat-count">余票: <span class="remaining-seats">5</span></div>
+                        <div class="seat-status limited">紧张</div>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- 详细信息 -->
-        <div class="detail-info">
+        <div class="detail-section">
             <h3>列车详细信息</h3>
             <div class="detail-grid">
                 <div>
@@ -612,6 +733,58 @@
             </div>
         </div>
         
+        <!-- 途经站点 -->
+        <div class="stopover-section detail-section">
+            <h3>途经站点</h3>
+            <div class="stopover-list" id="stopoverStations">
+                <!-- 途经站点将通过JavaScript动态加载 -->
+                <div class="stopover-item">
+                    <div class="station-info">
+                        <div class="station-name">北京南</div>
+                        <div class="station-code">VNP</div>
+                    </div>
+                    <div class="time-info">
+                        <div class="arrive-time">--</div>
+                        <div class="depart-time">08:00</div>
+                        <div class="stop-duration">起点站</div>
+                    </div>
+                </div>
+                <div class="stopover-item">
+                    <div class="station-info">
+                        <div class="station-name">济南西</div>
+                        <div class="station-code">JGK</div>
+                    </div>
+                    <div class="time-info">
+                        <div class="arrive-time">09:45</div>
+                        <div class="depart-time">09:47</div>
+                        <div class="stop-duration">2分钟</div>
+                    </div>
+                </div>
+                <div class="stopover-item">
+                    <div class="station-info">
+                        <div class="station-name">南京南</div>
+                        <div class="station-code">NKH</div>
+                    </div>
+                    <div class="time-info">
+                        <div class="arrive-time">11:15</div>
+                        <div class="depart-time">11:17</div>
+                        <div class="stop-duration">2分钟</div>
+                    </div>
+                </div>
+                <div class="stopover-item">
+                    <div class="station-info">
+                        <div class="station-name">上海虹桥</div>
+                        <div class="station-code">AOH</div>
+                    </div>
+                    <div class="time-info">
+                        <div class="arrive-time">12:30</div>
+                        <div class="depart-time">--</div>
+                        <div class="stop-duration">终点站</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- 操作按钮 -->
         <div class="action-bar">
             <div>
@@ -625,8 +798,19 @@
     </div>
     
     <script>
-        // 简单的交互效果
+        // 页面加载完成后初始化数据
         document.addEventListener('DOMContentLoaded', function() {
+            // 从URL参数获取车票信息
+            const urlParams = new URLSearchParams(window.location.search);
+            const trainId = urlParams.get('trainId');
+            const date = urlParams.get('date');
+            const originStationId = urlParams.get('originStationId');
+            const destinationStationId = urlParams.get('destinationStationId');
+            
+            if (trainId && date && originStationId && destinationStationId) {
+                loadTicketDetail(trainId, date, originStationId, destinationStationId);
+            }
+            
             // 座位类型点击效果
             const seatTypes = document.querySelectorAll('.seat-type');
             seatTypes.forEach(seat => {
@@ -648,37 +832,176 @@
                 e.preventDefault();
                 const selectedSeat = document.querySelector('.seat-type.selected');
                 if (selectedSeat) {
-                    alert('即将跳转到预订页面，选择的座位类型：' + selectedSeat.querySelector('.seat-name').textContent);
+                    const seatType = selectedSeat.getAttribute('data-seat-type');
+                    // 跳转到预订页面，传递必要参数
+                    window.location.href = `预订页面.html?trainId=${trainId}&date=${date}&originStationId=${originStationId}&destinationStationId=${destinationStationId}&seatType=${seatType}`;
                 } else {
                     alert('请先选择座位类型');
                 }
             });
         });
 
-        // 停靠站点下拉菜单功能
-        function toggleStops() {
-            const menu = document.getElementById('stopsMenu');
-            const toggle = document.querySelector('.stops-toggle');
-            
-            if (menu.classList.contains('show')) {
-                menu.classList.remove('show');
-                toggle.classList.remove('active');
-            } else {
-                menu.classList.add('show');
-                toggle.classList.add('active');
+        // 加载车票详情数据
+        async function loadTicketDetail(trainId, date, originStationId, destinationStationId) {
+            try {
+                const response = await fetch('/api/tickets/detail', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        trainId: trainId,
+                        date: date,
+                        originStationId: originStationId,
+                        destinationStationId: destinationStationId
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayTicketDetail(data);
+                } else {
+                    console.error('获取车票详情失败');
+                    // 使用模拟数据
+                    loadMockTicketDetail();
+                }
+            } catch (error) {
+                console.error('网络错误:', error);
+                // 使用模拟数据
+                loadMockTicketDetail();
             }
         }
 
-        // 点击其他地方关闭下拉菜单
-        document.addEventListener('click', function(event) {
-            const dropdown = document.querySelector('.stops-dropdown');
-            if (!dropdown.contains(event.target)) {
-                const menu = document.getElementById('stopsMenu');
-                const toggle = document.querySelector('.stops-toggle');
-                menu.classList.remove('show');
-                toggle.classList.remove('active');
-            }
-        });
+        // 显示车票详情
+        function displayTicketDetail(data) {
+            // 更新列车信息
+            document.getElementById('trainCode').textContent = data.trainInfo.code;
+            document.getElementById('trainType').textContent = data.trainInfo.type;
+            document.getElementById('trainName').textContent = data.trainInfo.name;
+            
+            // 更新站点信息
+            document.getElementById('originStationName').textContent = data.originStation.name;
+            document.getElementById('originStationCode').textContent = data.originStation.code;
+            document.getElementById('destinationStationName').textContent = data.destinationStation.name;
+            document.getElementById('destinationStationCode').textContent = data.destinationStation.code;
+            
+            // 更新时间信息
+            document.getElementById('startTime').textContent = data.startTime;
+            document.getElementById('endTime').textContent = data.endTime;
+            document.getElementById('duration').textContent = data.duration;
+            
+            // 更新座位类型信息
+            displaySeatTypes(data.seatTypes);
+            
+            // 更新途经站点
+            displayStopoverStations(data.stopoverStations);
+        }
+
+        // 显示座位类型
+        function displaySeatTypes(seatTypes) {
+            const container = document.getElementById('seatTypesContainer');
+            container.innerHTML = '';
+            
+            seatTypes.forEach(seat => {
+                const seatElement = document.createElement('div');
+                seatElement.className = `seat-type ${seat.remainingSeats > 0 ? (seat.remainingSeats > 10 ? 'available' : 'limited') : 'unavailable'}`;
+                seatElement.setAttribute('data-seat-type', seat.type);
+                
+                seatElement.innerHTML = `
+                    <div class="seat-name">${seat.name}</div>
+                    <div class="seat-price">¥${seat.price}</div>
+                    <div class="seat-count">余票: <span class="remaining-seats">${seat.remainingSeats}</span></div>
+                    <div class="seat-status ${seat.remainingSeats > 0 ? (seat.remainingSeats > 10 ? 'available' : 'limited') : 'unavailable'}">
+                        ${seat.remainingSeats > 10 ? '充足' : seat.remainingSeats > 0 ? '紧张' : '无票'}
+                    </div>
+                `;
+                
+                container.appendChild(seatElement);
+            });
+            
+            // 重新绑定点击事件
+            bindSeatClickEvents();
+        }
+
+        // 显示途经站点
+        function displayStopoverStations(stations) {
+            const container = document.getElementById('stopoverStations');
+            container.innerHTML = '';
+            
+            stations.forEach((station, index) => {
+                const stationElement = document.createElement('div');
+                stationElement.className = 'stopover-item';
+                
+                const isFirst = index === 0;
+                const isLast = index === stations.length - 1;
+                
+                stationElement.innerHTML = `
+                    <div class="station-info">
+                        <div class="station-name">${station.name}</div>
+                        <div class="station-code">${station.code}</div>
+                    </div>
+                    <div class="time-info">
+                        <div class="arrive-time">${isFirst ? '--' : station.arriveTime}</div>
+                        <div class="depart-time">${isLast ? '--' : station.departTime}</div>
+                        <div class="stop-duration">${isFirst ? '起点站' : isLast ? '终点站' : station.stopDuration}</div>
+                    </div>
+                `;
+                
+                container.appendChild(stationElement);
+            });
+        }
+
+        // 绑定座位点击事件
+        function bindSeatClickEvents() {
+            const seatTypes = document.querySelectorAll('.seat-type');
+            seatTypes.forEach(seat => {
+                seat.addEventListener('click', function() {
+                    if (!this.classList.contains('unavailable')) {
+                        // 移除其他选中状态
+                        seatTypes.forEach(s => s.classList.remove('selected'));
+                        // 添加选中状态
+                        this.classList.add('selected');
+                        this.style.borderColor = '#1890ff';
+                        this.style.backgroundColor = '#e6f7ff';
+                    }
+                });
+            });
+        }
+
+        // 模拟数据加载（用于演示）
+        function loadMockTicketDetail() {
+            const mockData = {
+                trainInfo: {
+                    code: 'G101',
+                    type: '高速动车组',
+                    name: '复兴号'
+                },
+                originStation: {
+                    name: '北京南',
+                    code: 'VNP'
+                },
+                destinationStation: {
+                    name: '上海虹桥',
+                    code: 'AOH'
+                },
+                startTime: '08:00',
+                endTime: '12:30',
+                duration: '4小时30分',
+                seatTypes: [
+                    { type: 0, name: '商务座', price: 1748, remainingSeats: 10 },
+                    { type: 1, name: '一等座', price: 933, remainingSeats: 45 },
+                    { type: 2, name: '二等座', price: 553, remainingSeats: 5 }
+                ],
+                stopoverStations: [
+                    { name: '北京南', code: 'VNP', arriveTime: null, departTime: '08:00', stopDuration: null },
+                    { name: '济南西', code: 'JGK', arriveTime: '09:45', departTime: '09:47', stopDuration: '2分钟' },
+                    { name: '南京南', code: 'NKH', arriveTime: '11:15', departTime: '11:17', stopDuration: '2分钟' },
+                    { name: '上海虹桥', code: 'AOH', arriveTime: '12:30', departTime: null, stopDuration: null }
+                ]
+            };
+            
+            displayTicketDetail(mockData);
+        }
     </script>
 </body>
 </html>

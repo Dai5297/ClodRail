@@ -25,6 +25,12 @@
 
 **请求参数**:
 
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| oldPhone | string | 是 | 当前绑定的手机号 |
+| newPhone | string | 是 | 新的手机号码 |
+| code | string | 是 | 手机验证码 |
+
 ```json
 {
   "username": "15160255297",
@@ -89,7 +95,38 @@
 }
 ```
 
-### 1.4 用户注册
+### 1.4 获取手机验证码
+
+**接口描述**: 获取手机验证码（用于注册、登录、修改手机号等场景）
+
+**请求信息**:
+
+- **URL**: `/account/captcha/phone`
+- **Method**: `GET`
+
+**请求参数**:
+
+| 参数名 | 类型   | 必填 | 说明     |
+| ------ | ------ | ---- | -------- |
+| phone  | String | 是   | 手机号码 |
+
+**请求示例**:
+
+```
+GET /account/captcha/phone?phone=13800138000
+```
+
+**响应示例**:
+
+```json
+{
+  "code": 200,
+  "message": "验证码发送成功",
+  "data": null
+}
+```
+
+### 1.5 用户注册
 
 **接口描述**: 用户注册新账号
 
@@ -129,7 +166,7 @@
 }
 ```
 
-### 1.5 重置密码
+### 1.6 重置密码
 
 **接口描述**: 用户重置密码
 
@@ -247,9 +284,133 @@
 
 ---
 
-## 3. 订单管理
+## 3. 账号安全管理
 
-### 3.1 获取订单列表
+### 3.1 更换手机号
+
+**接口描述**: 用户更换绑定的手机号码
+
+**请求信息**:
+
+- **URL**: `/account/phone/change`
+- **Method**: `POST`
+- **Headers**: `Authorization: Bearer {token}`
+
+**请求参数**:
+
+```json
+{
+  "oldPhone": "15160255297",
+  "newPhone": "13800138001",
+  "code": "123456"
+}
+```
+
+**响应示例**:
+
+```json
+{
+  "code": 200,
+  "message": "手机号更换成功",
+  "data": null
+}
+```
+
+### 3.2 更换邮箱
+
+**接口描述**: 用户更换绑定的邮箱地址
+
+**请求信息**:
+
+- **URL**: `/account/email/change`
+- **Method**: `POST`
+- **Headers**: `Authorization: Bearer {token}`
+
+**请求参数**:
+
+```json
+{
+  "newEmail": "newemail@example.com",
+  "code": "123456"
+}
+```
+
+**响应示例**:
+
+```json
+{
+  "code": 200,
+  "message": "邮箱更换成功",
+  "data": null
+}
+```
+
+### 3.3 发送邮箱验证码
+
+**接口描述**: 发送邮箱验证码（用于邮箱变更）
+
+**请求信息**:
+
+- **URL**: `/account/email/change/code`
+- **Method**: `POST`
+- **Headers**: `Authorization: Bearer {token}`
+
+**请求参数**:
+
+```json
+{
+  "email": "newemail@example.com"
+}
+```
+
+**响应示例**:
+
+```json
+{
+  "code": 200,
+  "message": "验证码发送成功",
+  "data": null
+}
+```
+
+### 3.4 实名认证
+
+**接口描述**: 用户提交实名认证信息
+
+**请求信息**:
+
+- **URL**: `/account/identity/verify`
+- **Method**: `POST`
+- **Headers**: `Authorization: Bearer {token}`
+
+**请求参数**:
+
+```json
+{
+  "realName": "张三",
+  "idCard": "110101199001011234"
+}
+```
+
+**响应示例**:
+
+```json
+{
+  "code": 200,
+  "message": "实名认证提交成功",
+  "data": {
+    "verifyStatus": 1,
+    "realName": "张三",
+    "idCard": "110101199001011234"
+  }
+}
+```
+
+---
+
+## 4. 订单管理
+
+### 4.1 获取订单列表
 
 **接口地址**: `GET /order/list`
 
@@ -288,7 +449,7 @@
 }
 ```
 
-### 3.2 获取订单详情
+### 4.2 获取订单详情
 
 **接口地址**: `GET /order/{orderId}`
 
@@ -328,9 +489,9 @@
 
 ---
 
-## 4. 常用联系人管理
+## 5. 常用联系人管理
 
-### 4.1 获取联系人列表
+### 5.1 获取联系人列表
 
 **接口地址**: `GET /contact/page`
 
@@ -393,7 +554,7 @@ GET /contact/page?page=1&size=10&name=张&passengerType=1&status=1
 }
 ```
 
-### 4.2 添加联系人
+### 5.2 添加联系人
 
 **接口地址**: `POST /contact/add`
 
@@ -434,7 +595,7 @@ GET /contact/page?page=1&size=10&name=张&passengerType=1&status=1
 }
 ```
 
-### 4.3 更新联系人
+### 5.3 更新联系人
 
 **接口地址**: `PUT /contact/{contactId}`
 
@@ -479,7 +640,7 @@ GET /contact/page?page=1&size=10&name=张&passengerType=1&status=1
 }
 ```
 
-### 4.4 删除联系人
+### 5.4 删除联系人
 
 **接口地址**: `DELETE /contact/{contactId}`
 
@@ -499,9 +660,9 @@ GET /contact/page?page=1&size=10&name=张&passengerType=1&status=1
 
 ---
 
-## 5. 积分管理
+## 6. 积分管理
 
-### 5.1 获取积分信息
+### 6.1 获取积分信息
 
 **接口地址**: `GET /points/info`
 
@@ -523,7 +684,7 @@ GET /contact/page?page=1&size=10&name=张&passengerType=1&status=1
 }
 ```
 
-### 5.2 获取积分明细
+### 6.2 获取积分明细
 
 **接口地址**: `GET /points/history`
 
@@ -567,9 +728,9 @@ GET /contact/page?page=1&size=10&name=张&passengerType=1&status=1
 
 ---
 
-## 6. 数据字典
+## 7. 数据字典
 
-### 6.1 证件类型 (idType)
+### 7.1 证件类型 (idType)
 
 - `0`: 身份证
 - `1`: 护照
@@ -578,35 +739,35 @@ GET /contact/page?page=1&size=10&name=张&passengerType=1&status=1
 - `4`: 台胞证
 - `5`: 港澳通行证
 
-### 6.2 乘客类型 (passengerType)
+### 7.2 乘客类型 (passengerType)
 
 - `1`: 成人
 - `2`: 儿童
 - `3`: 学生
 - `4`: 老人
 
-### 6.3 联系人状态 (status)
+### 7.3 联系人状态 (status)
 
 - `0`: 禁用
 - `1`: 启用
 
-### 6.4 默认联系人标识 (isDefault)
+### 7.4 默认联系人标识 (isDefault)
 
 - `0`: 非默认联系人
 - `1`: 默认联系人
 
-### 6.5 删除标识 (isDeleted)
+### 7.5 删除标识 (isDeleted)
 
 - `0`: 未删除
 - `1`: 已删除
 
-### 6.6 验证状态 (verifyStatus)
+### 7.6 验证状态 (verifyStatus)
 
 - `0`: 未验证
 - `1`: 已验证
 - `2`: 验证失败
 
-### 6.7 订单状态
+### 7.7 订单状态
 
 - `待支付`: 订单已创建，等待支付
 - `已支付`: 订单已支付成功
@@ -617,7 +778,7 @@ GET /contact/page?page=1&size=10&name=张&passengerType=1&status=1
 
 ---
 
-## 7. 错误码说明
+## 8. 错误码说明
 
 | 错误码 | 说明             |
 | ------ | ---------------- |
@@ -637,7 +798,7 @@ GET /contact/page?page=1&size=10&name=张&passengerType=1&status=1
 
 ---
 
-## 8. 注意事项
+## 9. 注意事项
 
 1. 所有需要认证的接口都需要在请求头中携带有效的 Token
 2. 时间格式统一使用 `yyyy-MM-dd HH:mm:ss`
@@ -648,7 +809,7 @@ GET /contact/page?page=1&size=10&name=张&passengerType=1&status=1
 
 ---
 
-## 9. 更新日志
+## 10. 更新日志
 
 | 版本 | 日期       | 更新内容                                                                                                      |
 | ---- | ---------- | ------------------------------------------------------------------------------------------------------------- |

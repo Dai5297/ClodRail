@@ -223,8 +223,8 @@ const handleLogin = async () => {
     
     // 调用登录API
     const response = await login(loginData)
-    
-    if (response.success) {
+    console.log(response)
+    if (response.code === 200) {
       // 登录成功
       ErrorHandler.showSuccess('登录成功')
       
@@ -257,6 +257,7 @@ const handleLogin = async () => {
 
 // 处理登录失败
 const handleLoginFailure = (message = '用户名或密码错误') => {
+  ElMessage.error(message)
   // 增加失败计数
   loginFailCount.value++
   localStorage.setItem('loginFailCount', loginFailCount.value.toString())

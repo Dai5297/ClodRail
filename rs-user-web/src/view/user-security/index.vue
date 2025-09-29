@@ -29,10 +29,10 @@
             <el-icon class="title-icon"><Phone /></el-icon>
             手机号码
           </div>
-          <div class="setting-desc">已绑定手机号：138****8888</div>
+          <div class="setting-desc">已绑定手机号：{{ userInfo.phone || '未绑定' }}</div>
         </div>
         <div class="setting-action">
-          <el-button>更换手机号</el-button>
+          <el-button @click="showPhoneChangeDialog">更换手机号</el-button>
         </div>
       </div>
 
@@ -43,29 +43,14 @@
             <el-icon class="title-icon"><Message /></el-icon>
             邮箱地址
           </div>
-          <div class="setting-desc">已绑定邮箱：user@example.com</div>
+          <div class="setting-desc">已绑定邮箱：{{ userInfo.email || '未绑定' }}</div>
         </div>
         <div class="setting-action">
-          <el-button>更换邮箱</el-button>
+          <el-button @click="showEmailChangeDialog">更换邮箱</el-button>
         </div>
       </div>
 
-      <!-- 实名认证 -->
-      <div class="setting-item">
-        <div class="setting-info">
-          <div class="setting-title">
-            <el-icon class="title-icon"><UserFilled /></el-icon>
-            实名认证
-          </div>
-          <div class="setting-desc">
-            <el-tag type="success" size="small">已认证</el-tag>
-            <span class="auth-name">张**</span>
-          </div>
-        </div>
-        <div class="setting-action">
-          <el-button disabled>已认证</el-button>
-        </div>
-      </div>
+
     </div>
 
     <!-- 安全提示 -->
@@ -145,14 +130,124 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 更换手机号弹窗 -->
+    <el-dialog
+      v-model="phoneChangeDialogVisible"
+      title="更换手机号"
+      width="500px"
+      :before-close="handleClosePhoneDialog"
+    >
+      <el-form
+        ref="phoneFormRef"
+        :model="phoneForm"
+        :rules="phoneRules"
+        label-width="120px"
+      >
+        <el-form-item label="当前手机号">
+          <el-input :value="userInfo.phone || '未绑定'" disabled />
+        </el-form-item>
+        <el-form-item label="新手机号" prop="newPhone">
+          <el-input
+            v-model="phoneForm.newPhone"
+            placeholder="请输入新手机号"
+            maxlength="11"
+          />
+        </el-form-item>
+        <el-form-item label="验证码" prop="code">
+          <div class="code-input-group">
+            <el-input
+              v-model="phoneForm.code"
+              placeholder="请输入验证码"
+              maxlength="6"
+            />
+            <el-button
+              :disabled="phoneCodeCountdown > 0"
+              @click="sendPhoneCode"
+              :loading="sendingPhoneCode"
+            >
+              {{ phoneCodeCountdown > 0 ? `${phoneCodeCountdown}s后重发` : '发送验证码' }}
+            </el-button>
+          </div>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="handleClosePhoneDialog">取消</el-button>
+          <el-button type="primary" @click="handleSubmitPhoneChange" :loading="submittingPhone">
+            确认更换
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- 更换邮箱弹窗 -->
+    <el-dialog
+      v-model="emailChangeDialogVisible"
+      title="更换邮箱"
+      width="500px"
+      :before-close="handleCloseEmailDialog"
+    >
+      <el-form
+        ref="emailFormRef"
+        :model="emailForm"
+        :rules="emailRules"
+        label-width="120px"
+      >
+        <el-form-item label="当前邮箱">
+          <el-input :value="userInfo.email || '未绑定'" disabled />
+        </el-form-item>
+        <el-form-item label="新邮箱" prop="newEmail">
+          <el-input
+            v-model="emailForm.newEmail"
+            placeholder="请输入新邮箱地址"
+          />
+        </el-form-item>
+        <el-form-item label="验证码" prop="code">
+          <div class="code-input-group">
+            <el-input
+              v-model="emailForm.code"
+              placeholder="请输入验证码"
+              maxlength="6"
+            />
+            <el-button
+              :disabled="emailCodeCountdown > 0"
+              @click="sendEmailCode"
+              :loading="sendingEmailCode"
+            >
+              {{ emailCodeCountdown > 0 ? `${emailCodeCountdown}s后重发` : '发送验证码' }}
+            </el-button>
+          </div>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="handleCloseEmailDialog">取消</el-button>
+          <el-button type="primary" @click="handleSubmitEmailChange" :loading="submittingEmail">
+            确认更换
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+
   </div>
 </template>
 
 <script>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Lock, Phone, Message, UserFilled, InfoFilled } from '@element-plus/icons-vue'
-import { resetPassword } from '@/api/auth.js'
+import { Lock, Phone, Message, InfoFilled } from '@element-plus/icons-vue'
+import { resetPassword, getPhoneCode } from '@/api/auth.js'
+import { 
+  getUserInfo
+} from '@/api/user.js'
+
+import {
+  changePhone,
+  sendEmailChangeCode,
+  changeEmail
+} from '@/api/auth.js'
 
 export default {
   name: 'UserSecurity',
@@ -160,19 +255,47 @@ export default {
     Lock,
     Phone,
     Message,
-    UserFilled,
     InfoFilled
   },
   setup() {
     const submitting = ref(false)
     const passwordDialogVisible = ref(false)
     const passwordFormRef = ref(null)
+    const userInfo = ref({})
+
+    // 更换手机号相关
+    const phoneChangeDialogVisible = ref(false)
+    const phoneFormRef = ref(null)
+    const submittingPhone = ref(false)
+    const sendingPhoneCode = ref(false)
+    const phoneCodeCountdown = ref(0)
+
+    // 更换邮箱相关
+    const emailChangeDialogVisible = ref(false)
+    const emailFormRef = ref(null)
+    const submittingEmail = ref(false)
+    const sendingEmailCode = ref(false)
+    const emailCodeCountdown = ref(0)
+
+
 
     const passwordForm = reactive({
       currentPassword: '',
       newPassword: '',
       confirmPassword: ''
     })
+
+    const phoneForm = reactive({
+      newPhone: '',
+      code: ''
+    })
+
+    const emailForm = reactive({
+      newEmail: '',
+      code: ''
+    })
+
+
 
     const validateCurrentPassword = (rule, value, callback) => {
       if (!value) {
@@ -221,6 +344,32 @@ export default {
         { validator: validateConfirmPassword, trigger: 'blur' }
       ]
     }
+
+    // 手机号验证规则
+    const phoneRules = {
+      newPhone: [
+        { required: true, message: '请输入手机号', trigger: 'blur' },
+        { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
+      ],
+      code: [
+        { required: true, message: '请输入验证码', trigger: 'blur' },
+        { pattern: /^\d{6}$/, message: '验证码为6位数字', trigger: 'blur' }
+      ]
+    }
+
+    // 邮箱验证规则
+    const emailRules = {
+      newEmail: [
+        { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+        { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+      ],
+      code: [
+        { required: true, message: '请输入验证码', trigger: 'blur' },
+        { pattern: /^\d{6}$/, message: '验证码为6位数字', trigger: 'blur' }
+      ]
+    }
+
+
 
     // 密码强度计算
     const passwordStrength = computed(() => {
@@ -295,20 +444,218 @@ export default {
 
         submitting.value = true
         
-        await resetPassword({
-          currentPassword: passwordForm.currentPassword,
+        const response = await resetPassword({
+          oldPassword: passwordForm.currentPassword,
           newPassword: passwordForm.newPassword
-        })
-        
-        ElMessage.success('密码修改成功')
-        passwordDialogVisible.value = false
-        resetPasswordForm()
+        });
+        if (response.code === 200) {
+          ElMessage.success('密码修改成功')
+          passwordDialogVisible.value = false
+          resetPasswordForm()
+        } else {
+          ElMessage.error(response.message || '密码修改失败')
+        }
       } catch (error) {
         ElMessage.error('密码修改失败，请检查当前密码是否正确')
       } finally {
         submitting.value = false
       }
     }
+
+    // 获取用户信息
+    const fetchUserInfo = async () => {
+      try {
+        const response = await getUserInfo()
+        if (response.code === 200) {
+          userInfo.value = response.data
+        } else {
+          console.error('获取用户信息失败:', response.message)
+        }
+      } catch (error) {
+        console.error('获取用户信息失败:', error)
+      }
+    }
+
+    // 显示更换手机号弹窗
+    const showPhoneChangeDialog = () => {
+      phoneChangeDialogVisible.value = true
+    }
+
+    // 关闭更换手机号弹窗
+    const handleClosePhoneDialog = () => {
+      phoneChangeDialogVisible.value = false
+      resetPhoneForm()
+    }
+
+    // 重置手机号表单
+    const resetPhoneForm = () => {
+      Object.assign(phoneForm, {
+        newPhone: '',
+        code: ''
+      })
+      if (phoneFormRef.value) {
+        phoneFormRef.value.clearValidate()
+      }
+    }
+
+    // 发送手机验证码
+    const sendPhoneCode = async () => {
+      if (!phoneForm.newPhone) {
+        ElMessage.error('请先输入新手机号')
+        return
+      }
+      if (!/^1[3-9]\d{9}$/.test(phoneForm.newPhone)) {
+        ElMessage.error('请输入正确的手机号')
+        return
+      }
+
+      try {
+        sendingPhoneCode.value = true
+        const response = await getPhoneCode({ phone: phoneForm.newPhone })
+        if (response.code === 200) {
+          ElMessage.success('验证码已发送')
+          startPhoneCountdown()
+        } else {
+          ElMessage.error(response.message || '发送验证码失败')
+        }
+      } catch (error) {
+        ElMessage.error('发送验证码失败')
+      } finally {
+        sendingPhoneCode.value = false
+      }
+    }
+
+    // 开始手机验证码倒计时
+    const startPhoneCountdown = () => {
+      phoneCodeCountdown.value = 60
+      const timer = setInterval(() => {
+        phoneCodeCountdown.value--
+        if (phoneCodeCountdown.value <= 0) {
+          clearInterval(timer)
+        }
+      }, 1000)
+    }
+
+    // 提交更换手机号
+    const handleSubmitPhoneChange = async () => {
+      try {
+        const valid = await phoneFormRef.value.validate()
+        if (!valid) return
+
+        submittingPhone.value = true
+        const response = await changePhone({
+          newPhone: phoneForm.newPhone,
+          code: phoneForm.code
+        })
+
+        if (response.code === 200) {
+          ElMessage.success('手机号更换成功')
+          phoneChangeDialogVisible.value = false
+          resetPhoneForm()
+          await fetchUserInfo()
+        } else {
+          ElMessage.error(response.message || '手机号更换失败')
+        }
+      } catch (error) {
+        ElMessage.error('手机号更换失败')
+      } finally {
+        submittingPhone.value = false
+      }
+    }
+
+    // 显示更换邮箱弹窗
+    const showEmailChangeDialog = () => {
+      emailChangeDialogVisible.value = true
+    }
+
+    // 关闭更换邮箱弹窗
+    const handleCloseEmailDialog = () => {
+      emailChangeDialogVisible.value = false
+      resetEmailForm()
+    }
+
+    // 重置邮箱表单
+    const resetEmailForm = () => {
+      Object.assign(emailForm, {
+        newEmail: '',
+        code: ''
+      })
+      if (emailFormRef.value) {
+        emailFormRef.value.clearValidate()
+      }
+    }
+
+    // 发送邮箱验证码
+    const sendEmailCode = async () => {
+      if (!emailForm.newEmail) {
+        ElMessage.error('请先输入新邮箱地址')
+        return
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailForm.newEmail)) {
+        ElMessage.error('请输入正确的邮箱地址')
+        return
+      }
+
+      try {
+        sendingEmailCode.value = true
+        const response = await sendEmailChangeCode({ email: emailForm.newEmail })
+        if (response.code === 200) {
+          ElMessage.success('验证码已发送')
+          startEmailCountdown()
+        } else {
+          ElMessage.error(response.message || '发送验证码失败')
+        }
+      } catch (error) {
+        ElMessage.error('发送验证码失败')
+      } finally {
+        sendingEmailCode.value = false
+      }
+    }
+
+    // 开始邮箱验证码倒计时
+    const startEmailCountdown = () => {
+      emailCodeCountdown.value = 60
+      const timer = setInterval(() => {
+        emailCodeCountdown.value--
+        if (emailCodeCountdown.value <= 0) {
+          clearInterval(timer)
+        }
+      }, 1000)
+    }
+
+    // 提交更换邮箱
+    const handleSubmitEmailChange = async () => {
+      try {
+        const valid = await emailFormRef.value.validate()
+        if (!valid) return
+
+        submittingEmail.value = true
+        const response = await changeEmail({
+          newEmail: emailForm.newEmail,
+          code: emailForm.code
+        })
+
+        if (response.code === 200) {
+          ElMessage.success('邮箱更换成功')
+          emailChangeDialogVisible.value = false
+          resetEmailForm()
+          await fetchUserInfo()
+        } else {
+          ElMessage.error(response.message || '邮箱更换失败')
+        }
+      } catch (error) {
+        ElMessage.error('邮箱更换失败')
+      } finally {
+        submittingEmail.value = false
+      }
+    }
+
+
+
+    // 页面初始化
+    onMounted(() => {
+      fetchUserInfo()
+    })
 
     return {
       submitting,
@@ -321,7 +668,32 @@ export default {
       passwordStrengthText,
       showPasswordDialog,
       handleClosePasswordDialog,
-      handleSubmitPassword
+      handleSubmitPassword,
+      userInfo,
+      // 手机号相关
+      phoneChangeDialogVisible,
+      phoneFormRef,
+      phoneForm,
+      phoneRules,
+      submittingPhone,
+      sendingPhoneCode,
+      phoneCodeCountdown,
+      showPhoneChangeDialog,
+      handleClosePhoneDialog,
+      sendPhoneCode,
+      handleSubmitPhoneChange,
+      // 邮箱相关
+      emailChangeDialogVisible,
+      emailFormRef,
+      emailForm,
+      emailRules,
+      submittingEmail,
+      sendingEmailCode,
+      emailCodeCountdown,
+      showEmailChangeDialog,
+      handleCloseEmailDialog,
+      sendEmailCode,
+      handleSubmitEmailChange
     }
   }
 }
@@ -481,24 +853,17 @@ export default {
   background: #52c41a;
 }
 
-.strength-text {
-  font-weight: 500;
+.code-input-group {
+  display: flex;
+  gap: 12px;
 }
 
-.strength-text.weak {
-  color: #ff4d4f;
+.code-input-group .el-input {
+  flex: 1;
 }
 
-.strength-text.medium {
-  color: #fa8c16;
-}
-
-.strength-text.strong {
-  color: #1890FF;
-}
-
-.strength-text.very-strong {
-  color: #52c41a;
+.code-input-group .el-button {
+  white-space: nowrap;
 }
 
 .dialog-footer {

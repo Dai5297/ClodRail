@@ -259,13 +259,12 @@ const sendVerificationCode = async () => {
       ElMessage.success('验证码已发送到您的手机')
     } else {
       ElMessage.error(response.message || '获取验证码失败')
+      return
     }
   } catch (error) {
     ElMessage.error('获取验证码失败，请稍后重试')
+    return
   }
-
-  // 模拟发送验证码（实际项目中应该调用API）
-  ElMessage.success('验证码已发送到您的手机')
   
   // 开始倒计时
   countdown.value = 60
@@ -298,16 +297,13 @@ const handleRegister = async () => {
       phone: registerForm.phone,
       email: registerForm.email,
       idCard: registerForm.idCard,
-      verificationCode: registerForm.verificationCode
+      code: registerForm.verificationCode
     }
     
     // 调用注册API
     const response = await register(registerData)
     
-    if (response.success) {
-      // 注册成功
-      ErrorHandler.showSuccess('注册成功，请登录')
-      
+    if (response.code === 200) {
       // 触发注册成功事件
       emit('register-success', {
         username: registerForm.username,

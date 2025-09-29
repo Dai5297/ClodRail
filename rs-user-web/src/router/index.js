@@ -16,20 +16,15 @@ const router = createRouter({
               {
                   path: 'ticket',
                   name: 'ticket',
-                  component: () => import('@/view/ticket-payment/index.vue'),
+                  component: () => import('@/view/ticket/index.vue'),
                   children: [
                       {
-                          path: '/search',
-                          name: 'ticket-search',
-                          component: () => import('@/view/ticket-search/index.vue')
-                      },
-                      {
-                          path: '/detail',
+                          path: 'detail',
                           name: 'ticket-detail',
                           component: () => import('@/view/ticket-detail/index.vue')
                       },
                       {
-                          path: '/payment',
+                          path: 'payment',
                           name: 'ticket-payment',
                           component: () => import('@/view/ticket-payment/index.vue')
                       }

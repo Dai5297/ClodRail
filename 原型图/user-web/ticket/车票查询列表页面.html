@@ -79,6 +79,7 @@
         .form-group {
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .form-group label {
@@ -88,16 +89,84 @@
         }
 
         .form-group input, .form-group select {
-            padding: 12px;
+            width: 100%;
+            padding: 12px 16px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
         }
 
         .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: #2a5298;
+        }
+
+        /* 车站选择框样式 */
+        .station-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        /* 智能搜索提示 */
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .station-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .station-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .station-code {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .hot-tag {
+            background: #ff4d4f;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
         }
 
         .search-buttons {
@@ -449,11 +518,17 @@
             <form class="search-form">
                 <div class="form-group">
                     <label for="origin">出发地</label>
-                    <input type="text" id="origin" placeholder="请输入出发城市" value="北京">
+                    <select id="origin" class="station-select">
+                        <option value="">请选择出发站</option>
+                        <!-- 车站选项将通过API动态加载 -->
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="destination">目的地</label>
-                    <input type="text" id="destination" placeholder="请输入到达城市" value="上海">
+                    <select id="destination" class="station-select">
+                        <option value="">请选择到达站</option>
+                        <!-- 车站选项将通过API动态加载 -->
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="departure-date">出发日期</label>
@@ -658,25 +733,135 @@
     </div>
 
     <script>
+        // 页面加载时初始化车站数据
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStations();
+        });
+
+        // 从后端加载车站数据
+        async function loadStations() {
+            try {
+                // 这里调用后端API获取车站列表
+                const response = await fetch('/api/stations');
+                const stations = await response.json();
+                
+                populateStationSelect('origin', stations);
+                populateStationSelect('destination', stations);
+            } catch (error) {
+                console.error('加载车站数据失败:', error);
+                // 如果API调用失败，使用模拟数据
+                loadMockStations();
+            }
+        }
+
+        // 填充车站选择框
+        function populateStationSelect(selectId, stations) {
+            const select = document.getElementById(selectId);
+            
+            // 清空现有选项（保留默认选项）
+            while (select.children.length > 1) {
+                select.removeChild(select.lastChild);
+            }
+            
+            // 添加车站选项
+            stations.forEach(station => {
+                const option = document.createElement('option');
+                option.value = station.id;
+                option.textContent = `${station.name} (${station.code})`;
+                option.dataset.stationCode = station.code;
+                option.dataset.stationName = station.name;
+                option.dataset.city = station.city;
+                select.appendChild(option);
+            });
+        }
+
+        // 模拟车站数据（用于演示）
+        function loadMockStations() {
+            const mockStations = [
+                { id: 1, name: '北京南站', code: 'VNP', city: '北京', isHot: 1 },
+                { id: 2, name: '北京西站', code: 'BXP', city: '北京', isHot: 1 },
+                { id: 3, name: '北京站', code: 'BJP', city: '北京', isHot: 0 },
+                { id: 4, name: '上海虹桥站', code: 'AOH', city: '上海', isHot: 1 },
+                { id: 5, name: '上海站', code: 'SHH', city: '上海', isHot: 1 },
+                { id: 6, name: '上海南站', code: 'SNH', city: '上海', isHot: 0 },
+                { id: 7, name: '广州南站', code: 'IZQ', city: '广州', isHot: 1 },
+                { id: 8, name: '深圳北站', code: 'IOQ', city: '深圳', isHot: 1 },
+                { id: 9, name: '杭州东站', code: 'HGH', city: '杭州', isHot: 1 },
+                { id: 10, name: '南京南站', code: 'NKH', city: '南京', isHot: 1 }
+            ];
+            
+            populateStationSelect('origin', mockStations);
+            populateStationSelect('destination', mockStations);
+        }
+
         // 搜索车票
         function searchTickets() {
-            const origin = document.getElementById('origin').value;
-            const destination = document.getElementById('destination').value;
+            const originSelect = document.getElementById('origin');
+            const destinationSelect = document.getElementById('destination');
             const departureDate = document.getElementById('departure-date').value;
             
-            if (!origin || !destination || !departureDate) {
+            const originId = originSelect.value;
+            const destinationId = destinationSelect.value;
+            const originName = originSelect.options[originSelect.selectedIndex]?.dataset.stationName;
+            const destinationName = destinationSelect.options[destinationSelect.selectedIndex]?.dataset.stationName;
+            
+            if (!originId || !destinationId || !departureDate) {
                 alert('请填写完整的搜索信息');
                 return;
             }
             
-            alert(`正在搜索 ${origin} → ${destination} 的车票...`);
-            // 这里可以添加实际的搜索逻辑
+            if (originId === destinationId) {
+                alert('出发地和目的地不能相同');
+                return;
+            }
+            
+            // 构建搜索参数
+            const searchParams = {
+                originStationId: originId,
+                destinationStationId: destinationId,
+                departureDate: departureDate,
+                returnDate: document.getElementById('return-date').value
+            };
+            
+            console.log('搜索参数:', searchParams);
+            alert(`正在搜索 ${originName} → ${destinationName} 的车票...`);
+            
+            // 这里可以调用后端搜索API
+            searchTicketsFromAPI(searchParams);
+        }
+
+        // 调用后端搜索车票API
+        async function searchTicketsFromAPI(params) {
+            try {
+                const response = await fetch('/api/tickets/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(params)
+                });
+                
+                const result = await response.json();
+                console.log('搜索结果:', result);
+                
+                // 更新页面显示搜索结果
+                displaySearchResults(result);
+            } catch (error) {
+                console.error('搜索车票失败:', error);
+                alert('搜索失败，请稍后重试');
+            }
+        }
+
+        // 显示搜索结果
+        function displaySearchResults(results) {
+            // 这里可以更新页面的车票列表显示
+            console.log('显示搜索结果:', results);
         }
 
         // 重置表单
         function resetForm() {
-            document.getElementById('origin').value = '';
-            document.getElementById('destination').value = '';
+            document.getElementById('origin').selectedIndex = 0;
+            document.getElementById('destination').selectedIndex = 0;
             document.getElementById('departure-date').value = '';
             document.getElementById('return-date').value = '';
         }

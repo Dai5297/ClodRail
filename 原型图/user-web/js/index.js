@@ -215,8 +215,28 @@ function updateNavForLoggedInUser(userInfo) {
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function() {
-                Utils.storage.remove('userInfo');
-                location.reload();
+                if (confirm('确定要退出登录吗？')) {
+                    try {
+                        // 清除所有用户相关数据
+                        Utils.storage.remove('userInfo');
+                        Utils.storage.remove('currentUser');
+                        Utils.storage.remove('userToken');
+                        Utils.storage.remove('userPoints');
+                        Utils.storage.remove('userOrders');
+                        Utils.storage.remove('userPassengers');
+                        Utils.storage.remove('userCoupons');
+                        
+                        Utils.showMessage('已退出登录', 'success');
+                        
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } catch (error) {
+                        console.error('退出登录时发生错误:', error);
+                        // 即使出错也要重新加载页面
+                        location.reload();
+                    }
+                }
             });
         }
     }

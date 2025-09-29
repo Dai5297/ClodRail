@@ -22,9 +22,7 @@ request.interceptors.response.use((response) => {
     if (code === 401) {
       localStorage.removeItem('token')
       localStorage.removeItem('userInfo')
-      router.push('/login').then(() => {
-        ElMessage.error('登录过期，请重新登录')
-      })
+      router.push('/login')
       return Promise.reject(new Error('登录过期'))
     }
     

@@ -15,7 +15,7 @@ class Utils {
             const value = localStorage.getItem(key);
             return value ? JSON.parse(value) : null;
         } catch (error) {
-            console.error('获取本地存储失败:', error);
+            // 静默处理错误，避免在退出登录时显示无关错误信息
             return null;
         }
     }
@@ -24,7 +24,7 @@ class Utils {
         try {
             localStorage.removeItem(key);
         } catch (error) {
-            console.error('删除本地存储失败:', error);
+            // 静默处理错误，避免在退出登录时显示无关错误信息
         }
     }
 

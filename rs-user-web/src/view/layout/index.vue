@@ -37,12 +37,18 @@ const goToUserCenter = () => {
 
 // 退出登录的方法 handle
 const handleLogout = async () => {
-  const response = await logout()
-  if (response.code === 200) {
+  try {
+    // 直接清除本地存储并跳转，不依赖API响应
+    await logout()
+    localStorage.removeItem('token')
+    localStorage.removeItem('userInfo')
     ElMessage.success('退出登录成功')
     router.push('/login')
-  } else {
-    ElMessage.error(response.message || '退出登录失败')
+  } catch (error) {
+    // 即使API调用失败，也要清除本地存储并跳转
+    localStorage.removeItem('token')
+    localStorage.removeItem('userInfo')
+    router.push('/login')
   }
 }
 

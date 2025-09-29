@@ -25,7 +25,7 @@ const ProfileApp = {
             {
                 section: '账户管理',
                 items: [
-                    { id: 'security', icon: 'shield', text: '账户安全', badge: null, value: null },
+                    { id: 'security', icon: 'ChromeFilled', text: '账户安全', badge: null, value: null },
                     { id: 'payment', icon: 'credit-card', text: '支付管理', badge: null, value: null },
                     { id: 'notifications', icon: 'bell', text: '消息通知', badge: '5', value: null },
                     { id: 'settings', icon: 'settings', text: '设置', badge: null, value: null }
