@@ -13,8 +13,8 @@ import request from '@/utils/request'
 export const searchTickets = (params) => {
   return request({
     url: '/tickets/search',
-    method: 'post',
-    data: {
+    method: 'get',
+    params: {
       originStationId: params.originStationId,
       destinationStationId: params.destinationStationId,
       departureDate: params.date,
@@ -26,18 +26,14 @@ export const searchTickets = (params) => {
 
 /**
  * 获取车票详情
- * @param {Object} params 查询参数
- * @param {number} params.trainId 列车ID
- * @param {string} params.date 出发日期
- * @param {number} params.originStationId 出发站ID
- * @param {number} params.destinationStationId 到达站ID
+ * @param {number} ticketId 车票ID
  * @returns {Promise} 车票详情数据
  */
-export const getTicketDetail = (params) => {
+export const getTicketDetail = (ticketId) => {
   return request({
     url: '/tickets/detail',
-    method: 'post',
-    data: params
+    method: 'get',
+    params: { ticketId }
   })
 }
 
@@ -64,7 +60,7 @@ export const getHotRoutes = () => {
 export const getAvailableSeats = (params) => {
   return request({
     url: '/seats/available',
-    method: 'post',
-    data: params
+    method: 'get',
+    params: params
   })
 }

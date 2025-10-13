@@ -53,14 +53,20 @@
                   </div>
                   <div class="route-info">
                     <div class="route-item">
-                      <span class="time">{{ orderInfo.startTime }}</span>
+                      <div class="time-display">
+                        <span class="time">{{ formatTime(orderInfo.startTime) }}</span>
+                        <span class="date">{{ formatDate(orderInfo.startTime) }}</span>
+                      </div>
                       <span class="station">{{ orderInfo.originStation }}</span>
                     </div>
                     <div class="route-arrow">
                       <el-icon><ArrowRight /></el-icon>
                     </div>
                     <div class="route-item">
-                      <span class="time">{{ orderInfo.endTime }}</span>
+                      <div class="time-display">
+                        <span class="time">{{ formatTime(orderInfo.endTime) }}</span>
+                        <span class="date">{{ formatDate(orderInfo.endTime) }}</span>
+                      </div>
                       <span class="station">{{ orderInfo.destinationStation }}</span>
                     </div>
                   </div>
@@ -114,7 +120,7 @@
                 <div class="countdown-text">
                   <div class="countdown-title">请在以下时间内完成支付</div>
                   <div class="countdown-timer">
-                    <span class="time-number">{{ formatTime(remainingTime) }}</span>
+                    <span class="time-number">{{ formatCountdown(remainingTime) }}</span>
                   </div>
                   <div class="countdown-tip">超时订单将自动取消</div>
                 </div>
@@ -313,8 +319,17 @@ const formatDate = (dateStr) => {
   return `${year}-${month}-${day} 周${weekday}`
 }
 
+// 格式化时间显示
+const formatTime = (dateStr) => {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${hours}:${minutes}`
+}
+
 // 格式化倒计时
-const formatTime = (seconds) => {
+const formatCountdown = (seconds) => {
   const minutes = Math.floor(seconds / 60)
   const remainingSeconds = seconds % 60
   return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`
@@ -575,10 +590,25 @@ onUnmounted(() => {
   gap: 4px;
 }
 
+.time-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
 .time {
   font-size: 18px;
   font-weight: 600;
   color: #333;
+  line-height: 1;
+}
+
+.date {
+  font-size: 10px;
+  color: #999;
+  line-height: 1;
+  margin-top: 2px;
 }
 
 .station {

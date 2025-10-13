@@ -22,13 +22,19 @@
               placeholder="请输入出发城市"
               class="form-input"
               clearable
+              :loading="departureLoading"
               @select="handleDepartureSelect"
+              @clear="handleDepartureClear"
+              @input="handleDepartureInput"
             >
               <template #default="{ item }">
-                <div class="city-item">
+                <div class="city-item" :class="{ 'placeholder-item': item.isPlaceholder }">
                   <span class="city-name">{{ item.name }}</span>
-                  <span class="city-code">{{ item.code }}</span>
+                  <span class="city-code" v-if="!item.isPlaceholder">{{ item.code }}</span>
                 </div>
+              </template>
+              <template #empty>
+                <div class="no-data">没有相关车站</div>
               </template>
             </el-autocomplete>
           </el-form-item>
@@ -43,16 +49,22 @@
             <el-autocomplete
               v-model="searchForm.destination"
               :fetch-suggestions="queryDestinationSearch"
-              placeholder="请输入到达城市"
+              placeholder="请输入目的城市"
               class="form-input"
               clearable
+              :loading="destinationLoading"
               @select="handleDestinationSelect"
+              @clear="handleDestinationClear"
+              @input="handleDestinationInput"
             >
               <template #default="{ item }">
-                <div class="city-item">
+                <div class="city-item" :class="{ 'placeholder-item': item.isPlaceholder }">
                   <span class="city-name">{{ item.name }}</span>
-                  <span class="city-code">{{ item.code }}</span>
+                  <span class="city-code" v-if="!item.isPlaceholder">{{ item.code }}</span>
                 </div>
+              </template>
+              <template #empty>
+                <div class="no-data">没有相关车站</div>
               </template>
             </el-autocomplete>
           </el-form-item>
@@ -64,18 +76,6 @@
               placeholder="请选择出发日期"
               class="form-input"
               :disabled-date="disabledDate"
-              format="YYYY-MM-DD"
-              value-format="YYYY-MM-DD"
-            />
-          </el-form-item>
-
-          <el-form-item label="返程日期" class="form-group">
-            <el-date-picker
-              v-model="searchForm.returnDate"
-              type="date"
-              placeholder="可选"
-              class="form-input"
-              :disabled-date="disabledReturnDate"
               format="YYYY-MM-DD"
               value-format="YYYY-MM-DD"
             />
@@ -94,38 +94,18 @@
             </el-button>
           </div>
         </div>
-
-        <!-- 快捷选项 -->
-        <div class="quick-options">
-          <div class="passenger-count">
-            <span class="option-label">乘车人：</span>
-            <el-input-number 
-              v-model="searchForm.passengerCount" 
-              :min="1" 
-              :max="6" 
-              size="small"
-            />
-          </div>
-          
-          <div class="seat-type">
-            <span class="option-label">座位类型：</span>
-            <el-radio-group v-model="searchForm.seatType" size="small">
-              <el-radio-button label="all">不限</el-radio-button>
-              <el-radio-button label="business">商务座</el-radio-button>
-              <el-radio-button label="first">一等座</el-radio-button>
-              <el-radio-button label="second">二等座</el-radio-button>
-            </el-radio-group>
-          </div>
-        </div>
       </el-form>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Tickets, Switch, Search } from '@element-plus/icons-vue'
+import { getHotStations } from '@/api/station'
+import { ElMessage } from 'element-plus'
+import { pinyin } from 'pinyin-pro'
 
 const router = useRouter()
 
@@ -135,13 +115,22 @@ const searchLoading = ref(false)
 
 // 搜索表单数据
 const searchForm = reactive({
-  departure: '北京',
-  destination: '上海',
+  departure: '',
+  destination: '',
+  departureId: null,
+  destinationId: null,
   departureDate: '',
-  returnDate: '',
   passengerCount: 1,
   seatType: 'all'
 })
+
+// 标记是否从下拉列表中选择
+const departureSelected = ref(false)
+const destinationSelected = ref(false)
+
+// 加载状态
+const departureLoading = ref(false)
+const destinationLoading = ref(false)
 
 // 表单验证规则
 const searchRules = {
@@ -149,60 +138,192 @@ const searchRules = {
     { required: true, message: '请输入出发城市', trigger: 'blur' }
   ],
   destination: [
-    { required: true, message: '请输入到达城市', trigger: 'blur' }
+    { required: true, message: '请输入目的城市', trigger: 'blur' }
   ],
   departureDate: [
     { required: true, message: '请选择出发日期', trigger: 'change' }
   ]
 }
 
-// 城市数据（模拟数据）
-const cities = [
-  { name: '北京', code: 'BJP' },
-  { name: '上海', code: 'SHH' },
-  { name: '广州', code: 'GZQ' },
-  { name: '深圳', code: 'SZN' },
-  { name: '杭州', code: 'HZH' },
-  { name: '南京', code: 'NJH' },
-  { name: '成都', code: 'CDW' },
-  { name: '重庆', code: 'CQW' },
-  { name: '西安', code: 'XAY' },
-  { name: '武汉', code: 'WHN' },
-  { name: '长沙', code: 'CSQ' },
-  { name: '郑州', code: 'ZZF' }
-]
+// 热门车站数据
+const hotStations = ref([])
+
+// 按首字母分组的车站数据
+const groupedStations = computed(() => {
+  const groups = {}
+  hotStations.value.forEach(station => {
+    // 获取车站名称的首字母
+    const firstLetter = station.name.charAt(0).toUpperCase()
+    if (!groups[firstLetter]) {
+      groups[firstLetter] = []
+    }
+    groups[firstLetter].push(station)
+  })
+  
+  // 转换为数组并排序
+  return Object.keys(groups)
+    .sort()
+    .map(letter => ({
+      letter,
+      stations: groups[letter].sort((a, b) => a.name.localeCompare(b.name))
+    }))
+})
+
+// 加载热门车站数据
+const loadHotStations = async () => {
+  try {
+    const response = await getHotStations()
+    if (response.code === 200 && response.data) {
+      hotStations.value = response.data
+      // 设置默认的出发地和目的地为前两个热门车站
+      if (hotStations.value.length >= 2) {
+        searchForm.departure = hotStations.value[0].name
+        searchForm.destination = hotStations.value[1].name
+        searchForm.departureId = hotStations.value[0].id
+        searchForm.destinationId = hotStations.value[1].id
+      }
+    }
+  } catch (error) {
+    console.error('加载热门车站失败:', error)
+    ElMessage.error('加载热门车站数据失败')
+    // 使用备用数据
+    hotStations.value = []
+    searchForm.departure = ''
+    searchForm.destination = ''
+    searchForm.departureId = null
+    searchForm.destinationId = null
+  }
+}
 
 // 出发地搜索
 const queryDepartureSearch = (queryString, cb) => {
-  const results = queryString
-    ? cities.filter(city => city.name.toLowerCase().includes(queryString.toLowerCase()))
-    : cities
-  cb(results)
+  departureLoading.value = true
+  
+  // 模拟异步搜索延迟
+  setTimeout(() => {
+    let results = []
+    
+    if (queryString) {
+      results = hotStations.value.filter(station => {
+        const query = queryString.toLowerCase()
+        const stationName = station.name.toLowerCase()
+        const stationCode = station.code.toLowerCase()
+        const pinyinFirst = pinyin(station.name, { pattern: 'first', toneType: 'none' }).toLowerCase()
+        const pinyinFull = pinyin(station.name, { toneType: 'none' }).toLowerCase()
+        
+        return stationName.includes(query) ||
+               stationCode.includes(query) ||
+               pinyinFirst.includes(query) ||
+               pinyinFull.includes(query)
+      })
+      
+      // 如果没有搜索结果，添加一个不可选择的提示项
+      if (results.length === 0) {
+        results = [{ name: '没有相关车站', code: '', id: null, disabled: true, isPlaceholder: true }]
+      }
+    } else {
+      results = hotStations.value
+    }
+    
+    departureLoading.value = false
+    cb(results)
+  }, 300)
 }
 
 // 目的地搜索
 const queryDestinationSearch = (queryString, cb) => {
-  const results = queryString
-    ? cities.filter(city => city.name.toLowerCase().includes(queryString.toLowerCase()))
-    : cities
-  cb(results)
+  destinationLoading.value = true
+  
+  // 模拟异步搜索延迟
+  setTimeout(() => {
+    let results = []
+    
+    if (queryString) {
+      results = hotStations.value.filter(station => {
+        const query = queryString.toLowerCase()
+        const stationName = station.name.toLowerCase()
+        const stationCode = station.code.toLowerCase()
+        const pinyinFirst = pinyin(station.name, { pattern: 'first', toneType: 'none' }).toLowerCase()
+        const pinyinFull = pinyin(station.name, { toneType: 'none' }).toLowerCase()
+        
+        return stationName.includes(query) ||
+               stationCode.includes(query) ||
+               pinyinFirst.includes(query) ||
+               pinyinFull.includes(query)
+      })
+      
+      // 如果没有搜索结果，添加一个不可选择的提示项
+      if (results.length === 0) {
+        results = [{ name: '没有相关车站', code: '', id: null, disabled: true, isPlaceholder: true }]
+      }
+    } else {
+      results = hotStations.value
+    }
+    
+    destinationLoading.value = false
+    cb(results)
+  }, 300)
 }
 
 // 选择出发地
 const handleDepartureSelect = (item) => {
+  if (item.disabled || item.isPlaceholder) return
+  
   searchForm.departure = item.name
+  searchForm.departureId = item.id
+  departureSelected.value = true
 }
 
 // 选择目的地
 const handleDestinationSelect = (item) => {
+  if (item.disabled || item.isPlaceholder) return
+  
   searchForm.destination = item.name
+  searchForm.destinationId = item.id
+  destinationSelected.value = true
+}
+
+// 出发地清空处理
+const handleDepartureClear = () => {
+  searchForm.departureId = null
+  departureSelected.value = false
+}
+
+// 目的地清空处理
+const handleDestinationClear = () => {
+  searchForm.destinationId = null
+  destinationSelected.value = false
+}
+
+// 出发地输入处理
+const handleDepartureInput = (value) => {
+  if (!departureSelected.value) {
+    searchForm.departureId = null
+  }
+  departureSelected.value = false
+}
+
+// 目的地输入处理
+const handleDestinationInput = (value) => {
+  if (!destinationSelected.value) {
+    searchForm.destinationId = null
+  }
+  destinationSelected.value = false
 }
 
 // 交换出发地和目的地
 const exchangeCities = () => {
-  const temp = searchForm.departure
+  const tempName = searchForm.departure
+  const tempId = searchForm.departureId
+  const tempSelected = departureSelected.value
+  
   searchForm.departure = searchForm.destination
-  searchForm.destination = temp
+  searchForm.departureId = searchForm.destinationId
+  departureSelected.value = destinationSelected.value
+  
+  searchForm.destination = tempName
+  searchForm.destinationId = tempId
+  destinationSelected.value = tempSelected
 }
 
 // 禁用过去的日期
@@ -210,29 +331,38 @@ const disabledDate = (time) => {
   return time.getTime() < Date.now() - 8.64e7
 }
 
-// 禁用返程日期（不能早于出发日期）
-const disabledReturnDate = (time) => {
-  if (!searchForm.departureDate) return false
-  return time.getTime() < new Date(searchForm.departureDate).getTime()
-}
-
 // 搜索车次
 const handleSearch = async () => {
   try {
     const valid = await searchFormRef.value.validate()
     if (valid) {
+      // 验证出发地和目的地必须从下拉列表中选择
+      if (!searchForm.departureId) {
+        ElMessage.error('请从下拉列表中选择出发地')
+        return
+      }
+      
+      if (!searchForm.destinationId) {
+        ElMessage.error('请从下拉列表中选择目的地')
+        return
+      }
+      
       searchLoading.value = true
+      
+      // 验证必要参数
+      if (!searchForm.departureDate) {
+        ElMessage.error('请选择出发日期')
+        searchLoading.value = false
+        return
+      }
       
       // 直接跳转到搜索结果页面
       router.push({
-        path: '/tickets',
+        path: '/ticket-search',
         query: {
-          from: searchForm.departure,
-          to: searchForm.destination,
-          date: searchForm.departureDate,
-          returnDate: searchForm.returnDate,
-          passengers: searchForm.passengerCount,
-          seatType: searchForm.seatType
+          originStationId: searchForm.departureId,
+          destinationStationId: searchForm.destinationId,
+          date: searchForm.departureDate
         }
       })
       
@@ -251,7 +381,10 @@ const initDefaultDate = () => {
 }
 
 // 组件挂载时初始化
-initDefaultDate()
+onMounted(async () => {
+  initDefaultDate()
+  await loadHotStations()
+})
 </script>
 
 <style scoped>
@@ -284,18 +417,25 @@ initDefaultDate()
 
 .search-form {
   width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .form-row {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr 1fr 1fr auto;
-  gap: 20px;
+  display: flex;
+  justify-content: center;
   align-items: end;
+  gap: 15px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  padding: 0 10px;
 }
 
 .form-group {
   margin-bottom: 0;
+  flex: 1;
+  min-width: 220px;
+  max-width: 280px;
 }
 
 .form-group :deep(.el-form-item__label) {
@@ -309,15 +449,18 @@ initDefaultDate()
 }
 
 .form-input :deep(.el-input__inner) {
-  padding: 12px;
+  padding: 12px 16px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 16px;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
+  background-color: #fafafa;
 }
 
 .form-input :deep(.el-input__inner:focus) {
   border-color: #1890ff;
+  background-color: white;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
 }
 
 .exchange-btn {
@@ -332,6 +475,7 @@ initDefaultDate()
   transition: all 0.3s;
   background-color: white;
   margin-bottom: 5px;
+  flex-shrink: 0;
 }
 
 .exchange-btn:hover {
@@ -343,14 +487,24 @@ initDefaultDate()
 .search-btn-group {
   display: flex;
   align-items: end;
+  flex-shrink: 0;
+  margin-left: 15px;
 }
 
 .search-btn {
-  padding: 12px 30px;
-  font-size: 16px;
-  border-radius: 8px;
-  height: 48px;
-  min-width: 120px;
+  padding: 8px 24px;
+  font-size: 14px;
+  border-radius: 6px;
+  height: 40px;
+  min-width: 100px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(24, 144, 255, 0.25);
+  transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
+  transform: translateY(-1px);
 }
 
 .city-item {
@@ -362,11 +516,28 @@ initDefaultDate()
 
 .city-name {
   font-weight: 500;
+  flex: 1;
 }
 
 .city-code {
   color: #999;
   font-size: 12px;
+  margin-left: 10px;
+}
+
+/* 选择框选项样式 */
+:deep(.el-select-dropdown__item) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+:deep(.el-select-group__title) {
+  font-weight: 600;
+  color: #1890ff;
+  background-color: #f0f8ff;
+  padding: 8px 12px;
+  font-size: 14px;
 }
 
 .quick-options {
@@ -394,15 +565,88 @@ initDefaultDate()
   align-items: center;
 }
 
+/* 空数据提示样式 */
+.no-data {
+  padding: 10px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+/* 覆盖Element Plus自动完成组件的默认选中样式 */
+:deep(.el-autocomplete-suggestion__item.disabled-item),
+:deep(.el-autocomplete-suggestion__item.disabled-item:hover),
+:deep(.el-autocomplete-suggestion__item.disabled-item.highlighted) {
+  background-color: #f8f8f8 !important;
+  color: #999 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* 禁用项样式 */
+:deep(.el-autocomplete-suggestion__list .disabled-item),
+:deep(.el-autocomplete-suggestion__list .placeholder-item) {
+  color: #999 !important;
+  cursor: not-allowed !important;
+  background-color: #f8f8f8 !important;
+  padding: 12px 16px !important;
+  border-radius: 4px !important;
+  margin: 2px 4px !important;
+  pointer-events: none !important;
+}
+
+/* 完全禁用所有交互状态 */
+:deep(.el-autocomplete-suggestion__list .disabled-item:hover),
+:deep(.el-autocomplete-suggestion__list .disabled-item:focus),
+:deep(.el-autocomplete-suggestion__list .disabled-item:active),
+:deep(.el-autocomplete-suggestion__list .disabled-item.is-highlighted),
+:deep(.el-autocomplete-suggestion__list .disabled-item.hover),
+:deep(.el-autocomplete-suggestion__list .disabled-item.selected),
+:deep(.el-autocomplete-suggestion__list .disabled-item.el-autocomplete-suggestion__item--highlighted),
+:deep(.el-autocomplete-suggestion__list .placeholder-item:hover),
+:deep(.el-autocomplete-suggestion__list .placeholder-item:focus),
+:deep(.el-autocomplete-suggestion__list .placeholder-item:active),
+:deep(.el-autocomplete-suggestion__list .placeholder-item.is-highlighted),
+:deep(.el-autocomplete-suggestion__list .placeholder-item.hover),
+:deep(.el-autocomplete-suggestion__list .placeholder-item.selected),
+:deep(.el-autocomplete-suggestion__list .placeholder-item.el-autocomplete-suggestion__item--highlighted) {
+  background-color: #f8f8f8 !important;
+  color: #999 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+}
+
+.disabled-item .city-name,
+.placeholder-item .city-name {
+  color: #999 !important;
+  font-weight: 400 !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+.disabled-item .city-code,
+.placeholder-item .city-code {
+  display: none !important;
+}
+
 /* 响应式设计 */
 @media (max-width: 1200px) {
   .form-row {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: center;
     gap: 15px;
   }
   
+  .form-group {
+    max-width: 300px;
+    width: 100%;
+  }
+  
   .exchange-btn {
-    display: none;
+    order: 2;
   }
   
   .quick-options {
@@ -419,6 +663,10 @@ initDefaultDate()
   
   .search-title {
     font-size: 24px;
+  }
+  
+  .form-group {
+    min-width: auto;
   }
   
   .quick-options {

@@ -20,3 +20,12 @@ export const getOrderDetail = (orderId) => {
     method: 'GET'
   })
 }
+
+// 创建订单
+export const createOrder = (orderData) => {
+  return request({
+    url: '/orders/create',
+    method: 'POST',
+    data: orderData
+  })
+}
