@@ -1,9 +1,12 @@
 spring:
   application:
     name: ticket-service
+  # 指定运行环境
+  profiles:
+    active: dev
   cloud:
     nacos:
-      server-addr: 127.0.0.1:8848
+      server-addr: localhost:8848
       config:
         namespace: 83a90920-a536-4767-b536-3e99c506b1a0
         file-extension: yaml
@@ -12,28 +15,8 @@ spring:
         enabled: true
   config:
     import:
-      - nacos:shared-mysql.yaml       # 导入共享的MySQL配置
+      - nacos:shared-mysql.yaml
       - nacos:shared-knife4j.yaml
-  profiles:
-    active: dev
-
-  mysql:
-    db-name: rs-ticket
-    host: localhost
-    port: 3306
-    username: root
-    password: 20050918
-
-    knife4j:
-      title: 票务服务
-      description: 票务服务接口文档
-      version: 1.0.0
-      path: com.dai.controller
-      group: 票务服务
-      contact:
-        name: dai
-        url: https://github.com/Dai5297
-        email: 15160255297@163.com
 
 server:
   port: 18082

@@ -10,25 +10,16 @@
     </parent>
 
     <artifactId>rs-api</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <description>微服务接口工程</description>
-    <modules>
-        <module>rs-customer-api</module>
-    </modules>
 
     <properties>
-        <maven.compiler.source>24</maven.compiler.source>
-        <maven.compiler.target>24</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
         <!--OpenFeign-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -45,6 +36,12 @@
         <dependency>
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-okhttp</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.dai</groupId>
+            <artifactId>rs-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

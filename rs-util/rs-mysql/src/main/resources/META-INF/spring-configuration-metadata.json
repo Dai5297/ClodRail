@@ -1,0 +1,172 @@
+{
+  "groups": [
+    {
+      "name": "rs.mysql",
+      "type": "com.rs.properties.MysqlProperties",
+      "sourceType": "com.rs.properties.MysqlProperties",
+      "description": "MySQL 数据库共享配置属性"
+    },
+    {
+      "name": "rs.mysql.hikari",
+      "type": "com.rs.properties.MysqlProperties$Hikari",
+      "sourceType": "com.rs.properties.MysqlProperties",
+      "description": "HikariCP 连接池配置"
+    }
+  ],
+  "properties": [
+    {
+      "name": "rs.mysql.host",
+      "type": "java.lang.String",
+      "description": "MySQL 服务器主机地址",
+      "sourceType": "com.rs.properties.MysqlProperties",
+      "defaultValue": "localhost"
+    },
+    {
+      "name": "rs.mysql.port",
+      "type": "java.lang.Integer",
+      "description": "MySQL 服务器端口号",
+      "sourceType": "com.rs.properties.MysqlProperties",
+      "defaultValue": 3306
+    },
+    {
+      "name": "rs.mysql.db-name",
+      "type": "java.lang.String",
+      "description": "数据库名称",
+      "sourceType": "com.rs.properties.MysqlProperties",
+      "defaultValue": "rs-order"
+    },
+    {
+      "name": "rs.mysql.username",
+      "type": "java.lang.String",
+      "description": "连接 MySQL 的用户名",
+      "sourceType": "com.rs.properties.MysqlProperties",
+      "defaultValue": "root"
+    },
+    {
+      "name": "rs.mysql.password",
+      "type": "java.lang.String",
+      "description": "连接 MySQL 的密码",
+      "sourceType": "com.rs.properties.MysqlProperties"
+    },
+    {
+      "name": "rs.mysql.hikari.connection-timeout",
+      "type": "java.lang.Long",
+      "description": "连接超时时间（毫秒）",
+      "sourceType": "com.rs.properties.MysqlProperties$Hikari",
+      "defaultValue": 30000
+    },
+    {
+      "name": "rs.mysql.hikari.validation-timeout",
+      "type": "java.lang.Long",
+      "description": "连接验证超时时间（毫秒）",
+      "sourceType": "com.rs.properties.MysqlProperties$Hikari",
+      "defaultValue": 10000
+    },
+    {
+      "name": "rs.mysql.hikari.maximum-pool-size",
+      "type": "java.lang.Integer",
+      "description": "连接池最大连接数",
+      "sourceType": "com.rs.properties.MysqlProperties$Hikari",
+      "defaultValue": 20
+    },
+    {
+      "name": "rs.mysql.hikari.minimum-idle",
+      "type": "java.lang.Integer",
+      "description": "连接池最小空闲连接数",
+      "sourceType": "com.rs.properties.MysqlProperties$Hikari",
+      "defaultValue": 5
+    },
+    {
+      "name": "rs.mysql.hikari.idle-timeout",
+      "type": "java.lang.Long",
+      "description": "连接空闲超时时间（毫秒）",
+      "sourceType": "com.rs.properties.MysqlProperties$Hikari",
+      "defaultValue": 600000
+    },
+    {
+      "name": "rs.mysql.hikari.max-lifetime",
+      "type": "java.lang.Long",
+      "description": "连接最大生命周期（毫秒）",
+      "sourceType": "com.rs.properties.MysqlProperties$Hikari",
+      "defaultValue": 1800000
+    }
+  ],
+  "hints": [
+    {
+      "name": "rs.mysql.port",
+      "values": [
+        {
+          "value": "3306",
+          "description": "MySQL 默认端口"
+        },
+        {
+          "value": "3307",
+          "description": "MySQL 备用端口"
+        },
+        {
+          "value": "3308",
+          "description": "MySQL 测试端口"
+        }
+      ]
+    },
+    {
+      "name": "rs.mysql.hikari.maximum-pool-size",
+      "values": [
+        {
+          "value": "10",
+          "description": "小型应用连接池大小"
+        },
+        {
+          "value": "20",
+          "description": "中型应用连接池大小"
+        },
+        {
+          "value": "50",
+          "description": "大型应用连接池大小"
+        },
+        {
+          "value": "100",
+          "description": "高并发应用连接池大小"
+        }
+      ]
+    },
+    {
+      "name": "rs.mysql.hikari.minimum-idle",
+      "values": [
+        {
+          "value": "5",
+          "description": "最小空闲连接数（推荐）"
+        },
+        {
+          "value": "10",
+          "description": "中等空闲连接数"
+        },
+        {
+          "value": "20",
+          "description": "较高空闲连接数"
+        }
+      ]
+    },
+    {
+      "name": "rs.mysql.db-name",
+      "values": [
+        {
+          "value": "rs-order",
+          "description": "订单服务数据库"
+        },
+        {
+          "value": "rs-user",
+          "description": "用户服务数据库"
+        },
+        {
+          "value": "rs-ticket",
+          "description": "票务服务数据库"
+        },
+        {
+          "value": "rs-payment",
+          "description": "支付服务数据库"
+        }
+      ]
+    }
+  ]
+}

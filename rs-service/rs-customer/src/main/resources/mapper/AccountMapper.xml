@@ -2,10 +2,10 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dai.mapper.AccountMapper">
+<mapper namespace="com.rs.mapper.AccountMapper">
 
     <!-- 基础ResultMap映射 -->
-    <resultMap id="BaseResultMap" type="com.dai.model.customer.User">
+    <resultMap id="BaseResultMap" type="com.rs.model.customer.User">
         <!-- 主键 -->
         <id column="id" property="id" jdbcType="BIGINT"/>
 

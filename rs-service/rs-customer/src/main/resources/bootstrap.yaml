@@ -1,9 +1,12 @@
 spring:
   application:
     name: customer-service
+  # 指定运行环境
+  profiles:
+    active: dev
   cloud:
     nacos:
-      server-addr: 127.0.0.1:8848
+      server-addr: localhost:8848
       config:
         namespace: 83a90920-a536-4767-b536-3e99c506b1a0
         file-extension: yaml
@@ -12,29 +15,8 @@ spring:
         enabled: true
   config:
     import:
-      - nacos:shared-mysql.yaml       # 导入共享的MySQL配置
+      - nacos:shared-mysql.yaml
       - nacos:shared-knife4j.yaml
-
-  profiles:
-    active: dev
-
-  mysql:
-    db-name: rs-customer
-    host: localhost
-    port: 3306
-    username: root
-    password: 20050918
-
-  knife4j:
-    title: 用户服务
-    description: 用户服务接口文档
-    version: 1.0.0
-    path: com.dai.controller
-    group: 用户服务
-    contact:
-      name: dai
-      url: https://github.com/Dai5297
-      email: 15160255297@163.com
 
 server:
   port: 18081

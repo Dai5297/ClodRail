@@ -1,0 +1,40 @@
+rs:
+  mysql:
+    db-name: rs-order
+    host: localhost
+    port: 3306
+    username: root
+    password: 20050918
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: dai
+    password: 050815
+    virtual-host: /test
+    connection-timeout: 1000
+    template-mandatory: true
+    x-retry-enable: false
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    acknowledge-mode: none
+    enable-listener-retry: false
+
+  knife4j:
+    title: 订单服务
+    description: 订单服务接口文档
+    version: 1.0.0
+    contact:
+      name: dai
+      url: https://github.com/Dai5297
+      email: 15160255297@163.com
+  seata:
+    nacos:
+      serve-addr: localhost:8848
+      namespace: 83a90920-a536-4767-b536-3e99c506b1a0
+      application: seata-server
+openapi:
+  groups:
+    - groupName: 用户端-订单服务
+      matchPath:
+        - com.rs.controller.user

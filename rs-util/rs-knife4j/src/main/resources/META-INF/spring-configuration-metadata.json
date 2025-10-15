@@ -1,0 +1,104 @@
+{
+  "groups": [
+    {
+      "name": "rs.knife4j",
+      "type": "com.rs.config.Knife4jProperties",
+      "sourceType": "com.rs.config.Knife4jProperties",
+      "description": "Knife4j 接口文档配置"
+    }
+  ],
+  "properties": [
+    {
+      "name": "rs.knife4j.title",
+      "type": "java.lang.String",
+      "description": "API 接口文档标题",
+      "sourceType": "com.rs.config.Knife4jProperties",
+      "defaultValue": "API服务"
+    },
+    {
+      "name": "rs.knife4j.description",
+      "type": "java.lang.String",
+      "description": "API 接口文档描述",
+      "sourceType": "com.rs.config.Knife4jProperties",
+      "defaultValue": "API服务"
+    },
+    {
+      "name": "rs.knife4j.version",
+      "type": "java.lang.String",
+      "description": "API 接口版本",
+      "sourceType": "com.rs.config.Knife4jProperties",
+      "defaultValue": "v1.0"
+    },
+    {
+      "name": "rs.knife4j.license-name",
+      "type": "java.lang.String",
+      "description": "许可证名称",
+      "sourceType": "com.rs.config.Knife4jProperties",
+      "defaultValue": "Apache 2.0"
+    },
+    {
+      "name": "rs.knife4j.license-url",
+      "type": "java.lang.String",
+      "description": "许可证URL",
+      "sourceType": "com.rs.config.Knife4jProperties",
+      "defaultValue": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    {
+      "name": "rs.knife4j.contact.name",
+      "type": "java.lang.String",
+      "description": "联系人姓名",
+      "sourceType": "com.rs.config.Knife4jProperties",
+      "defaultValue": "dai"
+    },
+    {
+      "name": "rs.knife4j.contact.email",
+      "type": "java.lang.String",
+      "description": "联系人邮箱",
+      "sourceType": "com.rs.config.Knife4jProperties",
+      "defaultValue": "15160255297@163.com"
+    },
+    {
+      "name": "rs.knife4j.contact.url",
+      "type": "java.lang.String",
+      "description": "联系人URL",
+      "sourceType": "com.rs.config.Knife4jProperties",
+      "defaultValue": "https://github.com/Dai5297"
+    }
+  ],
+  "hints": [
+    {
+      "name": "rs.knife4j.version",
+      "values": [
+        {
+          "value": "v1.0",
+          "description": "版本 1.0"
+        },
+        {
+          "value": "v2.0",
+          "description": "版本 2.0"
+        },
+        {
+          "value": "v3.0",
+          "description": "版本 3.0"
+        }
+      ]
+    },
+    {
+      "name": "rs.knife4j.license-name",
+      "values": [
+        {
+          "value": "Apache 2.0",
+          "description": "Apache 2.0 许可证"
+        },
+        {
+          "value": "MIT",
+          "description": "MIT 许可证"
+        },
+        {
+          "value": "GPL v3",
+          "description": "GPL v3 许可证"
+        }
+      ]
+    }
+  ]
+}

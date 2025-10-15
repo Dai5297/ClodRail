@@ -1,0 +1,21 @@
+rs:
+  mysql:
+    db-name: rs-customer
+    host: localhost
+    port: 3306
+    username: root
+    password: 20050918
+
+  knife4j:
+    title: 用户服务
+    description: 用户服务接口文档
+    version: 1.0.0
+    contact:
+      name: dai
+      url: https://github.com/Dai5297
+      email: 15160255297@163.com
+openapi:
+  groups:
+    - groupName: 用户端-用户服务
+      matchPath:
+        - com.rs.controller.user

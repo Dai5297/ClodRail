@@ -2,10 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dai.mapper.SeatMapper">
+<mapper namespace="com.rs.mapper.SeatMapper">
 
-
-    <select id="querySeatTypes" resultType="com.dai.model.domain.SeatInfo">
+    <select id="querySeatTypes" resultType="com.rs.model.domain.SeatInfo">
         select s.seat_type       as type,
                case seat_type
                    when 1 then '一等座'
@@ -15,8 +14,28 @@
                s.price           as price,
                sum(s.status = 0) as remaining_seats
         from seat s
-        where s.ticket_id = 7
+        where s.ticket_id = #{id}
         group by s.seat_type, s.price
+    </select>
+
+    <select id="queryAvailableSeats" resultType="com.rs.model.dto.response.AvailableSeatResDTO">
+        select s.seat_no as site, sum(s.status = 0) as count
+        from seat s
+        where s.ticket_id = #{ticketId} and s.seat_type = #{seatType}
+        group by s.seat_no
+    </select>
+
+    <select id="fetchSeat" resultType="java.lang.Long">
+        SELECT id
+        FROM seat
+        WHERE ticket_id = #{ticketId}
+          AND seat_type = #{seatType}
+          AND order_id IS NULL
+          AND status = 0
+        ORDER BY IF(seat_no = #{seatPosition}, 0, 1)
+                ,
+                 id
+        LIMIT 1
     </select>
 
 </mapper>

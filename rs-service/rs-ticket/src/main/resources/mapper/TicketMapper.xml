@@ -2,27 +2,27 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dai.mapper.TicketMapper">
+<mapper namespace="com.rs.mapper.TicketMapper">
 
-    <resultMap id="HotTicketResultMap" type="com.dai.model.dto.response.HotTicketResDTO">
+    <resultMap id="HotTicketResultMap" type="com.rs.model.dto.response.HotTicketResDTO">
         <id property="id" column="id"/>
         <result property="routeName" column="route_name"/>
         <result property="minPrice" column="min_price"/>
         <result property="avgDuration" column="avg_duration"
-                typeHandler="com.dai.util.DurationTypeUtil"/>
-        <association property="originStation" javaType="com.dai.model.domain.StationInfo">
+                typeHandler="com.rs.util.DurationTypeUtil"/>
+        <association property="originStation" javaType="com.rs.model.domain.StationInfo">
             <id property="id" column="origin_id"/>
             <result property="name" column="origin_name"/>
             <result property="code" column="origin_code"/>
         </association>
-        <association property="destinationStation" javaType="com.dai.model.domain.StationInfo">
+        <association property="destinationStation" javaType="com.rs.model.domain.StationInfo">
             <id property="id" column="destination_id"/>
             <result property="name" column="destination_name"/>
             <result property="code" column="destination_code"/>
         </association>
     </resultMap>
 
-    <resultMap id="searchResultMap" type="com.dai.model.dto.response.SearchTicketResDTO">
+    <resultMap id="searchResultMap" type="com.rs.model.dto.response.SearchTicketResDTO">
         <id property="id" column="id"/>
         <result property="trainId" column="train_id"/>
         <result property="trainName" column="train_name"/>
@@ -30,21 +30,51 @@
         <result property="startTime" column="start_time"/>
         <result property="endTime" column="end_time"/>
         <result property="duration" column="duration"
-                typeHandler="com.dai.util.DurationTypeUtil"/>
-        <association property="originStation" javaType="com.dai.model.domain.StationInfo">
+                typeHandler="com.rs.util.DurationTypeUtil"/>
+        <association property="originStation" javaType="com.rs.model.domain.StationInfo">
             <result property="id" column="id"/>
             <result property="name" column="name"/>
             <result property="code" column="code"/>
         </association>
-        <association property="destinationStation" javaType="com.dai.model.domain.StationInfo">
+        <association property="destinationStation" javaType="com.rs.model.domain.StationInfo">
             <result property="id" column="id"/>
             <result property="name" column="name"/>
             <result property="code" column="code"/>
         </association>
     </resultMap>
 
-    <resultMap id="SearchTicketResultMap" type="com.dai.model.dto.response.SearchTicketResDTO">
+    <resultMap id="TicketDetailResultMap" type="com.rs.model.dto.response.TicketDetailResDTO">
+        <id property="id" column="id"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="duration" column="duration"
+                typeHandler="com.rs.util.DurationTypeUtil"/>
+        <association property="trainInfo" javaType="com.rs.model.domain.TrainInfo">
+            <id property="id" column="train_id"/>
+            <result property="name" column="train_name"/>
+            <result property="code" column="train_code"/>
+            <result property="type" column="train_type"/>
+        </association>
+        <association property="originStation" javaType="com.rs.model.domain.StationInfo">
+            <result property="id" column="origin_station_id"/>
+            <result property="name" column="origin_station_name"/>
+            <result property="code" column="origin_station_code"/>
+        </association>
+        <association property="destinationStation" javaType="com.rs.model.domain.StationInfo">
+            <result property="id" column="destination_station_id"/>
+            <result property="name" column="destination_station_name"/>
+            <result property="code" column="destination_station_code"/>
+        </association>
+    </resultMap>
 
+    <resultMap id="StopoverStationResultMap" type="com.rs.model.domain.StopStationInfo">
+        <id property="id" column="stationId"/>
+        <result property="name" column="stationName"/>
+        <result property="code" column="stationCode"/>
+        <result property="arriveTime" column="arrive_time"/>
+        <result property="departTime" column="depart_time"/>
+        <result property="stopDuration" column="stop_duration"
+                typeHandler="com.rs.util.DurationTypeUtil"/>
     </resultMap>
 
     <select id="queryHotTicket" resultMap="HotTicketResultMap">
@@ -92,6 +122,40 @@
           and date(start_time) = #{departureDate}
     </select>
 
+    <select id="queryTicketDetail" resultMap="TicketDetailResultMap">
+        select tr.id                                           as train_id,
+               tr.code                                         as train_code,
+               tr.type                                         as train_type,
+               tr.name                                         as train_name,
+               ss.id                                           as origin_station_id,
+               ss.name                                         as origin_station_name,
+               ss.code                                         as origin_station_code,
+               se.id                                           as destination_station_id,
+               se.name                                         as destination_station_name,
+               se.code                                         as destination_station_code,
+               t.start_time                                    as start_time,
+               t.end_time                                      as end_time,
+               timestampdiff(SECOND, t.end_time, t.start_time) as duration
+        from ticket t
+                 left join train tr on t.train_id = tr.id
+                 left join line l on t.line_id = l.id
+                 left join station ss on l.start_station = ss.id
+                 left join station se on l.end_station = se.id
+        where t.id = #{id};
+    </select>
+
+    <select id="queryStopoverStations" resultMap="StopoverStationResultMap">
+        select s.id             as stationId,
+               s.name           as stationName,
+               s.code           as stationCode,
+               st.arrived_time  as arrivedTime,
+               st.departTime    as departTime,
+               st.stop_duration as stopDuration
+        from ticket t
+                 left join stop_stations st on t.id = st.ticket_id
+                 left join station s on st.station_id = s.id
+        where t.id = #{id}
+    </select>
 
 
 </mapper>

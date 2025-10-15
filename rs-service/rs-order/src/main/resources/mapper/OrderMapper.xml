@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.OrderMapper">
+
+    <insert id="createOrder">
+        insert into `order` (order_id, user_id, ticket_id, status, amount)
+            value (#{orderId}, #{userId}, #{ticketId}, #{status}, #{amount})
+    </insert>
+
+    <insert id="createOrderSeat">
+        insert into order_seat (order_id, seat_id)
+            value (#{orderId}, #{seatId})
+    </insert>
+</mapper>

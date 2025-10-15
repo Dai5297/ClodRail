@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: order-service
+  # 指定运行环境
+  profiles:
+    active: dev
+  cloud:
+    # nacos 配置
+    nacos:
+      server-addr: localhost:8848
+      config:
+        namespace: 83a90920-a536-4767-b536-3e99c506b1a0
+        file-extension: yaml
+      discovery:
+        namespace: 83a90920-a536-4767-b536-3e99c506b1a0
+        enabled: true
+  config:
+    import:
+      - nacos:shared-mysql.yaml
+      - nacos:shared-knife4j.yaml
+      - nacos:shared-rabbitmq.yaml
+      - nacos:shared-seata.yaml
+server:
+  port: 18083
+
+seata:
+  tx-service-group: order-service-group
+  service:
+    vgroup-mapping:
+      order-service-group: default
+  data-source-proxy-mode: AT

@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.dai.com.dai.config.AopAutoConfiguration
+  com.rs.com.dai.config.AopAutoConfiguration
