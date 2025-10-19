@@ -1,7 +1,6 @@
 package com.rs.client;
 
 import cn.hutool.core.lang.Assert;
-import cn.hutool.json.JSONUtil;
 import com.rs.exception.MqException;
 import com.rs.plugins.DelayMessagePostProcessor;
 import com.rs.plugins.RabbitMqListenableFutureCallback;
@@ -54,7 +53,6 @@ public class RabbitClient {
         correlationData.getFuture().thenAccept(futureCallback);
 
         // 消息封装处理
-        msg = JSONUtil.toJsonStr(msg);
         MessageProperties messageProperties = new MessageProperties();
         messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
         Message message = rabbitTemplate.getMessageConverter().

@@ -19,14 +19,14 @@ public class RedisIdUtil {
 
     private static final long BEGIN_TIMESTAMP = 1735689600L;
 
-    public long nextId(String prefix) {
+    public long nextId(String key) {
         // 1. 获取时间戳位
         LocalDateTime now = LocalDateTime.now();
         long epochSecond = now.toEpochSecond(ZoneOffset.UTC);
         long timestamp = epochSecond - BEGIN_TIMESTAMP;
         // 2. 获取序列号位
         String data = now.format(DateTimeFormatter.ofPattern("yyyy:MM:dd"));
-        Long increment = stringRedisTemplate.opsForValue().increment("icr:" + prefix + ":" + data);
+        Long increment = stringRedisTemplate.opsForValue().increment(key + ":" + data);
         return timestamp << 32 | increment;
     }
 

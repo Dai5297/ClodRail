@@ -3,7 +3,13 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rs.mapper.SeatMapper">
-
+    
+    <resultMap id="fetchSeatResultMap" type="com.rs.dto.response.FetchSeatResDTO">
+        <id property="id" column="id"/>
+        <result property="seatNo" column="seat_no"/>
+        <result property="fullSeatCode" column="full_seat_code"/>
+    </resultMap>
+    
     <select id="querySeatTypes" resultType="com.rs.model.domain.SeatInfo">
         select s.seat_type       as type,
                case seat_type
@@ -25,8 +31,8 @@
         group by s.seat_no
     </select>
 
-    <select id="fetchSeat" resultType="java.lang.Long">
-        SELECT id
+    <select id="fetchSeat" resultMap="fetchSeatResultMap">
+        SELECT id, seat_no, full_seat_code
         FROM seat
         WHERE ticket_id = #{ticketId}
           AND seat_type = #{seatType}
@@ -38,4 +44,19 @@
         LIMIT 1
     </select>
 
+    <update id="preOccupationSeat">
+        update seat
+        set status   = 1,
+            order_id = #{orderId}
+        where id = #{seatId}
+          and status = 0
+          and order_id is null
+    </update>
+
+    <update id="rollbackOccupySeat">
+        update seat
+        set status   = 0,
+            order_id = null
+        where order_id = #{orderId}
+    </update>
 </mapper>

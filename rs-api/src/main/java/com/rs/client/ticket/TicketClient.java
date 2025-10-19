@@ -1,4 +1,4 @@
-package client.ticket;
+package com.rs.client.ticket;
 
 import org.springframework.cloud.openfeign.FeignClient;
 

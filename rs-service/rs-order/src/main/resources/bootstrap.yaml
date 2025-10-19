@@ -1,4 +1,6 @@
 spring:
+  aop:
+    proxy-target-class: false
   application:
     name: order-service
   # 指定运行环境

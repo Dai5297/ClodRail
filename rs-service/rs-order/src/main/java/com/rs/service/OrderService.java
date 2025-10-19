@@ -11,18 +11,19 @@ import org.apache.seata.rm.tcc.api.TwoPhaseBusinessAction;
 @LocalTCC
 public interface OrderService {
 
-    OrderCreateResDTO test(OrderCreateReqDTO reqDTO);
-
     /**
      * 创建订单
+     * 
      * @param reqDTO 创建参数
      * @return 创建结果
      */
     @TwoPhaseBusinessAction(name = "createOrder", commitMethod = "commit", rollbackMethod = "rollback")
-    OrderCreateResDTO createOrder(@BusinessActionContextParameter(paramName = "reqDTO") OrderCreateReqDTO reqDTO);
+    OrderCreateResDTO createOrder(BusinessActionContext context,
+            @BusinessActionContextParameter(paramName = "reqDTO") OrderCreateReqDTO reqDTO);
 
     /**
      * 创建订单TCC - 提交
+     * 
      * @param context 上下文
      * @return 提交结果
      */
@@ -30,6 +31,7 @@ public interface OrderService {
 
     /**
      * 创建订单TCC - 回滚
+     * 
      * @param context 上下文
      * @return 回滚结果
      */

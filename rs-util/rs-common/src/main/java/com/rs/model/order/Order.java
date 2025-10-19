@@ -31,7 +31,7 @@ public class Order extends BaseModel {
     /**
      * 订单状态：0- 待支付, 1- 已支付, 2- 已出票, 3- 已取消, 4- 已退票, 5- 已改签
      */
-    private Integer status;
+    private Integer status = 0;
 
     /**
      * 支付方式：0- 支付宝, 1- 微信

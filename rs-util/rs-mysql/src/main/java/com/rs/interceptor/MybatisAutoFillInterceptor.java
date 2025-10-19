@@ -38,9 +38,6 @@ public class MybatisAutoFillInterceptor implements Interceptor {
         }
 
         Long loginId = UserContext.get();
-        if (loginId == null) {
-            return invocation.proceed();
-        }
 
         if (SqlCommandType.INSERT == sqlCommandType || SqlCommandType.UPDATE == sqlCommandType) {
             replaceEntityProperty(parameter, loginId, sqlCommandType);

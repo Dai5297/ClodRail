@@ -5,8 +5,33 @@
 <mapper namespace="com.rs.mapper.OrderMapper">
 
     <insert id="createOrder">
-        insert into `order` (order_id, user_id, ticket_id, status, amount)
-            value (#{orderId}, #{userId}, #{ticketId}, #{status}, #{amount})
+        INSERT INTO `order`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            order_id,
+            user_id,
+            ticket_id,
+            amount,
+            <if test="status != null">status,</if>
+            <if test="paymentMethod != null">payment_method,</if>
+            <if test="couponId != null">coupon_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{orderId},
+            #{userId},
+            #{ticketId},
+            #{amount},
+            <if test="status != null">#{status},</if>
+            <if test="paymentMethod != null">#{paymentMethod},</if>
+            <if test="couponId != null">#{couponId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
     </insert>
 
     <insert id="createOrderSeat">
