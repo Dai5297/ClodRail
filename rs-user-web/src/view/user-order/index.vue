@@ -114,7 +114,8 @@
           <el-table :data="orderDetail.passengers" style="width: 100%">
             <el-table-column prop="name" label="姓名" />
             <el-table-column prop="idCard" label="身份证号" />
-            <el-table-column prop="phone" label="手机号" />
+            <el-table-column prop="seatPosition" label="座位号" />
+            <el-table-column prop="actualPrice" label="实际票价" />
           </el-table>
         </div>
       </div>
@@ -127,6 +128,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ArrowRight } from '@element-plus/icons-vue'
 import { getOrderList, getOrderDetail } from '@/api/order.js'
+import { getTicketDetail } from '@/api/ticket.js'
 
 export default {
   name: 'UserOrder',
@@ -189,12 +191,75 @@ export default {
 
     const handleViewDetail = async (orderId) => {
       try {
-        const data = await getOrderDetail(orderId)
-        orderDetail.value = data
+        const response = await getOrderDetail(orderId)
+        if (response.code !== 200) {
+          ElMessage.error(response.message || '获取订单详情失败')
+          return
+        }
+        
+        const orderData = response.data
+        
+        // 获取车票详情
+        let ticketInfo = null
+        if (orderData.ticketId) {
+          try {
+            const ticketResponse = await getTicketDetail(orderData.ticketId)
+            if (ticketResponse.code === 200) {
+              ticketInfo = ticketResponse.data
+            }
+          } catch (error) {
+            console.error('获取车票信息失败:', error)
+            ElMessage.warning('获取车票信息失败，部分信息可能不完整')
+          }
+        }
+        
+        // 处理订单详情数据，适配新的响应结构
+        const processedOrderDetail = {
+          orderId: orderData.orderId,
+          status: getStatusText(orderData.status),
+          trainNumber: ticketInfo?.trainCode || 'G1234',
+          seatType: ticketInfo?.seatType === 1 ? '一等座' : ticketInfo?.seatType === 2 ? '二等座' : '商务座',
+          departure: ticketInfo?.originStation || '出发站',
+          arrival: ticketInfo?.destinationStation || '到达站',
+          departureTime: ticketInfo?.departureTime ? formatDateTime(ticketInfo.departureTime) : '08:00',
+          arrivalTime: ticketInfo?.arrivalTime ? formatDateTime(ticketInfo.arrivalTime) : '14:20',
+          seatNumber: orderData.passengers && orderData.passengers.length > 0 ? orderData.passengers[0].seatPosition : '',
+          price: orderData.totalAmount,
+          createTime: orderData.createTime ? formatDateTime(orderData.createTime) : '',
+          payTime: orderData.payTime ? formatDateTime(orderData.payTime) : '',
+          passengers: orderData.passengers || []
+        }
+        
+        orderDetail.value = processedOrderDetail
         detailVisible.value = true
       } catch (error) {
         ElMessage.error('获取订单详情失败')
       }
+    }
+
+    // 格式化日期时间
+    const formatDateTime = (dateTimeStr) => {
+      if (!dateTimeStr) return ''
+      const date = new Date(dateTimeStr)
+      return date.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    }
+
+    // 根据状态码获取状态文本
+    const getStatusText = (status) => {
+      const statusMap = {
+        0: '待支付',
+        1: '已支付',
+        2: '已出票',
+        3: '已取消',
+        4: '已退票'
+      }
+      return statusMap[status] || '未知状态'
     }
 
     const handleCloseDetail = () => {

@@ -39,161 +39,25 @@
           <!-- 左侧：订单信息 -->
           <div class="order-section">
             <!-- 订单详情卡片 -->
-            <div class="order-info-card">
-              <h3 class="card-title">
-                <el-icon><Document /></el-icon>
-                订单信息
-              </h3>
-              
-              <div class="order-details">
-                <div class="train-info">
-                  <div class="train-header">
-                    <span class="train-number">{{ orderInfo.trainCode }}</span>
-                    <span class="train-date">{{ formatDate(orderInfo.date) }}</span>
-                  </div>
-                  <div class="route-info">
-                    <div class="route-item">
-                      <div class="time-display">
-                        <span class="time">{{ formatTime(orderInfo.startTime) }}</span>
-                        <span class="date">{{ formatDate(orderInfo.startTime) }}</span>
-                      </div>
-                      <span class="station">{{ orderInfo.originStation }}</span>
-                    </div>
-                    <div class="route-arrow">
-                      <el-icon><ArrowRight /></el-icon>
-                    </div>
-                    <div class="route-item">
-                      <div class="time-display">
-                        <span class="time">{{ formatTime(orderInfo.endTime) }}</span>
-                        <span class="date">{{ formatDate(orderInfo.endTime) }}</span>
-                      </div>
-                      <span class="station">{{ orderInfo.destinationStation }}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="passenger-info">
-                  <h4 class="section-title">乘客信息</h4>
-                  <div class="passenger-list">
-                    <div 
-                      v-for="(passenger, index) in orderInfo.passengers" 
-                      :key="index"
-                      class="passenger-item"
-                    >
-                      <div class="passenger-details">
-                        <span class="passenger-name">{{ passenger.name }}</span>
-                        <span class="seat-info">{{ orderInfo.seatTypeName }}</span>
-                      </div>
-                      <div class="passenger-meta">
-                        <span class="id-info">{{ passenger.idType }} {{ passenger.idNumber }}</span>
-                        <span class="price">￥{{ orderInfo.ticketPrice }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="order-summary">
-                  <div class="summary-item">
-                    <span class="label">订单号：</span>
-                    <span class="value">{{ orderInfo.orderNumber }}</span>
-                  </div>
-                  <div class="summary-item">
-                    <span class="label">座位类型：</span>
-                    <span class="value">{{ orderInfo.seatTypeName }}</span>
-                  </div>
-                  <div class="summary-item">
-                    <span class="label">乘客数量：</span>
-                    <span class="value">{{ orderInfo.passengers.length }}人</span>
-                  </div>
-                  <div class="summary-item total">
-                    <span class="label">应付金额：</span>
-                    <span class="value">￥{{ orderInfo.totalAmount }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <OrderInfoCard :order-info="orderInfo" />
 
             <!-- 支付倒计时 -->
-            <div class="countdown-card">
-              <div class="countdown-content">
-                <el-icon class="countdown-icon"><Clock /></el-icon>
-                <div class="countdown-text">
-                  <div class="countdown-title">请在以下时间内完成支付</div>
-                  <div class="countdown-timer">
-                    <span class="time-number">{{ formatCountdown(remainingTime) }}</span>
-                  </div>
-                  <div class="countdown-tip">超时订单将自动取消</div>
-                </div>
-              </div>
-            </div>
+            <CountdownCard :remaining-time="remainingTime" />
           </div>
 
           <!-- 右侧：支付方式 -->
           <div class="payment-section">
-            <div class="payment-methods-card">
-              <h3 class="card-title">
-                <el-icon><CreditCard /></el-icon>
-                选择支付方式
-              </h3>
-
-              <div class="payment-methods">
-                <div 
-                  v-for="method in paymentMethods" 
-                  :key="method.id"
-                  class="payment-method"
-                  :class="{ 'selected': selectedPaymentMethod?.id === method.id }"
-                  @click="selectPaymentMethod(method)"
-                >
-                  <div class="method-icon">
-                    <img :src="method.icon" :alt="method.name" />
-                  </div>
-                  <div class="method-info">
-                    <div class="method-name">{{ method.name }}</div>
-                    <div class="method-desc">{{ method.description }}</div>
-                  </div>
-                  <div class="method-radio">
-                    <el-radio 
-                      :model-value="selectedPaymentMethod?.id === method.id"
-                      @change="selectPaymentMethod(method)"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <!-- 支付按钮 -->
-              <div class="payment-actions">
-                <el-button 
-                  type="primary" 
-                  size="large" 
-                  @click="processPayment"
-                  :disabled="!selectedPaymentMethod || processing"
-                  :loading="processing"
-                  class="pay-button"
-                >
-                  <el-icon><CreditCard /></el-icon>
-                  立即支付 ￥{{ orderInfo.totalAmount }}
-                </el-button>
-                
-                <div class="payment-security">
-                  <el-icon><Lock /></el-icon>
-                  <span>支付环境安全，信息已加密</span>
-                </div>
-              </div>
-            </div>
+            <PaymentMethodsCard
+              :payment-methods="paymentMethods"
+              :selected-method="selectedPaymentMethod"
+              :total-amount="orderInfo.totalAmount"
+              :processing="processing"
+              @select-method="selectPaymentMethod"
+              @pay="processPayment"
+            />
 
             <!-- 支付说明 -->
-            <div class="payment-notice-card">
-              <h4 class="notice-title">
-                <el-icon><InfoFilled /></el-icon>
-                支付说明
-              </h4>
-              <ul class="notice-list">
-                <li>请在{{ Math.floor(remainingTime / 60) }}分钟内完成支付，超时订单将自动取消</li>
-                <li>支付成功后，车票信息将发送至您的手机和邮箱</li>
-                <li>如遇支付问题，请联系客服：400-123-4567</li>
-                <li>退票改签请遵循铁路部门相关规定</li>
-              </ul>
-            </div>
+            <PaymentNoticeCard :remaining-time="remainingTime" />
           </div>
         </div>
       </div>
@@ -245,10 +109,15 @@ import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
-  ArrowLeft, Document, ArrowRight, Clock, CreditCard, Lock, 
-  InfoFilled, CircleCheck, Tickets, User, Check
+  ArrowLeft, CircleCheck, Tickets, User, Check
 } from '@element-plus/icons-vue'
 import request from '@/utils/request'
+import { payOrder, getOrderDetail } from '@/api/order'
+import { getTicketDetail } from '@/api/ticket'
+import OrderInfoCard from './components/OrderInfoCard.vue'
+import CountdownCard from './components/CountdownCard.vue'
+import PaymentMethodsCard from './components/PaymentMethodsCard.vue'
+import PaymentNoticeCard from './components/PaymentNoticeCard.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -263,8 +132,13 @@ const timer = ref(null)
 
 // 订单信息
 const orderInfo = ref({
-  orderId: route.query.orderId,
+  orderId: null,
   orderNumber: '',
+  amount: 0,
+  totalAmount: 0,
+  status: 0,
+  expireTime: '',
+  createTime: '',
   trainCode: '',
   date: '',
   startTime: '',
@@ -273,7 +147,6 @@ const orderInfo = ref({
   destinationStation: '',
   seatTypeName: '',
   ticketPrice: 0,
-  totalAmount: 0,
   passengers: []
 })
 
@@ -283,57 +156,19 @@ const paymentMethods = ref([
     id: 'alipay',
     name: '支付宝',
     description: '推荐使用，支付快捷安全',
-    icon: '/images/alipay.png'
+    icon: '/images/alipay.png',
+    available: true
   },
   {
     id: 'wechat',
     name: '微信支付',
-    description: '微信用户首选支付方式',
-    icon: '/images/wechat-pay.png'
-  },
-  {
-    id: 'unionpay',
-    name: '银联支付',
-    description: '支持各大银行卡支付',
-    icon: '/images/unionpay.png'
-  },
-  {
-    id: 'credit-card',
-    name: '信用卡支付',
-    description: '支持Visa、MasterCard等',
-    icon: '/images/credit-card.png'
+    description: '功能待开发',
+    icon: '/images/wechat-pay.png',
+    available: false
   }
 ])
 
 const selectedPaymentMethod = ref(null)
-
-// 格式化日期
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  const weekdays = ['日', '一', '二', '三', '四', '五', '六']
-  const weekday = weekdays[date.getDay()]
-  return `${year}-${month}-${day} 周${weekday}`
-}
-
-// 格式化时间显示
-const formatTime = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  const hours = String(date.getHours()).padStart(2, '0')
-  const minutes = String(date.getMinutes()).padStart(2, '0')
-  return `${hours}:${minutes}`
-}
-
-// 格式化倒计时
-const formatCountdown = (seconds) => {
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds % 60
-  return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`
-}
 
 // 返回上一页
 const goBack = () => {
@@ -344,36 +179,141 @@ const goBack = () => {
 const loadOrderInfo = async () => {
   try {
     loading.value = true
-    // 这里应该调用获取订单详情的API
-    // const response = await request.get(`/orders/${orderInfo.value.orderId}`)
     
-    // 模拟订单数据
-    const mockOrderData = {
-      orderNumber: 'TK' + Date.now(),
-      trainCode: 'G1234',
-      date: '2024-01-15',
-      startTime: '08:30',
-      endTime: '14:20',
-      originStation: '北京南',
-      destinationStation: '上海虹桥',
-      seatTypeName: '二等座',
-      ticketPrice: 553,
-      totalAmount: 1106,
-      passengers: [
-        {
-          name: '张三',
-          idType: '身份证',
-          idNumber: '110101199001011234'
-        },
-        {
-          name: '李四',
-          idType: '身份证',
-          idNumber: '110101199002021234'
+    // 从路由参数获取orderId
+    const orderId = route.query.orderId
+    if (!orderId) {
+      ElMessage.error('订单ID缺失')
+      router.back()
+      return
+    }
+
+    // 调用API获取订单详情
+    const response = await getOrderDetail(orderId)
+    if (response.code !== 200) {
+      ElMessage.error(response.message || '获取订单信息失败')
+      router.back()
+      return
+    }
+
+    const orderData = response.data
+    
+    // 验证订单数据完整性
+    if (!orderData.orderId || !orderData.totalAmount) {
+      ElMessage.error('订单数据不完整')
+      router.back()
+      return
+    }
+
+    // 获取车票详情
+    let ticketInfo = null
+    if (orderData.ticketId) {
+      try {
+        const ticketResponse = await getTicketDetail(orderData.ticketId)
+        if (ticketResponse.code === 200) {
+          ticketInfo = ticketResponse.data
         }
-      ]
+      } catch (error) {
+        console.error('获取车票信息失败:', error)
+        ElMessage.warning('获取车票信息失败，部分信息可能不完整')
+      }
+    }
+
+    // 处理 priceDetail 数据
+    const priceDetail = orderData.priceDetail || {}
+    const baseAmount = priceDetail.baseAmount || orderData.totalAmount
+    const discountAmount = priceDetail.discountAmount || 0
+    const totalAmount = priceDetail.totalAmount || orderData.totalAmount
+    
+    // 处理乘客信息
+    const passengers = orderData.passengers ? orderData.passengers.map((passenger, index) => {
+      // 从 priceDetail.breakdown 中获取价格信息
+      const breakdown = priceDetail.breakdown?.[index] || {}
+      return {
+        name: passenger.name,
+        passengerType: passenger.passengerType,
+        seatPosition: passenger.seatPosition,
+        idType: '身份证',
+        idNumber: '***********',
+        basePrice: breakdown.basePrice || 0,
+        discount: breakdown.discount || 0,
+        actualPrice: breakdown.actualPrice || breakdown.basePrice || 0
+      }
+    }) : []
+
+    // 获取座位类型
+    const getSeatTypeName = (seatType) => {
+      const seatTypeMap = {
+        1: '一等座',
+        2: '二等座',
+        3: '商务座',
+        4: '特等座'
+      }
+      return seatTypeMap[seatType] || '二等座'
+    }
+
+    // 处理车站信息：兼容对象和字符串
+    const getStationInfo = (stationData, defaultName) => {
+      if (!stationData) return { name: defaultName }
+      
+      // 如果是字符串，直接返回
+      if (typeof stationData === 'string') {
+        return { name: stationData }
+      }
+      
+      // 如果是对象，提取 name 字段
+      if (typeof stationData === 'object') {
+        return {
+          name: stationData.name || defaultName,
+          code: stationData.code || '',
+          id: stationData.id || null
+        }
+      }
+      
+      return { name: defaultName }
+    }
+
+    // 设置订单信息 - 根据后端实际返回的数据结构
+    const processedOrderData = {
+      orderId: orderData.orderId,
+      orderNumber: orderData.orderId,
+      amount: totalAmount,
+      totalAmount: totalAmount,
+      baseAmount: baseAmount,
+      discountAmount: discountAmount,
+      status: orderData.status ?? 0,
+      expireTime: orderData.expireTime,
+      createTime: orderData.createTime,
+      payTime: orderData.payTime,
+      passengers: passengers,
+      // 从车票信息获取车次信息
+      trainCode: ticketInfo?.trainCode || 'G1234',
+      date: ticketInfo?.departureTime || ticketInfo?.departureDate || new Date().toISOString(),
+      startTime: ticketInfo?.departureTime || new Date().toISOString(),
+      endTime: ticketInfo?.arrivalTime || new Date().toISOString(),
+      originStation: getStationInfo(ticketInfo?.originStation, '出发站'),
+      destinationStation: getStationInfo(ticketInfo?.destinationStation, '到达站'),
+      seatType: { name: getSeatTypeName(ticketInfo?.seatType) },
+      seatTypeName: getSeatTypeName(ticketInfo?.seatType),
+      ticketPrice: passengers.length > 0 ? passengers[0].actualPrice : totalAmount
     }
     
-    Object.assign(orderInfo.value, mockOrderData)
+    Object.assign(orderInfo.value, processedOrderData)
+    
+    // 计算剩余支付时间
+    if (orderData.expireTime) {
+      const expireTime = new Date(orderData.expireTime).getTime()
+      const currentTime = new Date().getTime()
+      const timeDiff = expireTime - currentTime
+      
+      if (timeDiff > 0) {
+        remainingTime.value = Math.floor(timeDiff / 1000)
+      } else {
+        ElMessage.error('订单已过期')
+        router.back()
+        return
+      }
+    }
     
   } catch (error) {
     console.error('获取订单信息失败:', error)
@@ -386,6 +326,10 @@ const loadOrderInfo = async () => {
 
 // 选择支付方式
 const selectPaymentMethod = (method) => {
+  if (!method.available) {
+    ElMessage.warning('该支付方式暂不可用')
+    return
+  }
   selectedPaymentMethod.value = method
 }
 
@@ -396,30 +340,99 @@ const processPayment = async () => {
     return
   }
 
+  if (!selectedPaymentMethod.value.available) {
+    ElMessage.warning('该支付方式暂不可用')
+    return
+  }
+
+  if (selectedPaymentMethod.value.id === 'wechat') {
+    ElMessage.info('微信支付功能待开发，敬请期待')
+    return
+  }
+
   try {
     processing.value = true
     
-    // 模拟支付处理
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    // 这里应该调用支付API
-    // const response = await request.post('/payments', {
-    //   orderId: orderInfo.value.orderId,
-    //   paymentMethod: selectedPaymentMethod.value.id,
-    //   amount: orderInfo.value.totalAmount
-    // })
-    
-    // 模拟支付成功
-    showSuccessModal.value = true
-    currentStep.value = 3
-    
-    // 停止倒计时
-    if (timer.value) {
-      clearInterval(timer.value)
+    // 调用支付宝支付API
+    if (selectedPaymentMethod.value.id === 'alipay') {
+      try {
+        ElMessage.info('正在跳转支付宝支付...')
+        
+        // 调用后端支付接口，传入订单ID
+        const response = await payOrder(orderInfo.value.orderId)
+        
+        console.log('=== 支付接口响应 ===')
+        console.log('响应数据:', response)
+        console.log('==================')
+        
+        // 后端返回的是支付宝表单HTML
+        if (response.code === 200 && response.data) {
+          // response.data 是支付宝表单HTML字符串
+          const alipayForm = response.data
+          
+          // 创建一个临时div来承载表单
+          const div = document.createElement('div')
+          div.innerHTML = alipayForm
+          document.body.appendChild(div)
+          
+          // 查找表单并提交
+          const form = div.querySelector('form')
+          if (form) {
+            // 提交表单，会自动跳转到支付宝页面
+            form.submit()
+            
+            // 停止倒计时
+            if (timer.value) {
+              clearInterval(timer.value)
+              timer.value = null
+            }
+            
+            // 提示用户
+            ElMessage.success('正在跳转到支付宝支付页面...')
+            
+            // 注意：实际支付成功后，支付宝会通过回调通知后端
+            // 前端可以通过轮询或websocket来获取支付状态更新
+            // 这里先不显示成功弹窗，等用户从支付宝返回后再处理
+          } else {
+            console.error('未找到支付表单')
+            ElMessage.error('支付表单加载失败')
+          }
+        } else {
+          ElMessage.error(response.message || '获取支付信息失败')
+        }
+      } catch (apiError) {
+        console.error('支付API调用失败:', apiError)
+        
+        // 检查是否是404或接口不存在的错误
+        if (apiError.response?.status === 404 || apiError.message?.includes('404')) {
+          ElMessageBox.confirm(
+            '后端支付接口调用失败，是否模拟支付成功？',
+            '提示',
+            {
+              confirmButtonText: '模拟支付',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }
+          ).then(() => {
+            // 模拟支付成功
+            ElMessage.success('支付成功（模拟）！')
+            orderInfo.value.status = 1
+            if (timer.value) {
+              clearInterval(timer.value)
+              timer.value = null
+            }
+            showSuccessModal.value = true
+            currentStep.value = 3
+          }).catch(() => {
+            ElMessage.info('已取消支付')
+          })
+        } else {
+          ElMessage.error('支付失败：' + (apiError.message || '未知错误'))
+        }
+      }
     }
-    
   } catch (error) {
-    console.error('支付失败:', error)
+    console.error('支付过程出错:', error)
     ElMessage.error('支付失败，请重试')
   } finally {
     processing.value = false
@@ -456,18 +469,21 @@ const startCountdown = () => {
 
 // 组件挂载时初始化
 onMounted(async () => {
-  // 验证订单ID
-  if (!orderInfo.value.orderId) {
-    ElMessage.error('缺少订单信息')
+  // 从路由参数获取orderId
+  const orderId = route.query.orderId
+  
+  if (!orderId) {
+    ElMessage.error('缺少订单ID，请重新下单')
     router.back()
     return
   }
   
   await loadOrderInfo()
   
-  // 默认选择第一个支付方式
-  if (paymentMethods.value.length > 0) {
-    selectedPaymentMethod.value = paymentMethods.value[0]
+  // 默认选择第一个可用的支付方式
+  const availableMethod = paymentMethods.value.find(method => method.available)
+  if (availableMethod) {
+    selectedPaymentMethod.value = availableMethod
   }
   
   // 启动倒计时
@@ -532,298 +548,6 @@ onUnmounted(() => {
   gap: 30px;
 }
 
-/* 订单信息区域 */
-.order-info-card,
-.countdown-card,
-.payment-methods-card,
-.payment-notice-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-.card-title {
-  font-size: 18px;
-  color: #333;
-  margin: 0 0 20px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.train-info {
-  margin-bottom: 24px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.train-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.train-number {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1890ff;
-}
-
-.train-date {
-  color: #666;
-  font-size: 14px;
-}
-
-.route-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.route-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.time-display {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.time {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-  line-height: 1;
-}
-
-.date {
-  font-size: 10px;
-  color: #999;
-  line-height: 1;
-  margin-top: 2px;
-}
-
-.station {
-  font-size: 14px;
-  color: #666;
-}
-
-.route-arrow {
-  color: #1890ff;
-}
-
-.section-title {
-  font-size: 16px;
-  color: #333;
-  margin: 0 0 12px 0;
-}
-
-.passenger-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.passenger-item {
-  padding: 12px;
-  background: #fafafa;
-  border-radius: 8px;
-}
-
-.passenger-details {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.passenger-name {
-  font-weight: 600;
-  color: #333;
-}
-
-.seat-info {
-  color: #1890ff;
-  font-size: 14px;
-}
-
-.passenger-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-  color: #666;
-}
-
-.price {
-  color: #ff6b35;
-  font-weight: 600;
-}
-
-.order-summary {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.summary-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 0;
-}
-
-.summary-item.total {
-  border-top: 1px solid #f0f0f0;
-  padding-top: 12px;
-  margin-top: 8px;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.label {
-  color: #666;
-}
-
-.value {
-  color: #333;
-}
-
-.summary-item.total .value {
-  color: #ff6b35;
-  font-size: 20px;
-}
-
-/* 倒计时卡片 */
-.countdown-content {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.countdown-icon {
-  font-size: 32px;
-  color: #ff6b35;
-}
-
-.countdown-title {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 8px;
-}
-
-.countdown-timer {
-  font-size: 24px;
-  font-weight: 600;
-  color: #ff6b35;
-  margin-bottom: 4px;
-}
-
-.countdown-tip {
-  font-size: 12px;
-  color: #999;
-}
-
-/* 支付方式 */
-.payment-methods {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.payment-method {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-  border: 2px solid #f0f0f0;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.payment-method:hover {
-  border-color: #1890ff;
-}
-
-.payment-method.selected {
-  border-color: #1890ff;
-  background-color: #f0f9ff;
-}
-
-.method-icon img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-}
-
-.method-info {
-  flex: 1;
-}
-
-.method-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 4px;
-}
-
-.method-desc {
-  font-size: 12px;
-  color: #666;
-}
-
-.payment-actions {
-  text-align: center;
-}
-
-.pay-button {
-  width: 100%;
-  height: 48px;
-  font-size: 16px;
-  margin-bottom: 16px;
-}
-
-.payment-security {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  font-size: 12px;
-  color: #52c41a;
-}
-
-/* 支付说明 */
-.notice-title {
-  font-size: 14px;
-  color: #333;
-  margin: 0 0 12px 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.notice-list {
-  margin: 0;
-  padding-left: 16px;
-  color: #666;
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.notice-list li {
-  margin-bottom: 4px;
-}
 
 /* 支付成功弹窗 */
 .success-modal {
@@ -873,18 +597,6 @@ onUnmounted(() => {
   .payment-layout {
     grid-template-columns: 1fr;
     gap: 20px;
-  }
-  
-  .route-info {
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .passenger-details,
-  .passenger-meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
   }
 }
 </style>

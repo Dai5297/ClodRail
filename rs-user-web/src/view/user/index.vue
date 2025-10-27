@@ -18,7 +18,7 @@
 import { ref, onMounted } from 'vue'
 import { User, Document, UserFilled, Star, Lock } from '@element-plus/icons-vue'
 import { getUserInfo } from '@/api/user.js'
-import UserSidebar from './component/UserSidebar.vue'
+import UserSidebar from '@/view/user/components/UserSidebar.vue'
 
 const userInfo = ref({
   realName: '',

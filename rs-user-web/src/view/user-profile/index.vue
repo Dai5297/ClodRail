@@ -28,9 +28,9 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getUserInfo, updateUserInfo } from '@/api/user.js'
-import PageHeader from './component/PageHeader.vue'
-import ProfileDisplay from './component/ProfileDisplay.vue'
-import ProfileForm from './component/ProfileForm.vue'
+import PageHeader from '@/view/user-profile/components/PageHeader.vue'
+import ProfileDisplay from '@/view/user-profile/components/ProfileDisplay.vue'
+import ProfileForm from '@/view/user-profile/components/ProfileForm.vue'
 
 // 表单引用
 const profileFormRef = ref()

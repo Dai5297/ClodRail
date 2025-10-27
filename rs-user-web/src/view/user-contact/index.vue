@@ -67,9 +67,9 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { getContactList, getContactById, addContact, updateContact, deleteContact } from '@/api/contact'
-import SearchBar from './component/SearchBar.vue'
-import ContactCard from './component/ContactCard.vue'
-import ContactForm from './component/ContactForm.vue'
+import SearchBar from './components/SearchBar.vue'
+import ContactCard from './components/ContactCard.vue'
+import ContactForm from './components/ContactForm.vue'
 
 const loading = ref(false)
 const submitting = ref(false)

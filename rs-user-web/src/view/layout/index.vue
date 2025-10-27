@@ -20,7 +20,7 @@
 import {onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {ElMessage} from 'element-plus'
-import Header from './component/Header.vue'
+import Header from '@/view/layout/components/Header.vue'
 import {getUserInfo} from "@/api/user.js";
 import {logout} from "@/api/auth.js";
 

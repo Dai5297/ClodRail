@@ -46,9 +46,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import AuthTabs from './component/AuthTabs.vue'
-import LoginForm from './component/LoginForm.vue'
-import RegisterForm from './component/RegisterForm.vue'
+import AuthTabs from '@/view/login/components/AuthTabs.vue'
+import LoginForm from '@/view/login/components/LoginForm.vue'
+import RegisterForm from '@/view/login/components/RegisterForm.vue'
 
 const router = useRouter()
 

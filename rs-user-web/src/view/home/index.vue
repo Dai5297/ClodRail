@@ -1,8 +1,8 @@
 <script setup>
-import BannerSection from './component/BannerSection.vue'
-import SearchSection from './component/SearchSection.vue'
-import FeaturesSection from './component/FeaturesSection.vue'
-import PopularRoutesSection from './component/PopularRoutesSection.vue'
+import BannerSection from '@/view/home/components/BannerSection.vue'
+import SearchSection from '@/view/home/components/SearchSection.vue'
+import FeaturesSection from '@/view/home/components/FeaturesSection.vue'
+import PopularRoutesSection from '@/view/home/components/PopularRoutesSection.vue'
 
 // 由于所有子组件都已经自行处理事件和路由跳转，
 // 父组件不再需要定义事件处理函数
