@@ -1,6 +1,7 @@
 package com.rs.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.rs.dto.response.customer.PassengerResDTO;
 import com.rs.enums.RespCode;
 import com.rs.exception.CommonException;
 import com.rs.mapper.ContactMapper;
@@ -16,6 +17,7 @@ import com.rs.util.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -105,5 +107,20 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public void delete(Long id) {
         contactMapper.deleteById(id);
+    }
+
+    /**
+     * 查询联系人
+     *
+     * @param passengerIds 联系人id
+     * @return 联系人信息
+     */
+    @Override
+    public List<PassengerResDTO> queryPassenger(List<Long> passengerIds) {
+        List<PassengerResDTO> result = new ArrayList<>();
+        for (Long passengerId : passengerIds) {
+            result.add(contactMapper.queryPassenger(passengerId));
+        }
+        return result;
     }
 }

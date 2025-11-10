@@ -6,28 +6,27 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "rs.seata")
+@ConfigurationProperties(prefix = "rs.seata.nacos")
 public class SeataProperties {
 
-    private Registry registry = new Registry();
+    /**
+     * Nacos 服务器地址，对应配置项：rs.seata.nacos.serve-addr
+     * 注意：字段名使用 serveAddr（因为配置是 serve-addr）
+     */
+    private String serveAddr = "localhost:8848";
 
-    @Data
-    public static class Registry {
-        private String type = "nacos";
-        private Nacos nacos = new Nacos();
+    /**
+     * Nacos 命名空间 ID
+     */
+    private String namespace = "";
 
-        @Data
-        public static class Nacos {
-            /**
-             * 注意：字段名应为 serverAddr（对应 server-addr）
-             * 但你原始配置中写的是 serve-addr（拼写错误）
-             * 此处按正确语义使用 serverAddr，若需保留错误拼写，请改为 serveAddr
-             */
-            private String serverAddr = "localhost:8848";
-            private String namespace = "";
-            private String group = "DEFAULT_GROUP";
-            private String application = "seata-server";
+    /**
+     * Seata Server 在 Nacos 中注册的应用名
+     */
+    private String application = "seata-server";
 
-        }
-    }
+    /**
+     * Nacos 分组（可选，默认 DEFAULT_GROUP）
+     */
+    private String group = "DEFAULT_GROUP";
 }

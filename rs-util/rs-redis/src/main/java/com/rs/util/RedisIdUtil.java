@@ -19,7 +19,7 @@ public class RedisIdUtil {
 
     private static final long BEGIN_TIMESTAMP = 1735689600L;
 
-    public long nextId(String key) {
+    public String nextId(String key) {
         // 1. 获取时间戳位
         LocalDateTime now = LocalDateTime.now();
         long epochSecond = now.toEpochSecond(ZoneOffset.UTC);
@@ -27,7 +27,7 @@ public class RedisIdUtil {
         // 2. 获取序列号位
         String data = now.format(DateTimeFormatter.ofPattern("yyyy:MM:dd"));
         Long increment = stringRedisTemplate.opsForValue().increment(key + ":" + data);
-        return timestamp << 32 | increment;
+        return String.valueOf(timestamp << 32 | increment);
     }
 
 }

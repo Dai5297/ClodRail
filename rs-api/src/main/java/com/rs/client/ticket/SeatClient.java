@@ -1,13 +1,10 @@
 package com.rs.client.ticket;
 
-import com.rs.dto.request.FetchSeatReqDTO;
-import com.rs.dto.request.OccupySeatReqDTO;
-import com.rs.dto.response.FetchSeatResDTO;
+import com.rs.dto.request.ticket.FetchSeatReqDTO;
+import com.rs.dto.response.ticket.FetchSeatResDTO;
+import com.rs.model.ticket.Seat;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "ticket-service", contextId = "seatClient", path = "/inner/seats")
 public interface SeatClient {
@@ -21,9 +18,12 @@ public interface SeatClient {
     @PostMapping("/fetch")
     FetchSeatResDTO fetchSeat(@RequestBody FetchSeatReqDTO reqDTO);
 
-    @PostMapping("/occupy")
-    boolean preOccupySeat(@RequestBody OccupySeatReqDTO occupySeatReqDTO);
-
     @PutMapping("/rollback/seat")
     void rollbackOccupySeat(@RequestParam Long orderId);
+
+    @GetMapping("/check/stock")
+    boolean checkStock(@RequestParam("ticketId") Long ticketId, @RequestParam("seatType") Integer seatType);
+
+    @GetMapping("/query/seatPosition")
+    Seat querySeat(@RequestParam String orderId);
 }

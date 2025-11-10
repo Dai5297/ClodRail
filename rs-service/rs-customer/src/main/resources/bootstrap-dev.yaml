@@ -6,6 +6,18 @@ rs:
     username: root
     password: 20050918
 
+  redis:
+    host: localhost
+    port: 6379
+    password: 050815
+    timeout: 2000
+    database: 1
+    pool:
+      max-active: 8
+      max-idle: 8
+      min-idle: 0
+      max-wait: -1
+
   knife4j:
     title: 用户服务
     description: 用户服务接口文档
@@ -14,8 +26,8 @@ rs:
       name: dai
       url: https://github.com/Dai5297
       email: 15160255297@163.com
-openapi:
-  groups:
-    - groupName: 用户端-用户服务
-      matchPath:
-        - com.rs.controller.user
+  openapi:
+    groups:
+      - groupName: 用户端-用户服务
+        matchPath:
+          - com.rs.controller.user

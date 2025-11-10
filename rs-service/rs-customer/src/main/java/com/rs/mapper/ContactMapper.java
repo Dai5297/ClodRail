@@ -1,5 +1,6 @@
 package com.rs.mapper;
 
+import com.rs.dto.response.customer.PassengerResDTO;
 import com.rs.model.customer.Contact;
 import com.rs.model.dto.response.ContactAddResDTO;
 import com.rs.model.dto.response.ContactDetailResDTO;
@@ -22,4 +23,6 @@ public interface ContactMapper {
     boolean updateContact(Contact contact);
 
     void deleteById(Long id);
+
+    PassengerResDTO queryPassenger(Long passengerId);
 }

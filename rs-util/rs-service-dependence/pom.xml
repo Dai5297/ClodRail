@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>rs-service-dependence</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <description>
         微服务工程公共依赖工程
     </description>
@@ -74,15 +74,14 @@
         </dependency>
     </dependencies>
 
-
     <build>
         <plugins>
+            <!-- 确保不继承 spring-boot-maven-plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.5.5</version>
                 <configuration>
-                    <skip>true</skip> <!-- 必须跳过，因为此模块无主类 -->
+                    <skip>true</skip> <!-- 跳过 repackage -->
                 </configuration>
             </plugin>
         </plugins>

@@ -1,4 +1,4 @@
-package com.rs.dto.response;
+package com.rs.dto.response.ticket;
 
 import lombok.Data;
 

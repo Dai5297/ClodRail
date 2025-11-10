@@ -39,4 +39,12 @@ public interface TickerService {
      * @return 车票详情
      */
     TicketDetailResDTO ticketDetail(Long ticketId);
+
+    /**
+     * 查询车票价格
+     *
+     * @param ticketId 车票ID
+     * @return 车票价格
+     */
+    Double queryTicketPrice(Long ticketId, Integer seatType);
 }

@@ -4,6 +4,23 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rs.mapper.OrderMapper">
 
+    <resultMap id="OrderDetailResultMap" type="com.rs.model.dto.response.OrderDetailResDTO">
+        <id property="orderId" column="order_id"/>
+        <result property="status" column="status"/>
+        <result property="totalAmount" column="amount"/>
+        <result property="ticketId" column="ticket_id"/>
+        <result property="voucherId" column="voucher_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="payTime" column="pay_time"/>
+        <result property="expireTime" column="expire_time"/>
+    </resultMap>
+
+    <resultMap id="PermissionsResultMap" type="com.rs.model.domain.Permissions">
+        <result property="canPay" column="can_pay"/>
+        <result property="canCancel" column="can_cancel"/>
+        <result property="canChange" column="can_change"/>
+    </resultMap>
+
     <insert id="createOrder">
         INSERT INTO `order`
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -14,6 +31,7 @@
             <if test="status != null">status,</if>
             <if test="paymentMethod != null">payment_method,</if>
             <if test="couponId != null">coupon_id,</if>
+            <if test="expireTime != null">expire_time,</if>
             <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null">update_by,</if>
@@ -27,6 +45,7 @@
             <if test="status != null">#{status},</if>
             <if test="paymentMethod != null">#{paymentMethod},</if>
             <if test="couponId != null">#{couponId},</if>
+            <if test="expireTime != null">#{expireTime},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
@@ -35,7 +54,50 @@
     </insert>
 
     <insert id="createOrderSeat">
-        insert into order_seat (order_id, seat_id)
-            value (#{orderId}, #{seatId})
+        insert into order_seat (order_id, seat_id, passenger_id)
+            value (#{orderId}, #{seatId}, #{passengerId})
     </insert>
+
+    <update id="updateAliPayStatus">
+        update `order`
+        set status = 1,
+            payment_method = 0,
+            pay_time = now()
+        where order_id = #{orderId}
+    </update>
+
+    <select id="queryDetail" resultMap="OrderDetailResultMap">
+        select order_id,
+               status,
+               amount,
+               ticket_id,
+               voucher_id,
+               create_time,
+               pay_time,
+               expire_time
+        from `order`
+        where order_id = #{orderId}
+    </select>
+
+    <select id="queryPassengers" resultType="java.lang.Long">
+        select passenger_id
+        from order_seat
+        where order_id = #{orderId}
+    </select>
+
+    <select id="queryPermission" resultMap="PermissionsResultMap">
+        SELECT
+            IF(status = 0, 1, 0) AS can_pay,
+            IF(status &lt; 2, 1, 0) AS can_cancel,
+            IF(has_change = 0, 1, 0) AS can_change
+        FROM `order`
+        WHERE order_id = #{orderId}
+    </select>
+
+    <select id="queryById" resultType="com.rs.model.order.Order">
+        select *
+        from `order`
+        where order_id = #{orderId}
+    </select>
+
 </mapper>

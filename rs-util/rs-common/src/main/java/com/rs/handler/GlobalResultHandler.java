@@ -1,8 +1,9 @@
 package com.rs.handler;
 
-import com.rs.model.RespResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rs.annotation.IgnoreResult;
+import com.rs.model.RespResult;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+
+import java.lang.reflect.Method;
 
 /**
  * 全局结果封装处理（支持String类型）
@@ -33,6 +36,11 @@ public class GlobalResultHandler implements ResponseBodyAdvice<Object> {
         // 排查Swagger请求及内部接口
         if (requestURI.startsWith("/v3/api-docs") || requestURI.startsWith("/swagger") || requestURI.startsWith("/inner")) {
             return false; // 不包装
+        }
+
+        Method method = returnType.getMethod();
+        if (method.isAnnotationPresent(IgnoreResult.class)) {
+            return false;
         }
 
         return true;

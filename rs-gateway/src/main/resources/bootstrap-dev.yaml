@@ -1,0 +1,15 @@
+rs:
+  redis:
+    host: localhost
+    port: 6379
+    password: 050815
+    timeout: 2000
+    database: 1
+    pool:
+      max-active: 8
+      max-idle: 8
+      min-idle: 0
+      max-wait: -1
+  auth:
+    exclude:
+      paths: /doc.html, /account/login/username, /orders/pay/alipay/notify

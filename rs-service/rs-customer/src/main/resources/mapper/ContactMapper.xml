@@ -26,6 +26,12 @@
         <result property="remark" column="remark"/>
     </resultMap>
 
+    <resultMap id="PassengerResultMap" type="com.rs.dto.response.customer.PassengerResDTO">
+        <id property="passengerId" column="id"/>
+        <result property="name" column="name"/>
+        <result property="passengerType" column="passenger_type"/>
+    </resultMap>
+
     <insert id="addContact">
         insert into contact (user_id, name, id_card, phone, email, passenger_type, is_default, remark)
         values (#{userId}, #{name}, #{idCard}, #{phone}, #{email}, #{passengerType}, #{isDefault}, #{remark})
@@ -102,6 +108,15 @@
     </select>
 
     <select id="getDefaultCount" resultType="java.lang.Integer">
-        select count(id) from contact where user_id = #{userId} and is_default = 1
+        select count(id)
+        from contact
+        where user_id =  #{userId}
+          and is_default = 1
+    </select>
+
+    <select id="queryPassenger" resultMap="PassengerResultMap">
+        select id, name, passenger_type
+        from contact
+        where id = #{passengerId}
     </select>
 </mapper>

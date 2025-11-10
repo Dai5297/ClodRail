@@ -1,9 +1,9 @@
 package com.rs.service;
 
-import com.rs.dto.request.OccupySeatReqDTO;
-import com.rs.dto.response.FetchSeatResDTO;
+import com.rs.dto.request.ticket.FetchSeatReqDTO;
+import com.rs.dto.response.ticket.FetchSeatResDTO;
 import com.rs.model.dto.response.AvailableSeatResDTO;
-import com.rs.dto.request.FetchSeatReqDTO;
+import com.rs.model.ticket.Seat;
 
 import java.util.List;
 
@@ -26,15 +26,22 @@ public interface SeatService {
     FetchSeatResDTO fetchSeat(FetchSeatReqDTO fetchSeatReqDTO);
 
     /**
-     * 预占座位
-     * @param occupySeatReqDTO 预占座位参数
-     * @return 是否成功
-     */
-    boolean preOccupySeat(OccupySeatReqDTO occupySeatReqDTO);
-
-    /**
      * 回滚预占座位
      * @param orderId 订单ID
      */
     void rollbackOccupySeat(Long orderId);
+
+    /**
+     * 检查库存
+     * @param ticketId 订单ID
+     * @return 是否有库存
+     */
+    boolean checkStock(Long ticketId, Integer seatType);
+
+    /**
+     * 查询座位
+     * @param orderId 订单ID
+     * @return 座位
+     */
+    Seat querySeat(String orderId);
 }

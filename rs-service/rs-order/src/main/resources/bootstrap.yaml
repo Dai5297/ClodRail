@@ -22,6 +22,8 @@ spring:
       - nacos:shared-knife4j.yaml
       - nacos:shared-rabbitmq.yaml
       - nacos:shared-seata.yaml
+      - nacos:shared-redis.yaml
+      - nacos:shared-alipay.yaml
 server:
   port: 18083
 

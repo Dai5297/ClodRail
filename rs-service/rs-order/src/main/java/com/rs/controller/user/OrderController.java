@@ -2,15 +2,13 @@ package com.rs.controller.user;
 
 import com.rs.model.dto.request.OrderCreateReqDTO;
 import com.rs.model.dto.response.OrderCreateResDTO;
+import com.rs.model.dto.response.OrderDetailResDTO;
 import com.rs.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.seata.spring.annotation.GlobalTransactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,5 +23,10 @@ public class OrderController {
     @GlobalTransactional
     public OrderCreateResDTO createOrder(@RequestBody OrderCreateReqDTO reqDTO) {
         return orderService.createOrder(null, reqDTO);
+    }
+
+    @GetMapping("/detail/{orderId}")
+    public OrderDetailResDTO orderDetail(@PathVariable String orderId) {
+        return orderService.orderDetail(orderId);
     }
 }

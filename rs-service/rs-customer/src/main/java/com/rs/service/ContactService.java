@@ -1,10 +1,13 @@
 package com.rs.service;
 
+import com.rs.dto.response.customer.PassengerResDTO;
 import com.rs.model.PageResult;
 import com.rs.model.dto.request.ContactReqDTO;
 import com.rs.model.dto.response.ContactAddResDTO;
 import com.rs.model.dto.response.ContactDetailResDTO;
 import com.rs.model.dto.response.ContactPageResDTO;
+
+import java.util.List;
 
 public interface ContactService {
 
@@ -50,4 +53,12 @@ public interface ContactService {
      * @param id 联系人id
      */
     void delete(Long id);
+
+    /**
+     * 查询联系人
+     *
+     * @param passengerIds 联系人id
+     * @return 联系人信息
+     */
+    List<PassengerResDTO> queryPassenger(List<Long> passengerIds);
 }

@@ -1,9 +1,9 @@
 package com.rs.controller.inner;
 
-import com.rs.dto.request.OccupySeatReqDTO;
-import com.rs.dto.response.FetchSeatResDTO;
+import com.rs.dto.request.ticket.FetchSeatReqDTO;
+import com.rs.dto.response.ticket.FetchSeatResDTO;
+import com.rs.model.ticket.Seat;
 import com.rs.service.SeatService;
-import com.rs.dto.request.FetchSeatReqDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +21,18 @@ public class InnerSeatController {
         return seatService.fetchSeat(reqDTO);
     }
 
-    @PostMapping("/occupy")
-    boolean preOccupySeat(@RequestBody OccupySeatReqDTO occupySeatReqDTO) {
-        return seatService.preOccupySeat(occupySeatReqDTO);
-    }
-
     @PutMapping("/rollback/seat")
     void rollbackOccupySeat(@RequestParam Long orderId) {
         seatService.rollbackOccupySeat(orderId);
+    }
+
+    @GetMapping("/check/stock")
+    boolean checkStock(@RequestParam("ticketId") Long ticketId, @RequestParam("seatType") Integer seatType){
+        return seatService.checkStock(ticketId, seatType);
+    }
+
+    @GetMapping("/query/seatPosition")
+    Seat querySeat(@RequestParam String orderId) {
+        return seatService.querySeat(orderId);
     }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class OrderCreateResDTO {
 
-    private Long id;
+    private String id;
 
     private Double amount;
 

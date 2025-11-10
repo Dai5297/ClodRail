@@ -157,5 +157,16 @@
         where t.id = #{id}
     </select>
 
+    <select id="queryTicketPrice" resultType="java.lang.Double">
+        SELECT
+            CASE
+                WHEN #{seatType} = 1 THEN first_class_price
+                WHEN #{seatType} = 2 THEN second_class_price
+                ELSE 0 -- 或者其它适当的默认值
+                END AS selected_price
+        FROM ticket
+        WHERE id = #{ticketId}
+    </select>
+
 
 </mapper>

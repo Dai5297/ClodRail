@@ -27,6 +27,9 @@
         <springdoc.version>2.8.9</springdoc.version>
         <pagehelper.version>2.1.1</pagehelper.version>
         <springamqp.version>3.5.5</springamqp.version>
+        <alipay.version>4.9.28.ALL</alipay.version>
+        <aliessdk.version>2.2.0</aliessdk.version>
+        <langchain4j.version>1.8.0-beta15</langchain4j.version>
     </properties>
 
     <modules>
@@ -37,6 +40,8 @@
         <module>rs-mysql</module>
         <module>rs-rabbitmq</module>
         <module>rs-seata</module>
+        <module>rs-thirdparty</module>
+        <module>rs-langchain4j</module>
     </modules>
 
     <dependencyManagement>
@@ -112,6 +117,43 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-amqp</artifactId>
                 <version>${springamqp.version}</version>
+            </dependency>
+
+            <!-- Redisson -->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>3.52.0</version>
+            </dependency>
+
+            <!-- 支付宝 -->
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-sdk-java</artifactId>
+                <version>${alipay.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-easysdk</artifactId>
+                <version>${aliessdk.version}</version>
+            </dependency>
+
+            <!-- langchain4j -->
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-community-bom</artifactId>
+                <version>${langchain4j.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-bom</artifactId>
+                <version>1.8.0</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -11,10 +11,10 @@
     </parent>
 
     <artifactId>rs-knife4j</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <properties>
-        <maven.compiler.source>24</maven.compiler.source>
-        <maven.compiler.target>24</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -30,4 +30,16 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <!-- 确保不继承 spring-boot-maven-plugin -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip> <!-- 跳过 repackage -->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

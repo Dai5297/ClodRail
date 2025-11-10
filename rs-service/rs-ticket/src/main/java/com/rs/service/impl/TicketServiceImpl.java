@@ -8,7 +8,6 @@ import com.rs.model.PageResult;
 import com.rs.model.dto.response.HotTicketResDTO;
 import com.rs.model.dto.response.SearchTicketResDTO;
 import com.rs.model.dto.response.TicketDetailResDTO;
-import com.rs.model.ticket.Ticket;
 import com.rs.service.TickerService;
 import com.rs.util.PageUtil;
 import lombok.RequiredArgsConstructor;
@@ -70,6 +69,11 @@ public class TicketServiceImpl implements TickerService {
         ticketDetailResDTO.setSeatTypes(seatMapper.querySeatTypes(ticketId));
         ticketDetailResDTO.setStopoverStations(ticketMapper.queryStopoverStations(ticketId));
         return ticketDetailResDTO;
+    }
+
+    @Override
+    public Double queryTicketPrice(Long ticketId, Integer seatType) {
+        return ticketMapper.queryTicketPrice(ticketId, seatType);
     }
 
 }

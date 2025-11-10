@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class CreateTicketOrderMessage {
-    private Long orderId;
+    private String orderId;
 
     private List<Long> passengerIds;
 }

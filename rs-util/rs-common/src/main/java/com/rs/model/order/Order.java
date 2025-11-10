@@ -4,6 +4,8 @@ import com.rs.model.BaseModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.LocalDateTime;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Order extends BaseModel {
@@ -16,7 +18,7 @@ public class Order extends BaseModel {
     /**
      * 订单id
      */
-    private Long orderId;
+    private String orderId;
 
     /**
      * 下单用户
@@ -47,4 +49,14 @@ public class Order extends BaseModel {
      * 费用（单位：分）
      */
     private Double amount;
+
+    /**
+     * 过期时间
+     */
+    private LocalDateTime expireTime;
+
+    /**
+     * 支付时间
+     */
+    private LocalDateTime payTime;
 }

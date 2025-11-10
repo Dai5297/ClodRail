@@ -17,6 +17,7 @@ spring:
     import:
       - nacos:shared-mysql.yaml
       - nacos:shared-knife4j.yaml
+      - nacos:shared-redis.yaml
 
 server:
   port: 18082

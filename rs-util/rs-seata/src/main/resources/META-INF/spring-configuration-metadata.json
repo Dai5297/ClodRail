@@ -1,51 +1,35 @@
 {
   "groups": [
     {
-      "name": "seata",
-      "type": "com.example.config.SeataProperties",
-      "sourceType": "com.example.config.SeataProperties"
-    },
-    {
-      "name": "seata.registry",
-      "type": "com.example.config.SeataProperties$Registry",
-      "sourceType": "com.example.config.SeataProperties$Registry"
-    },
-    {
-      "name": "seata.registry.nacos",
-      "type": "com.example.config.SeataProperties$Registry$Nacos",
-      "sourceType": "com.example.config.SeataProperties$Registry$Nacos"
+      "name": "rs.seata.nacos",
+      "type": "properties.SeataProperties",
+      "sourceType": "properties.SeataProperties"
     }
   ],
   "properties": [
     {
-      "name": "seata.registry.type",
+      "name": "rs.seata.nacos.serve-addr",
       "type": "java.lang.String",
-      "description": "Seata 注册中心类型，例如 nacos、eureka、redis 等。",
-      "defaultValue": "nacos"
-    },
-    {
-      "name": "seata.registry.nacos.server-addr",
-      "type": "java.lang.String",
-      "description": "Nacos 服务器地址，格式为 host:port。支持占位符 ${rs.seata.nacos.serve-addr}，默认值为 localhost:8848。",
+      "description": "Nacos 服务器地址，格式为 host:port",
       "defaultValue": "localhost:8848"
     },
     {
-      "name": "seata.registry.nacos.namespace",
+      "name": "rs.seata.nacos.namespace",
       "type": "java.lang.String",
-      "description": "Nacos 命名空间 ID（非命名空间名称），用于隔离配置和服务。可为空。",
+      "description": "Nacos 命名空间 ID（UUID 格式）",
       "defaultValue": ""
     },
     {
-      "name": "seata.registry.nacos.group",
+      "name": "rs.seata.nacos.application",
       "type": "java.lang.String",
-      "description": "Nacos 分组名称，默认为 DEFAULT_GROUP。",
-      "defaultValue": "DEFAULT_GROUP"
+      "description": "Seata Server 在 Nacos 中注册的服务名",
+      "defaultValue": "seata-server"
     },
     {
-      "name": "seata.registry.nacos.application",
+      "name": "rs.seata.nacos.group",
       "type": "java.lang.String",
-      "description": "Seata 服务在 Nacos 中注册的应用名，通常为 seata-server。",
-      "defaultValue": "seata-server"
+      "description": "Nacos 分组名称",
+      "defaultValue": "DEFAULT_GROUP"
     }
   ],
   "hints": []

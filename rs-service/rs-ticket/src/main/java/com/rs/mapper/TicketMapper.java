@@ -31,4 +31,9 @@ public interface TicketMapper {
      * 查询车票的经停站点
      */
     List<StopStationInfo> queryStopoverStations(Long id);
+
+    /**
+     * 获取车票的座位价格
+     */
+    Double queryTicketPrice(Long ticketId, Integer seatType);
 }

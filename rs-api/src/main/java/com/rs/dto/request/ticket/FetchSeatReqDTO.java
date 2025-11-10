@@ -1,4 +1,4 @@
-package com.rs.dto.request;
+package com.rs.dto.request.ticket;
 
 import lombok.Data;
 
@@ -7,7 +7,7 @@ public class FetchSeatReqDTO {
 
     private Long ticketId;
 
-    private Long orderId;
+    private String orderId;
 
     private Integer seatType;
 

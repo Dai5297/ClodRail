@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rs.mapper.SeatMapper">
     
-    <resultMap id="fetchSeatResultMap" type="com.rs.dto.response.FetchSeatResDTO">
+    <resultMap id="fetchSeatResultMap" type="com.rs.dto.response.ticket.FetchSeatResDTO">
         <id property="id" column="id"/>
         <result property="seatNo" column="seat_no"/>
         <result property="fullSeatCode" column="full_seat_code"/>
@@ -42,6 +42,20 @@
                 ,
                  id
         LIMIT 1
+    </select>
+
+    <select id="queryStock" resultType="java.lang.Integer">
+        select count(id)
+        from seat
+        where ticket_id = #{ticketId}
+          and seat_type = #{seatType}
+          and status = 0
+          and order_id is null
+    </select>
+    <select id="querySeatPosition" resultType="com.rs.model.ticket.Seat">
+        select *
+        from seat
+        where order_id = #{orderId}
     </select>
 
     <update id="preOccupationSeat">

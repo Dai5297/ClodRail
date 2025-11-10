@@ -3,8 +3,7 @@ package com.rs.controller.inner;
 import com.rs.service.TickerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -13,4 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class InnerTicketController {
 
     private final TickerService tickerService;
+
+    @GetMapping("/price")
+    Double queryTicketPrice(@RequestParam("ticketId") Long ticketId, @RequestParam("seatType") Integer seatType) {
+        return tickerService.queryTicketPrice(ticketId, seatType);
+    }
 }

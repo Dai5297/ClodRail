@@ -1,11 +1,11 @@
 package com.rs.service.impl;
 
-import com.rs.dto.request.OccupySeatReqDTO;
-import com.rs.dto.response.FetchSeatResDTO;
+import com.rs.dto.request.ticket.FetchSeatReqDTO;
+import com.rs.dto.response.ticket.FetchSeatResDTO;
 import com.rs.mapper.SeatMapper;
 import com.rs.model.dto.response.AvailableSeatResDTO;
+import com.rs.model.ticket.Seat;
 import com.rs.service.SeatService;
-import com.rs.dto.request.FetchSeatReqDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,19 +34,26 @@ public class SeatServiceImpl implements SeatService {
     @Transactional
     public FetchSeatResDTO fetchSeat(FetchSeatReqDTO fetchSeatReqDTO) {
         FetchSeatResDTO seat = seatMapper.fetchSeat(fetchSeatReqDTO);
+        if (seat == null) {
+            return null;
+        }
         Integer updateNum = seatMapper.preOccupationSeat(seat.getId(), fetchSeatReqDTO.getOrderId());
         return updateNum > 0 ? seat : null;
     }
 
     @Override
-    @Transactional
-    public boolean preOccupySeat(OccupySeatReqDTO occupySeatReqDTOd) {
-        Integer updateNum = seatMapper.preOccupationSeat(occupySeatReqDTOd.getSeatId(), occupySeatReqDTOd.getOrderId());
-        return updateNum > 0;
+    public void rollbackOccupySeat(Long orderId) {
+        seatMapper.rollbackOccupySeat(orderId);
     }
 
     @Override
-    public void rollbackOccupySeat(Long orderId) {
-        seatMapper.rollbackOccupySeat(orderId);
+    public boolean checkStock(Long ticketId, Integer seatType) {
+        Integer stock = seatMapper.queryStock(ticketId, seatType);
+        return stock > 0;
+    }
+
+    @Override
+    public Seat querySeat(String orderId) {
+        return seatMapper.querySeatPosition(orderId);
     }
 }

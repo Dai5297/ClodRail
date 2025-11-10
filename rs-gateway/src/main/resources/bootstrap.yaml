@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: dev
   application:
     name: rs-gateway
   cloud:
@@ -6,6 +8,9 @@ spring:
       server-addr: 127.0.0.1:8848
       discovery:
         namespace: 83a90920-a536-4767-b536-3e99c506b1a0
+      config:
+        namespace: 83a90920-a536-4767-b536-3e99c506b1a0
+        file-extension: yaml
     gateway:
       routes:
         - id: customer-service
@@ -20,6 +25,13 @@ spring:
           uri: lb://order-service
           predicates:
             - Path=/orders/**
+        - id: assistant-service
+          uri: lb://assistant-service
+          predicates:
+            - Path=/assistant/**
+  config:
+    import:
+      - nacos:shared-redis.yaml
   main:
     web-application-type: reactive
 server:
