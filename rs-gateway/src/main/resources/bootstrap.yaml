@@ -13,22 +13,22 @@ spring:
         file-extension: yaml
     gateway:
       routes:
-        - id: customer-service
+        - id: user-service
           uri: lb://customer-service
           predicates:
-            - Path=/user/**, /account/**, /contact/**, /customer-service/**
+            - Path=/customer/user/**, /customer/account/**, /customer/contact/**
         - id: ticket-service
           uri: lb://ticket-service
           predicates:
-            - Path=/tickets/**, /stations/**, /seats/**, /inner/ticket/**
+            - Path=/customer/tickets/**, /customer/stations/**, /customer/seats/**, /inner/ticket/**
         - id: order-service
           uri: lb://order-service
           predicates:
-            - Path=/orders/**
+            - Path=/customer/orders/**
         - id: assistant-service
           uri: lb://assistant-service
           predicates:
-            - Path=/assistant/**
+            - Path=/customer/assistant/**
   config:
     import:
       - nacos:shared-redis.yaml

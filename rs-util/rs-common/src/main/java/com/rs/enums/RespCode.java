@@ -7,6 +7,7 @@ public enum RespCode {
 
     SUCCESS(200),
     UNAUTHORIZED(401),
+    FORBIDDEN(403),
     ERROR(500),
     SYSTEM_ERROR(501),
     DATA_NOT_EXIST(502),

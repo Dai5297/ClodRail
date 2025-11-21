@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @Tag(name = "车票相关接口")
 @RequiredArgsConstructor
-@RequestMapping("/tickets")
+@RequestMapping("/customer/tickets")
 public class TicketController {
 
     private final TickerService tickerService;

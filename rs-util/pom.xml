@@ -42,6 +42,7 @@
         <module>rs-seata</module>
         <module>rs-thirdparty</module>
         <module>rs-langchain4j</module>
+        <module>rs-netty</module>
     </modules>
 
     <dependencyManagement>

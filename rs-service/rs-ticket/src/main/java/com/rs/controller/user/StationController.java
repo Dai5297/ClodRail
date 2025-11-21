@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @Tag(name = "站点管理")
 @RequiredArgsConstructor
-@RequestMapping("/stations")
+@RequestMapping("/customer/stations")
 public class StationController {
 
     private final StationService stationService;

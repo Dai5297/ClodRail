@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "座位相关接口")
-@RequestMapping("/seats")
+@RequestMapping("/customer/seats")
 public class SeatController {
 
     private final SeatService seatService;

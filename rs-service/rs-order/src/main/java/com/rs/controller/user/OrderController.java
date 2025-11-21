@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "订单相关接口")
-@RequestMapping("/orders")
+@RequestMapping("/customer/orders")
 public class OrderController {
 
     private final OrderService orderService;

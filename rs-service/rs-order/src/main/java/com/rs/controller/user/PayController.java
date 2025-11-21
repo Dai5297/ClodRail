@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "订单支付接口")
-@RequestMapping("/orders/pay")
+@RequestMapping("/customer/ticket/pay")
 public class PayController {
 
     private final PayService payService;

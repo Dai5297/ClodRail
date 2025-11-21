@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
     <description>微服务业务工程</description>
     <modules>
-        <module>rs-customer</module>
+        <module>rs-user</module>
         <module>rs-ticket</module>
         <module>rs-order</module>
         <module>rs-assistant</module>

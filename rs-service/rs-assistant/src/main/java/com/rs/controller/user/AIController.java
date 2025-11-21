@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "用户客服接口")
-@RequestMapping("/assistant")
+@RequestMapping("/customer/assistant")
 public class AIController {
 
     private final AIService aiService;

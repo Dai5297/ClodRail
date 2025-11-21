@@ -13,3 +13,6 @@ rs:
   auth:
     exclude:
       paths: /doc.html, /account/login/username, /orders/pay/alipay/notify
+  security:
+    ignore-urls:
+      - /costumer/**
