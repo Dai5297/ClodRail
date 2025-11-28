@@ -1,7 +1,7 @@
 package com.rs.mapper;
 
 import com.rs.model.customer.User;
-import com.rs.model.dto.response.UserInfoResDTO;
+import com.rs.model.dto.response.user.UserInfoResDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

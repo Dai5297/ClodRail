@@ -8,6 +8,16 @@ public class RedisUserKeyConstant {
     public static final String USER_LOGIN_TOKEN = "user:login:token:";
 
     /**
+     * 管理员登录tokenKey
+     */
+    public static final String ADMIN_LOGIN_TOKEN = "admin:login:token:";
+
+    /**
+     * 用户权限Key
+     */
+    public static final String AUTH_ROLE = "auth:role:";
+
+    /**
      * 用户登录tokenTTL
      */
     public static final Long USER_LOGIN_TOKEN_TTL = 3600000L;

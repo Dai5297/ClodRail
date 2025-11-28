@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.PermissionMapper">
+
+    <select id="queryPermission" resultType="com.rs.model.customer.AdminPermission">
+        select *
+        from admin_permission
+        where role = #{role}
+    </select>
+    <select id="queryRoutes" resultType="java.lang.String">
+        select permission
+        from admin_permission
+        where role = #{role}
+          and type = 1
+    </select>
+</mapper>

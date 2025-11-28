@@ -5,15 +5,16 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.rs.annotation.Lock;
 import com.rs.client.RabbitClient;
-import com.rs.client.customer.ContactClient;
+import com.rs.client.user.ContactClient;
 import com.rs.client.ticket.SeatClient;
 import com.rs.client.ticket.TicketClient;
 import com.rs.dto.request.ticket.FetchSeatReqDTO;
-import com.rs.dto.response.customer.PassengerResDTO;
+import com.rs.dto.response.user.PassengerResDTO;
 import com.rs.dto.response.ticket.FetchSeatResDTO;
 import com.rs.enums.RespCode;
 import com.rs.exception.CommonException;
 import com.rs.mapper.OrderMapper;
+import com.rs.model.PageResult;
 import com.rs.model.domain.CreateTicketOrderMessage;
 import com.rs.model.domain.Passenger;
 import com.rs.model.domain.PriceDetail;
@@ -23,6 +24,7 @@ import com.rs.model.dto.response.OrderDetailResDTO;
 import com.rs.model.order.Order;
 import com.rs.model.ticket.Seat;
 import com.rs.service.OrderService;
+import com.rs.util.PageUtil;
 import com.rs.util.RedisIdUtil;
 import com.rs.util.UserContext;
 import jakarta.transaction.Transactional;
@@ -425,6 +427,14 @@ public class OrderServiceImpl implements OrderService {
         detailResDTO.setPassengers(passengers);
         detailResDTO.setPermissions(orderMapper.queryPermission(orderId));
         return detailResDTO;
+    }
+
+    @Override
+    public PageResult<OrderDetailResDTO> page(Integer pageNum, Integer pageSize, String orderId, Integer status) {
+        PageUtil.startPage(pageNum, pageSize);
+        Long userId = UserContext.get();
+        List<OrderDetailResDTO> orderDetailResDTOS = orderMapper.queryOrders(userId, orderId, status);
+        return PageUtil.buildPageResult(orderDetailResDTOS);
     }
 
     /**

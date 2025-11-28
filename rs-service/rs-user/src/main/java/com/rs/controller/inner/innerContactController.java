@@ -1,6 +1,6 @@
 package com.rs.controller.inner;
 
-import com.rs.dto.response.customer.PassengerResDTO;
+import com.rs.dto.response.user.PassengerResDTO;
 import com.rs.service.ContactService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

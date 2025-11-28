@@ -1,16 +1,16 @@
 package com.rs.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.rs.dto.response.customer.PassengerResDTO;
+import com.rs.dto.response.user.PassengerResDTO;
 import com.rs.enums.RespCode;
 import com.rs.exception.CommonException;
 import com.rs.mapper.ContactMapper;
 import com.rs.model.PageResult;
 import com.rs.model.customer.Contact;
-import com.rs.model.dto.request.ContactReqDTO;
-import com.rs.model.dto.response.ContactAddResDTO;
-import com.rs.model.dto.response.ContactDetailResDTO;
-import com.rs.model.dto.response.ContactPageResDTO;
+import com.rs.model.dto.request.user.ContactReqDTO;
+import com.rs.model.dto.response.user.ContactAddResDTO;
+import com.rs.model.dto.response.user.ContactDetailResDTO;
+import com.rs.model.dto.response.user.ContactPageResDTO;
 import com.rs.service.ContactService;
 import com.rs.util.PageUtil;
 import com.rs.util.UserContext;

@@ -27,4 +27,6 @@ public class RedisKeyConstant {
     public static final String TICKET_HOT = "ticket:hot:";
 
     public static final String TICKET_STORE = "ticket:store:";
+
+    public static final String ASSISTANT_ORDER = "assistant:order:";
 }

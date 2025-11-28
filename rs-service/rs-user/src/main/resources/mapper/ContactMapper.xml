@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rs.mapper.ContactMapper">
 
-    <resultMap id="ContactPageResDTOMap" type="com.rs.model.dto.response.ContactPageResDTO">
+    <resultMap id="ContactPageResDTOMap" type="com.rs.model.dto.response.user.ContactPageResDTO">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="idCard" column="id_card"/>
@@ -14,7 +14,7 @@
         <result property="status" column="status"/>
     </resultMap>
 
-    <resultMap id="ContactDetailResDTOMap" type="com.rs.model.dto.response.ContactDetailResDTO">
+    <resultMap id="ContactDetailResDTOMap" type="com.rs.model.dto.response.user.ContactDetailResDTO">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="idCard" column="id_card"/>
@@ -26,7 +26,7 @@
         <result property="remark" column="remark"/>
     </resultMap>
 
-    <resultMap id="PassengerResultMap" type="com.rs.dto.response.customer.PassengerResDTO">
+    <resultMap id="PassengerResultMap" type="com.rs.dto.response.user.PassengerResDTO">
         <id property="passengerId" column="id"/>
         <result property="name" column="name"/>
         <result property="passengerType" column="passenger_type"/>

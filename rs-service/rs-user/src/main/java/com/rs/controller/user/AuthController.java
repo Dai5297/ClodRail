@@ -1,8 +1,8 @@
 package com.rs.controller.user;
 
-import com.rs.model.dto.request.*;
-import com.rs.model.dto.response.UserLoginResDTO;
-import com.rs.model.dto.response.UserRegisterResDTO;
+import com.rs.model.dto.request.user.*;
+import com.rs.model.dto.response.user.UserLoginResDTO;
+import com.rs.model.dto.response.user.UserRegisterResDTO;
 import com.rs.service.UserAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

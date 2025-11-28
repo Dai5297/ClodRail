@@ -1,5 +1,6 @@
 package com.rs.service;
 
+import com.rs.model.PageResult;
 import com.rs.model.domain.CreateTicketOrderMessage;
 import com.rs.model.dto.request.OrderCreateReqDTO;
 import com.rs.model.dto.response.OrderCreateResDTO;
@@ -58,4 +59,13 @@ public interface OrderService {
      * @return 订单详情
      */
     OrderDetailResDTO orderDetail(String orderId);
+
+    /**
+     * 订单分页查询
+     *
+     * @param pageNum  页码（从1开始）
+     * @param pageSize 页大小
+     * @return 订单分页结果
+     */
+    PageResult<OrderDetailResDTO> page(Integer pageNum, Integer pageSize,String orderId, Integer status);
 }

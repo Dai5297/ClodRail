@@ -1,5 +1,6 @@
 package com.rs.controller.user;
 
+import com.rs.model.PageResult;
 import com.rs.model.dto.request.OrderCreateReqDTO;
 import com.rs.model.dto.response.OrderCreateResDTO;
 import com.rs.model.dto.response.OrderDetailResDTO;
@@ -28,5 +29,15 @@ public class OrderController {
     @GetMapping("/detail/{orderId}")
     public OrderDetailResDTO orderDetail(@PathVariable String orderId) {
         return orderService.orderDetail(orderId);
+    }
+
+    @GetMapping("/page")
+    public PageResult<OrderDetailResDTO> page(
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize,
+            @RequestParam(required = false) String orderId,
+            @RequestParam(required = false) Integer status
+    ) {
+        return orderService.page(pageNum, pageSize, orderId, status);
     }
 }

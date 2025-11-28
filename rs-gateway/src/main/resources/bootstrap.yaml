@@ -14,9 +14,9 @@ spring:
     gateway:
       routes:
         - id: user-service
-          uri: lb://customer-service
+          uri: lb://user-service
           predicates:
-            - Path=/customer/user/**, /customer/account/**, /customer/contact/**
+            - Path=/customer/user/**, /customer/contact/**, /customer/auth/**, /admin/auth/**, /admin/profile/**
         - id: ticket-service
           uri: lb://ticket-service
           predicates:
@@ -29,6 +29,12 @@ spring:
           uri: lb://assistant-service
           predicates:
             - Path=/customer/assistant/**
+    openfeign:
+      client:
+        config:
+          user-service:
+            connect-timeout: 5000
+            readTimeout: 15000
   config:
     import:
       - nacos:shared-redis.yaml

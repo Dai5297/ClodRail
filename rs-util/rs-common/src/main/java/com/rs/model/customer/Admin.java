@@ -28,19 +28,24 @@ public class Admin extends BaseModel {
     private String realName;
 
     /**
-     * 部门编号（关联 dept 表主键）
+     * 身份证号码
      */
-    private Long deptId;
+    private String idCard;
+
+    /**
+     * 头像
+     */
+    private String icon;
 
     /**
      * 角色ID（注意：单角色设计，若需多角色应移除此字段，改用关联表）
      */
-    private Long role;
+    private Integer role;
 
     /**
-     * 用户编号（工号等）
+     * 角色名称
      */
-    private String number;
+    private String roleName;
 
     /**
      * 账号状态：0-禁用，1-启用

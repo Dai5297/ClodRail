@@ -1,9 +1,0 @@
-rs:
-  auth:
-    exclude:
-      paths:
-      - /account/login/**
-      - /account/register/**
-      - /account/forget/**
-      - /account/captcha/**
-      - /account/logout

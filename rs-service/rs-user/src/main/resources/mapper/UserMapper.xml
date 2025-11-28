@@ -29,7 +29,7 @@
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
-    <resultMap id="InfoResultMap" type="com.rs.model.dto.response.UserInfoResDTO">
+    <resultMap id="InfoResultMap" type="com.rs.model.dto.response.user.UserInfoResDTO">
         <id column="id" property="id"/>
         <result column="username" property="username"/>
         <result column="gender" property="gender"/>
@@ -44,7 +44,7 @@
         <result column="create_time" property="createTime"/>
     </resultMap>
 
-    <resultMap id="RegisterResltMap" type="com.rs.model.dto.response.UserRegisterResDTO">
+    <resultMap id="RegisterResltMap" type="com.rs.model.dto.response.user.UserRegisterResDTO">
 
     </resultMap>
 

@@ -1,16 +1,22 @@
 package com.rs.manage;
 
 import io.netty.channel.Channel;
+import lombok.Data;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
+@Data
 @Component
 public class AssistantManage {
 
     private final ConcurrentHashMap<String, Channel> agentChannelMap = new ConcurrentHashMap<>();
 
     private final ConcurrentHashMap<String, Channel> userChannelMap = new ConcurrentHashMap<>();
+
+    private final ConcurrentHashMap<String, List<String>> sessionMap = new ConcurrentHashMap<>();
 
     public void addAgent(String agentId, Channel channel) {
         agentChannelMap.put(agentId, channel);
@@ -22,11 +28,6 @@ public class AssistantManage {
 
     public void removeAgent(String agentId) {
         agentChannelMap.remove(agentId);
-    }
-
-    public boolean isOnline(String agentId) {
-        Channel ch = agentChannelMap.get(agentId);
-        return ch != null && ch.isActive();
     }
 
     public void addUser(String userId, Channel channel) {
@@ -41,8 +42,17 @@ public class AssistantManage {
         userChannelMap.remove(userId);
     }
 
-    public boolean isUserOnline(String userId) {
-        Channel ch = userChannelMap.get(userId);
-        return ch != null && ch.isActive();
+    public void addSession(String assistantId, String userId) {
+        sessionMap.computeIfAbsent(
+                assistantId, k -> new CopyOnWriteArrayList<>()
+        ).add(userId);
+    }
+
+    public void removeSession(String assistantId) {
+        sessionMap.remove(assistantId);
+    }
+
+    public Integer countOnlineAgent() {
+        return agentChannelMap.size();
     }
 }

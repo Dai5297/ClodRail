@@ -64,4 +64,14 @@ public interface OrderMapper {
      * @return 订单信息
      */
     Order queryById(String orderId);
+
+    /**
+     * 查询订单列表
+     *
+     * @param userId  用户ID
+     * @param orderId 订单ID
+     * @param status  订单状态
+     * @return 订单列表
+     */
+    List<OrderDetailResDTO> queryOrders(Long userId, String orderId, Integer status);
 }

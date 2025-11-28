@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.AdminMapper">
+    <update id="updateIcon">
+        update admin
+        set icon = #{icon}
+        where id = #{id}
+    </update>
+    <update id="updateInfo">
+        update admin
+        <set>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="icon != null">
+                icon = #{icon},
+            </if>
+            <if test="role != null">
+                role = #{role},
+            </if>
+            <if test="roleName != null">
+                role_name = #{roleName},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="queryAdminById" resultType="com.rs.model.customer.Admin">
+        select *
+        from admin
+        where id = #{id}
+    </select>
+
+    <select id="queryAdminByUsername" resultType="com.rs.model.customer.Admin">
+        select *
+        from admin
+        where username = #{username}
+    </select>
+</mapper>

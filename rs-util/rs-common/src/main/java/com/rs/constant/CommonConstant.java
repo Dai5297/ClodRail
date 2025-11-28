@@ -11,4 +11,8 @@ public class CommonConstant {
     public static final String USER_PATH_PREFIX = "/customer";
 
     public static final String ADMIN_PATH_PREFIX = "/admin";
+
+    public static final String AUTHENTICATION = "Authorization";
+
+    public static final String AUTH_PREFIX = "Bearer ";
 }

@@ -12,7 +12,11 @@ rs:
       max-wait: -1
   auth:
     exclude:
-      paths: /doc.html, /account/login/username, /orders/pay/alipay/notify
+      paths:
+        - /doc.html
+        - /customer/auth/login/username
+        - /orders/pay/alipay/notify
+        - /admin/auth/login
   security:
     ignore-urls:
       - /costumer/**

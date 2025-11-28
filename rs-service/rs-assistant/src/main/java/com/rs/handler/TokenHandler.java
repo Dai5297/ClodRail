@@ -7,6 +7,7 @@ import cn.hutool.json.JSONUtil;
 import com.rs.constant.RedisUserKeyConstant;
 import com.rs.enums.RespCode;
 import com.rs.exception.CommonException;
+import com.rs.model.customer.Admin;
 import com.rs.model.customer.User;
 import com.rs.util.JWTUtil;
 import io.jsonwebtoken.Claims;
@@ -51,7 +52,12 @@ public class TokenHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         uuid = (String) urlQuery.get("token");
         sessionId = (String) urlQuery.get("sessionId");
 
-        String key = RedisUserKeyConstant.USER_LOGIN_TOKEN + uuid;
+        String key = null;
+        if (request.uri().contains("user")) {
+            key = RedisUserKeyConstant.USER_LOGIN_TOKEN + uuid;
+        }else {
+            key = RedisUserKeyConstant.ADMIN_LOGIN_TOKEN + uuid;
+        }
         String token = stringRedisTemplate.opsForValue().get(key);
         Claims claims = null;
         try {
@@ -65,13 +71,13 @@ public class TokenHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         }
 
         User user = null;
+        Admin admin = null;
         if (request.uri().startsWith("/ws/assistant/user")) {
             user = JSONUtil.toBean(claimsSubject, User.class);
             ctx.channel().attr(USER).set(user);
         }else {
-            // TODO 将claimsSubject转为Admin 而不是User
-            user = JSONUtil.toBean(claimsSubject, User.class);
-            ctx.channel().attr(AGENT).set(user);
+            admin = JSONUtil.toBean(claimsSubject, Admin.class);
+            ctx.channel().attr(AGENT).set(admin);
         }
 
         ctx.channel().attr(SESSION_ID).set(sessionId);

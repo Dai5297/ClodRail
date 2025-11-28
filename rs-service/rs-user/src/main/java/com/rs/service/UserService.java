@@ -1,7 +1,7 @@
 package com.rs.service;
 
-import com.rs.model.dto.request.UserInfoUpdateReqDTO;
-import com.rs.model.dto.response.UserInfoResDTO;
+import com.rs.model.dto.request.user.UserInfoUpdateReqDTO;
+import com.rs.model.dto.response.user.UserInfoResDTO;
 
 public interface UserService {
 

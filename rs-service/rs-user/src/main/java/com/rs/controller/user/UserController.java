@@ -1,7 +1,7 @@
 package com.rs.controller.user;
 
-import com.rs.model.dto.request.UserInfoUpdateReqDTO;
-import com.rs.model.dto.response.UserInfoResDTO;
+import com.rs.model.dto.request.user.UserInfoUpdateReqDTO;
+import com.rs.model.dto.response.user.UserInfoResDTO;
 import com.rs.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -99,5 +99,18 @@
         from `order`
         where order_id = #{orderId}
     </select>
+    <select id="queryOrders" resultType="com.rs.model.dto.response.OrderDetailResDTO">
+        select *
+        from `order`
+        <where>
+            user_id = #{userId}
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="orderId != null">
+                and order_id = #{orderId}
+            </if>
+        </where>
+    </select>
 
 </mapper>
