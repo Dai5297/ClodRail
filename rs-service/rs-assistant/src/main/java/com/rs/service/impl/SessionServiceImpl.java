@@ -10,7 +10,7 @@ import com.rs.mapper.SessionMapper;
 import com.rs.model.dto.response.ChatMessageResDTO;
 import com.rs.model.dto.response.ChatSessionResDTO;
 import com.rs.model.dto.response.SessionCreateResDTO;
-import com.rs.model.entity.Memory;
+import com.rs.model.assistant.Memory;
 import com.rs.service.SessionService;
 import com.rs.util.UserContext;
 import lombok.RequiredArgsConstructor;

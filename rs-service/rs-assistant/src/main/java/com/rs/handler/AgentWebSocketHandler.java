@@ -1,6 +1,7 @@
 package com.rs.handler;
 
 import cn.hutool.json.JSONUtil;
+import com.rs.client.RabbitClient;
 import com.rs.constant.RedisAssistantKeyyConstant;
 import com.rs.manage.AssistantManage;
 import com.rs.model.customer.Admin;
@@ -17,8 +18,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 
-import static com.rs.constant.AssistantConstant.CLOSE_TYPE;
+import static com.rs.constant.AssistantConstant.*;
 import static com.rs.constant.AttributeKeyConstant.AGENT;
 
 @Slf4j
@@ -30,6 +32,8 @@ public class AgentWebSocketHandler extends SimpleChannelInboundHandler<WebSocket
     private final StringRedisTemplate stringRedisTemplate;
 
     private final AssistantManage assistantManage;
+
+    private final RabbitClient rabbitClient;
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
@@ -65,6 +69,9 @@ public class AgentWebSocketHandler extends SimpleChannelInboundHandler<WebSocket
         message.setFrom(admin.getId() + "");
         String userId = message.getTo();
         Channel userChannel = assistantManage.getUserChannel(userId);
+        if (Objects.equals(message.getType(), ASSISTANT_TYPE)) {
+            rabbitClient.sendMsg("rs.assistant.msg", "assistant.agent", messageJson);
+        }
         MessageUtil.sendMessage(userChannel, message);
     }
 

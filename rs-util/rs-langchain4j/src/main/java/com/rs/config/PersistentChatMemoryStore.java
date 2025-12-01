@@ -1,6 +1,6 @@
 package com.rs.config;
 
-import com.rs.mapper.MemoryMapper;
+import com.rs.mapper.ChatMemoryMapper;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.ChatMessageDeserializer;
 import dev.langchain4j.data.message.ChatMessageSerializer;
@@ -14,26 +14,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PersistentChatMemoryStore implements ChatMemoryStore {
 
-    private final MemoryMapper memoryMapper;
+    private final ChatMemoryMapper chatMemoryMapper;
 
     @Override
     public List<ChatMessage> getMessages(Object memoryId) {
-        String memory = memoryMapper.getMemory((String) memoryId);
+        String memory = chatMemoryMapper.getMemory((String) memoryId);
         return ChatMessageDeserializer.messagesFromJson(memory);
     }
 
     @Override
     public void updateMessages(Object memoryId, List<ChatMessage> messages) {
-        String memory = memoryMapper.getMemory(memoryId.toString());
+        String memory = chatMemoryMapper.getMemory(memoryId.toString());
         if (memory != null) {
-            memoryMapper.updateMemory(memoryId.toString(), ChatMessageSerializer.messagesToJson(messages));
+            chatMemoryMapper.updateMemory(memoryId.toString(), ChatMessageSerializer.messagesToJson(messages));
         } else {
-            memoryMapper.saveMemory(memoryId.toString(), ChatMessageSerializer.messagesToJson(messages));
+            chatMemoryMapper.saveMemory(memoryId.toString(), ChatMessageSerializer.messagesToJson(messages));
         }
     }
 
     @Override
     public void deleteMessages(Object memoryId) {
-        memoryMapper.deleteMemory(memoryId.toString());
+        chatMemoryMapper.deleteMemory(memoryId.toString());
     }
 }

@@ -9,6 +9,7 @@ import com.rs.client.user.ContactClient;
 import com.rs.client.ticket.SeatClient;
 import com.rs.client.ticket.TicketClient;
 import com.rs.dto.request.ticket.FetchSeatReqDTO;
+import com.rs.dto.response.ticket.ListTicketResDTO;
 import com.rs.dto.response.user.PassengerResDTO;
 import com.rs.dto.response.ticket.FetchSeatResDTO;
 import com.rs.enums.RespCode;
@@ -21,6 +22,7 @@ import com.rs.model.domain.PriceDetail;
 import com.rs.model.dto.request.OrderCreateReqDTO;
 import com.rs.model.dto.response.OrderCreateResDTO;
 import com.rs.model.dto.response.OrderDetailResDTO;
+import com.rs.model.dto.response.OrderListResDTO;
 import com.rs.model.order.Order;
 import com.rs.model.ticket.Seat;
 import com.rs.service.OrderService;
@@ -111,7 +113,8 @@ public class OrderServiceImpl implements OrderService {
         }
         if (reqDTO != null) {
             String hotKey = TICKET_HOT + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy:MM:dd"));
-            Boolean isHotTicket = stringRedisTemplate.opsForSet().isMember(hotKey, String.valueOf(reqDTO.getTicketId()));
+            Boolean isHotTicket = stringRedisTemplate.opsForSet().isMember(hotKey,
+                    String.valueOf(reqDTO.getTicketId()));
             if (isHotTicket == null || !isHotTicket) {
                 return true;
             }
@@ -122,8 +125,7 @@ public class OrderServiceImpl implements OrderService {
                         reqDTO.getPassengers()
                                 .stream()
                                 .map(Passenger::getPassengerId)
-                                .toList()
-                );
+                                .toList());
                 rabbitClient.sendMsg("rs.ticket.order", "ticket.order", orderMessage);
                 log.info("TCC Commit阶段执行完成，订单ID: {}", orderId);
             } else {
@@ -144,7 +146,8 @@ public class OrderServiceImpl implements OrderService {
             OrderCreateReqDTO reqDTO = object.toJavaObject(OrderCreateReqDTO.class);
             String hotKey = TICKET_HOT + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy:MM:dd"));
             String orderId = stringRedisTemplate.opsForValue().get(TICKET_ORDER_ID + context.getBranchId());
-            Boolean isHotTicket = stringRedisTemplate.opsForSet().isMember(hotKey, String.valueOf(reqDTO.getTicketId()));
+            Boolean isHotTicket = stringRedisTemplate.opsForSet().isMember(hotKey,
+                    String.valueOf(reqDTO.getTicketId()));
             // 回滚时间设置
             rollbackRepeatTime(reqDTO);
             if (isHotTicket == null || !isHotTicket) {
@@ -204,8 +207,7 @@ public class OrderServiceImpl implements OrderService {
         Long result = stringRedisTemplate.execute(
                 SCRIPT,
                 List.of(TICKET_STORE + reqDTO.getTicketId() + ":" + reqDTO.getSeatType()),
-                String.valueOf(size)
-        );
+                String.valueOf(size));
         if (result == 0) {
             throw new CommonException(RespCode.TICKET_SEAT_NOT_ENOUGH, "余票不足");
         }
@@ -213,8 +215,7 @@ public class OrderServiceImpl implements OrderService {
                 TICKET_DEDUCTION_TAG + context.getBranchId(),
                 String.valueOf(1),
                 TICKET_DEDUCTION_TAG_TTL,
-                TimeUnit.SECONDS
-        );
+                TimeUnit.SECONDS);
     }
 
     /**
@@ -228,8 +229,7 @@ public class OrderServiceImpl implements OrderService {
         stringRedisTemplate.execute(
                 SCRIPT,
                 List.of(TICKET_STORE + reqDTO.getTicketId() + ":" + reqDTO.getSeatType()),
-                String.valueOf(size)
-        );
+                String.valueOf(size));
     }
 
     /**
@@ -256,8 +256,7 @@ public class OrderServiceImpl implements OrderService {
                         SCRIPT,
                         List.of(TICKET_USER_TIME + dateKey + ":" + passenger.getPassengerId()),
                         String.valueOf(startSite),
-                        String.valueOf(endSite)
-                );
+                        String.valueOf(endSite));
                 if (result == 0) {
                     throw new CommonException(RespCode.TICKET_ORDER_CREATE_FAIL, "购票时间存在冲突");
                 }
@@ -266,8 +265,10 @@ public class OrderServiceImpl implements OrderService {
                 SCRIPT.setLocation(new ClassPathResource("lua/CheckAndSetRepeatTimeCrossDay.lua"));
 
                 // 构建参数：开始日期key、结束日期key、开始位置、结束位置、乘客ID
-                String startDateKey = TICKET_USER_TIME + startDate.format(DateTimeFormatter.ofPattern("yyyy:MM:dd")) + ":" + passenger.getPassengerId();
-                String endDateKey = TICKET_USER_TIME + endDate.format(DateTimeFormatter.ofPattern("yyyy:MM:dd")) + ":" + passenger.getPassengerId();
+                String startDateKey = TICKET_USER_TIME + startDate.format(DateTimeFormatter.ofPattern("yyyy:MM:dd"))
+                        + ":" + passenger.getPassengerId();
+                String endDateKey = TICKET_USER_TIME + endDate.format(DateTimeFormatter.ofPattern("yyyy:MM:dd")) + ":"
+                        + passenger.getPassengerId();
 
                 Long result = stringRedisTemplate.execute(
                         SCRIPT,
@@ -275,8 +276,7 @@ public class OrderServiceImpl implements OrderService {
                         String.valueOf(startSite),
                         String.valueOf(endSite),
                         String.valueOf(startDate.toEpochDay()),
-                        String.valueOf(endDate.toEpochDay())
-                );
+                        String.valueOf(endDate.toEpochDay()));
                 if (result == 0) {
                     throw new CommonException(RespCode.TICKET_ORDER_CREATE_FAIL, "购票时间存在冲突");
                 }
@@ -300,7 +300,6 @@ public class OrderServiceImpl implements OrderService {
             LocalDate startDate = reqDTO.getStartTime().toLocalDate();
             LocalDate endDate = reqDTO.getEndTime().toLocalDate();
 
-
             if (startDate.equals(endDate)) {
                 // 同一天的情况
                 String dateKey = startDate.format(DateTimeFormatter.ofPattern("yyyy:MM:dd"));
@@ -310,15 +309,16 @@ public class OrderServiceImpl implements OrderService {
                         SCRIPT,
                         List.of(TICKET_USER_TIME + dateKey + ":" + passenger.getPassengerId()),
                         String.valueOf(startSite),
-                        String.valueOf(endSite)
-                );
+                        String.valueOf(endSite));
             } else {
                 // 跨天的情况 - 使用改进的跨天回滚逻辑
                 SCRIPT.setLocation(new ClassPathResource("lua/RollbackRepeatTimeCrossDay.lua"));
 
                 // 构建参数：开始日期key、结束日期key、开始位置、结束位置
-                String startDateKey = TICKET_USER_TIME + startDate.format(DateTimeFormatter.ofPattern("yyyy:MM:dd")) + ":" + passenger.getPassengerId();
-                String endDateKey = TICKET_USER_TIME + endDate.format(DateTimeFormatter.ofPattern("yyyy:MM:dd")) + ":" + passenger.getPassengerId();
+                String startDateKey = TICKET_USER_TIME + startDate.format(DateTimeFormatter.ofPattern("yyyy:MM:dd"))
+                        + ":" + passenger.getPassengerId();
+                String endDateKey = TICKET_USER_TIME + endDate.format(DateTimeFormatter.ofPattern("yyyy:MM:dd")) + ":"
+                        + passenger.getPassengerId();
 
                 stringRedisTemplate.execute(
                         SCRIPT,
@@ -326,8 +326,7 @@ public class OrderServiceImpl implements OrderService {
                         String.valueOf(startSite),
                         String.valueOf(endSite),
                         String.valueOf(startDate.toEpochDay()),
-                        String.valueOf(endDate.toEpochDay())
-                );
+                        String.valueOf(endDate.toEpochDay()));
             }
         }
     }
@@ -414,7 +413,7 @@ public class OrderServiceImpl implements OrderService {
                 breakdown.setDiscount(breakdown.getBasePrice() * 0.2);
                 breakdown.setActualPrice(breakdown.getBasePrice() - breakdown.getDiscount());
                 totalDiscountAmount += breakdown.getDiscount();
-            }else {
+            } else {
                 breakdown.setActualPrice(breakdown.getBasePrice());
             }
             breakdowns.add(breakdown);
@@ -490,5 +489,28 @@ public class OrderServiceImpl implements OrderService {
                 TimeUnit.SECONDS);
         // 使用Branchid存储订单Id
         return resDTO;
+    }
+
+    @Override
+    public List<OrderListResDTO> list() {
+        Long userId = UserContext.get();
+        List<Order> orders = orderMapper.findByUserId(userId);
+        List<OrderListResDTO> listResDTOS = new ArrayList<>();
+        for (Order order : orders) {
+            listResDTOS.add(BeanUtil.copyProperties(order, OrderListResDTO.class));
+        }
+        List<Long> ticketIds = listResDTOS.stream().map(OrderListResDTO::getTicketId).toList();
+        List<ListTicketResDTO> list = ticketClient.list(ticketIds);
+        for (OrderListResDTO resDTO : listResDTOS) {
+            for (ListTicketResDTO listTicketResDTO : list) {
+                if (resDTO.getTicketId().equals(listTicketResDTO.getId())) {
+                    resDTO.setStartStation(listTicketResDTO.getStartStation());
+                    resDTO.setEndStation(listTicketResDTO.getEndStation());
+                    resDTO.setStartTime(listTicketResDTO.getStartTime());
+                    resDTO.setEndTime(listTicketResDTO.getEndTime());
+                }
+            }
+        }
+        return listResDTOS;
     }
 }

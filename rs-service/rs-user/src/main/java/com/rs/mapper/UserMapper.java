@@ -26,4 +26,11 @@ public interface UserMapper {
      * @param user 用户信息
      */
     void updateUser(User user);
+
+    /**
+     * 根据ID查询用户名
+     * @param id 用户ID
+     * @return 用户名
+     */
+    String queryUsername(Long id);
 }

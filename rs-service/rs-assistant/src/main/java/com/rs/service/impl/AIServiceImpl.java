@@ -1,7 +1,6 @@
 package com.rs.service.impl;
 
 import com.rs.config.Agent;
-import com.rs.mapper.AIMapper;
 import com.rs.service.AIService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,6 @@ import reactor.core.publisher.Flux;
 @Service
 @RequiredArgsConstructor
 public class AIServiceImpl implements AIService {
-
-    private final AIMapper aiMapper;
 
     @Autowired
     @Qualifier("railwayAgent")

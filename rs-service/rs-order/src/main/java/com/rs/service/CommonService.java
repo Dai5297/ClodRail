@@ -1,6 +1,6 @@
 package com.rs.service;
 
-import com.rs.model.order.Order;
+import com.rs.dto.request.ticket.AssistantOrderMsgDTO;
 
 public interface CommonService {
 
@@ -9,7 +9,7 @@ public interface CommonService {
      *
      * @return 链接
      */
-    String generateAssistantOrder(Order order);
+    String generateAssistantOrder(String id);
 
     /**
      * 解析订单短链接
@@ -17,5 +17,5 @@ public interface CommonService {
      * @param uuid 链接
      * @return 订单信息
      */
-    Order praseAssistantOrder(String uuid);
+    AssistantOrderMsgDTO praseAssistantOrder(String uuid);
 }

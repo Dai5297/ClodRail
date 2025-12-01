@@ -1,6 +1,6 @@
 package com.rs.mapper;
 
-import com.rs.model.entity.Memory;
+import com.rs.model.assistant.Memory;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

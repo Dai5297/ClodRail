@@ -77,6 +77,23 @@
                 typeHandler="com.rs.util.DurationTypeUtil"/>
     </resultMap>
 
+    <resultMap id="ListTicketResultMap" type="com.rs.dto.response.ticket.ListTicketResDTO">
+        <id property="id" column="id"/>
+        <result property="startStation" column="start_station"/>
+        <result property="endStation" column="end_station"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+    </resultMap>
+
+
+    <resultMap id="AssistantOrderMsgResultMap" type="com.rs.dto.request.ticket.AssistantOrderMsgDTO">
+        <result property="startStation" column="start_station"/>
+        <result property="endStation" column="end_station"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="trainNumber" column="train_number"/>
+    </resultMap>
+
     <select id="queryHotTicket" resultMap="HotTicketResultMap">
         SELECT t.id                                            AS id,
                -- 出发站字段加 origin_ 前缀
@@ -166,6 +183,29 @@
                 END AS selected_price
         FROM ticket
         WHERE id = #{ticketId}
+    </select>
+
+    <select id="queryById" resultType="com.rs.model.ticket.Ticket">
+        select *
+        from ticket
+        where id = #{id}
+    </select>
+    
+    <select id="querylist" resultMap="ListTicketResultMap">
+        select ticket.id, start_station, end_station, start_time, end_time
+        from ticket
+                 left join line on ticket.line_id = line.id
+        where ticket.id = #{ticketId}
+    </select>
+
+    <select id="queryOrderMsgDetail" resultMap="AssistantOrderMsgResultMap">
+        select s1.name as start_station, s2.name as end_station, t.start_time, t.end_time, tr.name as train_number
+        from ticket t
+                 left join line l on t.line_id = l.id
+                 left join station s1 on l.start_station = s1.id
+                 left join station s2 on l.end_station = s2.id
+                 left join train tr on t.train_id = tr.id
+        where t.id = #{ticketId}
     </select>
 
 

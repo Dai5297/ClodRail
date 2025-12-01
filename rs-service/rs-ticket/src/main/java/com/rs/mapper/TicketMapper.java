@@ -1,10 +1,14 @@
 package com.rs.mapper;
 
+import com.rs.dto.request.ticket.AssistantOrderMsgDTO;
+import com.rs.dto.response.ticket.ListTicketResDTO;
 import com.rs.model.domain.StopStationInfo;
 import com.rs.model.dto.response.HotTicketResDTO;
 import com.rs.model.dto.response.SearchTicketResDTO;
 import com.rs.model.dto.response.TicketDetailResDTO;
+import com.rs.model.ticket.Ticket;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -36,4 +40,19 @@ public interface TicketMapper {
      * 获取车票的座位价格
      */
     Double queryTicketPrice(Long ticketId, Integer seatType);
+
+    /**
+     * 根据车票ID查询车票信息
+     */
+    Ticket queryById(Long ticketId);
+
+    /**
+     * 查询车票列表
+     */
+    ListTicketResDTO querylist(Long ticketId);
+
+    /**
+     * 查询助手订单信息
+     */
+    AssistantOrderMsgDTO queryOrderMsgDetail(@Param("ticketId") Long ticketId);
 }

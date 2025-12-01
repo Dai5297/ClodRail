@@ -6,5 +6,5 @@ public class RedisAssistantKeyyConstant {
 
     public static final String ASSISTANT_POOL = "assistant:pool";
 
-    public static final String ASSISTANT_RELATION = "assistant:relation:";
+    public static final String ASSISTANT_ORDER = "assistant:order:";
 }

@@ -4,12 +4,15 @@ import com.rs.model.PageResult;
 import com.rs.model.dto.request.OrderCreateReqDTO;
 import com.rs.model.dto.response.OrderCreateResDTO;
 import com.rs.model.dto.response.OrderDetailResDTO;
+import com.rs.model.dto.response.OrderListResDTO;
 import com.rs.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.seata.spring.annotation.GlobalTransactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,5 +42,10 @@ public class OrderController {
             @RequestParam(required = false) Integer status
     ) {
         return orderService.page(pageNum, pageSize, orderId, status);
+    }
+
+    @GetMapping("/list")
+    public List<OrderListResDTO> list() {
+        return orderService.list();
     }
 }

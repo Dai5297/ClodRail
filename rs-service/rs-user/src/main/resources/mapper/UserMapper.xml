@@ -137,4 +137,9 @@
         from user
         where id = #{id}
     </select>
+    <select id="queryUsername" resultType="java.lang.String">
+        select username
+        from user
+        where id = #{id}
+    </select>
 </mapper>

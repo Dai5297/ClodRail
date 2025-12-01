@@ -2,8 +2,10 @@ package com.rs.handler;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.rs.client.RabbitClient;
 import com.rs.manage.AssistantManage;
 import com.rs.model.customer.User;
+import com.rs.model.entity.Message;
 import com.rs.util.MessageUtil;
 import com.rs.util.ZSetUtil;
 import io.netty.channel.Channel;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.rs.constant.AssistantConstant.*;
 import static com.rs.constant.AttributeKeyConstant.SESSION_ID;
@@ -36,6 +39,8 @@ public class UserWebSocketHandler extends SimpleChannelInboundHandler<WebSocketF
     private final AssistantManage assistantManage;
 
     private final ZSetUtil zSetUtil;
+
+    private final RabbitClient rabbitClient;
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
@@ -83,7 +88,17 @@ public class UserWebSocketHandler extends SimpleChannelInboundHandler<WebSocketF
 
         // 转发消息
         String messageText = ((TextWebSocketFrame) msg).text();
-        MessageUtil.sendMessage(channel, messageText, USER_TYPE, user.getId() + "", assistant);
+        Message message = JSONUtil.toBean(messageText, Message.class);
+        message.setTo(assistant);
+        messageText = JSONUtil.toJsonStr(message);
+        if (Objects.equals(message.getType(), USER_TYPE)) {
+            rabbitClient.sendMsg("rs.assistant.msg", "assistant.user", messageText);
+        }else if (Objects.equals(message.getType(), ORDER_TYPE)) {
+            rabbitClient.sendMsg("rs.assistant.msg", "assistant.order", messageText);
+        }
+        if (channel != null) {
+            MessageUtil.sendMessage(channel, message);
+        }
     }
 
     private void distributeChannel(String assistant, User user, String sessionId) {

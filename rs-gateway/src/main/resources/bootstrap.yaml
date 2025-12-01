@@ -24,11 +24,11 @@ spring:
         - id: order-service
           uri: lb://order-service
           predicates:
-            - Path=/customer/orders/**
+            - Path=/customer/orders/**, /common/orders/**
         - id: assistant-service
           uri: lb://assistant-service
           predicates:
-            - Path=/customer/assistant/**
+            - Path=/customer/assistant/**, /admin/memory/**
     openfeign:
       client:
         config:

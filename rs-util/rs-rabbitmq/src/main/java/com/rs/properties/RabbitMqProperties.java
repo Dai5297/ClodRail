@@ -36,7 +36,7 @@ public class RabbitMqProperties {
     /**
      * RabbitMQ 虚拟主机路径
      */
-    private String virtualHost = "/test";
+    private String virtualHost;
 
     /**
      * RabbitMQ 连接超时时间（毫秒）

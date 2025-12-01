@@ -3,6 +3,7 @@ package com.rs;
 import cn.hutool.core.net.url.UrlQuery;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.json.JSONObject;
+import com.rs.client.user.UserClient;
 import com.rs.config.Agent;
 import com.rs.config.AgentConfig;
 import com.rs.factory.AgentFactory;
@@ -17,6 +18,8 @@ import reactor.core.publisher.Flux;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 public class TestAgent {
@@ -26,6 +29,9 @@ public class TestAgent {
 
     @Autowired
     private StreamingChatModel model;
+
+    @Autowired
+    private UserClient userClient;
 
     @Autowired
     private ChatModel chatModel;
@@ -67,4 +73,10 @@ public class TestAgent {
         System.out.println(jsonObject.toBean(Message.class));
     }
 
+    @Test
+    void testClient() {
+        for (Map.Entry<Long, String> longStringEntry : userClient.usernameList(List.of(1L)).entrySet()) {
+            System.out.println(longStringEntry);
+        }
+    }
 }

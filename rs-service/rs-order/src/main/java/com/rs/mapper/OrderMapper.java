@@ -63,7 +63,7 @@ public interface OrderMapper {
      * @param orderId 订单ID
      * @return 订单信息
      */
-    Order queryById(String orderId);
+    Order queryByOrderId(String orderId);
 
     /**
      * 查询订单列表
@@ -74,4 +74,20 @@ public interface OrderMapper {
      * @return 订单列表
      */
     List<OrderDetailResDTO> queryOrders(Long userId, String orderId, Integer status);
+
+    /**
+     * 根据ID查询订单信息
+     *
+     * @param id 订单ID
+     * @return 订单信息
+     */
+    Order queryById(Long id);
+
+    /**
+     * 根据用户ID查询订单信息
+     *
+     * @param userId 用户ID
+     * @return 订单信息
+     */
+    List<Order> findByUserId(Long userId);
 }

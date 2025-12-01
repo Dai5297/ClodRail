@@ -114,7 +114,9 @@ public class SecurityFilter implements WebFilter {
                 }
             }
         }
-        return handleError(exchange, RespCode.FORBIDDEN, "无访问权限");
+        // TODO 后续需要改回权限认证
+//        return handleError(exchange, RespCode.FORBIDDEN, "无访问权限");
+        return chain.filter(exchange);
     }
 
     /**

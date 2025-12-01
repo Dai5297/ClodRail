@@ -17,6 +17,7 @@ rs:
         - /customer/auth/login/username
         - /orders/pay/alipay/notify
         - /admin/auth/login
+        - /common/**
   security:
     ignore-urls:
       - /costumer/**

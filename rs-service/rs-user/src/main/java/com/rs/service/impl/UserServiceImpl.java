@@ -15,6 +15,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -52,5 +56,15 @@ public class UserServiceImpl implements UserService {
         BeanUtil.copyProperties(reqDTO, user);
         userMapper.updateUser(user);
         return BeanUtil.copyProperties(user, UserInfoResDTO.class);
+    }
+
+    @Override
+    public Map<Long, String> usernameList(List<Long> userIds) {
+        Map<Long, String> usernameMap = new HashMap<>();
+        userIds.stream().filter(Objects::nonNull).forEach(id -> {
+            String username = userMapper.queryUsername(id);
+            usernameMap.put(id, username);
+        });
+        return usernameMap;
     }
 }

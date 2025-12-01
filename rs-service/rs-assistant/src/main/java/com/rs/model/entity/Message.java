@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class Message {
 
+    private String sessionId;
+
     private String type;
 
     private String content;
@@ -12,5 +14,4 @@ public class Message {
     private String from;
 
     private String to;
-
 }

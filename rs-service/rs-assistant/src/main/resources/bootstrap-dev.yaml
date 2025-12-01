@@ -31,6 +31,12 @@ rs:
       - groupName: 用户端-客服服务
         matchPath:
           - com.rs.controller.user
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: dai
+    password: 050815
+    virtual-host: /
 
   ai:
     ali-api-key: sk-503c62b4e2af49bea05d88d0062e157f

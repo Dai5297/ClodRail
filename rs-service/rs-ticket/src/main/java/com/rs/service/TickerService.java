@@ -1,5 +1,7 @@
 package com.rs.service;
 
+import com.rs.dto.request.ticket.AssistantOrderMsgDTO;
+import com.rs.dto.response.ticket.ListTicketResDTO;
 import com.rs.model.PageResult;
 import com.rs.model.dto.response.HotTicketResDTO;
 import com.rs.model.dto.response.SearchTicketResDTO;
@@ -47,4 +49,20 @@ public interface TickerService {
      * @return 车票价格
      */
     Double queryTicketPrice(Long ticketId, Integer seatType);
+
+    /**
+     * 批量查询车票信息
+     *
+     * @param ticketIds 车票ID列表
+     * @return 车票信息
+     */
+    List<ListTicketResDTO> list(List<Long> ticketIds);
+
+    /**
+     * 查询助手订单信息
+     *
+     * @param ticketId 订单ID
+     * @return 助手订单信息
+     */
+    AssistantOrderMsgDTO queryOrderMsgDetail(Long ticketId);
 }

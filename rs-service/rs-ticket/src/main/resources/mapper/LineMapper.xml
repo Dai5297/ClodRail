@@ -2,6 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rs.mapper.AIMapper">
+<mapper namespace="com.rs.mapper.LineMapper">
 
+    <select id="selectById" resultType="com.rs.model.ticket.Line">
+        select * from line where id = #{id}
+    </select>
 </mapper>

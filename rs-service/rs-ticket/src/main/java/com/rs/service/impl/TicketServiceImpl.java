@@ -1,9 +1,11 @@
 package com.rs.service.impl;
 
+import com.rs.dto.request.ticket.AssistantOrderMsgDTO;
+import com.rs.dto.response.ticket.ListTicketResDTO;
+import com.rs.mapper.LineMapper;
 import com.rs.mapper.SeatMapper;
 import com.rs.mapper.StationMapper;
 import com.rs.mapper.TicketMapper;
-import com.rs.mapper.TrainMapper;
 import com.rs.model.PageResult;
 import com.rs.model.dto.response.HotTicketResDTO;
 import com.rs.model.dto.response.SearchTicketResDTO;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,7 +29,7 @@ public class TicketServiceImpl implements TickerService {
 
     private final StationMapper stationMapper;
 
-    private final TrainMapper trainMapper;
+    private final LineMapper lineMapper;
 
     /**
      * 获取热门车票
@@ -74,6 +77,20 @@ public class TicketServiceImpl implements TickerService {
     @Override
     public Double queryTicketPrice(Long ticketId, Integer seatType) {
         return ticketMapper.queryTicketPrice(ticketId, seatType);
+    }
+
+    @Override
+    public List<ListTicketResDTO> list(List<Long> ticketIds) {
+        List<ListTicketResDTO> listResDTOS = new ArrayList<>();
+        for (Long ticketId : ticketIds) {
+            listResDTOS.add(ticketMapper.querylist(ticketId));
+        }
+        return listResDTOS;
+    }
+
+    @Override
+    public AssistantOrderMsgDTO queryOrderMsgDetail(Long ticketId) {
+        return ticketMapper.queryOrderMsgDetail(ticketId);
     }
 
 }

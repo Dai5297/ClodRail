@@ -1,8 +1,10 @@
 package com.rs.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-public interface MemoryMapper {
+@Mapper
+public interface ChatMemoryMapper {
     String getMemory(@Param("memoryId") String memoryId);
 
     void updateMemory(@Param("memoryId") String sessionId, @Param("content") String content);

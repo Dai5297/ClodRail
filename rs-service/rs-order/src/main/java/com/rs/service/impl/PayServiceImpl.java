@@ -31,7 +31,7 @@ public class PayServiceImpl implements PayService {
     @Override
     public String payOrder(String orderId) {
         String result;
-        Order order = orderMapper.queryById(orderId);
+        Order order = orderMapper.queryByOrderId(orderId);
         try {
             result = payUtil.createAliPay(orderId, order.getAmount(), "支付订单" + orderId);
         } catch (Exception e) {
