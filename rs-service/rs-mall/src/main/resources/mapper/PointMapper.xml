@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.PointMapper">
+    <insert id="addPointDetail">
+        insert into `point-detail` (user_id, type, point, comment, create_time, create_by, update_time, update_by)
+        values (#{userId}, #{type}, #{point}, #{comment}, now(), #{createBy}, now(), #{updateBy});
+    </insert>
+
+    <insert id="addPointBalance">
+        insert into `point_balance` (user_id, current_points, total_earned, create_time, create_by, update_time,
+                                     update_by)
+        values (#{userId}, #{point}, #{point}, now(), #{createBy}, now(), #{updateBy});
+    </insert>
+
+    <update id="updatePointBalance">
+        update point_balance
+        set current_points = current_points + #{point},
+            total_earned = total_earned + #{point},
+            update_time = now(),
+            update_by = #{updateBy}
+        where user_id = #{userId}
+    </update>
+
+    <select id="getPointBalance" resultType="com.rs.model.mall.PointBalance">
+        select * from point_balance where user_id = #{userId}
+    </select>
+</mapper>

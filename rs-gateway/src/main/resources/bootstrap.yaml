@@ -29,6 +29,10 @@ spring:
           uri: lb://assistant-service
           predicates:
             - Path=/customer/assistant/**, /admin/memory/**
+        - id: mall-service
+          uri: lb://mall-service
+          predicates:
+            - Path=/customer/points/**, /customer/mall/**
     openfeign:
       client:
         config:

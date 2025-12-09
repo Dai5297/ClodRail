@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.seata.spring.annotation.GlobalTransactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "订单相关接口")
@@ -35,17 +33,12 @@ public class OrderController {
     }
 
     @GetMapping("/page")
-    public PageResult<OrderDetailResDTO> page(
+    public PageResult<OrderListResDTO> list(
             @RequestParam Integer pageNum,
             @RequestParam Integer pageSize,
             @RequestParam(required = false) String orderId,
             @RequestParam(required = false) Integer status
     ) {
-        return orderService.page(pageNum, pageSize, orderId, status);
-    }
-
-    @GetMapping("/list")
-    public List<OrderListResDTO> list() {
-        return orderService.list();
+        return orderService.list(pageNum, pageSize, orderId, status);
     }
 }

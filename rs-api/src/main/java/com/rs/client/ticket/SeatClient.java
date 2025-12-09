@@ -2,9 +2,12 @@ package com.rs.client.ticket;
 
 import com.rs.dto.request.ticket.FetchSeatReqDTO;
 import com.rs.dto.response.ticket.FetchSeatResDTO;
+import com.rs.dto.response.ticket.SeatTypeInfoResDTO;
 import com.rs.model.ticket.Seat;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @FeignClient(name = "ticket-service", contextId = "seatClient", path = "/inner/seats")
 public interface SeatClient {
@@ -26,4 +29,7 @@ public interface SeatClient {
 
     @GetMapping("/query/seatPosition")
     Seat querySeat(@RequestParam String orderId);
+
+    @PostMapping("/query/seatPosition")
+    List<SeatTypeInfoResDTO> ListSeatQuery(@RequestBody List<String> orderId);
 }

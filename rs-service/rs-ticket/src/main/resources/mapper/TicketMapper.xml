@@ -192,9 +192,11 @@
     </select>
     
     <select id="querylist" resultMap="ListTicketResultMap">
-        select ticket.id, start_station, end_station, start_time, end_time
+        select ticket.id, s1.name as start_station, s2.name as end_station, start_time, end_time
         from ticket
                  left join line on ticket.line_id = line.id
+        left join station s1 on line.start_station = s1.id
+        left join station s2 on line.end_station = s2.id
         where ticket.id = #{ticketId}
     </select>
 

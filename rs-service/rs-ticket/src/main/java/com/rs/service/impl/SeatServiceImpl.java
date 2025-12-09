@@ -2,6 +2,8 @@ package com.rs.service.impl;
 
 import com.rs.dto.request.ticket.FetchSeatReqDTO;
 import com.rs.dto.response.ticket.FetchSeatResDTO;
+import com.rs.dto.response.ticket.SeatInfoResDTO;
+import com.rs.dto.response.ticket.SeatTypeInfoResDTO;
 import com.rs.mapper.SeatMapper;
 import com.rs.model.dto.response.AvailableSeatResDTO;
 import com.rs.model.ticket.Seat;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -55,5 +58,15 @@ public class SeatServiceImpl implements SeatService {
     @Override
     public Seat querySeat(String orderId) {
         return seatMapper.querySeatPosition(orderId);
+    }
+
+    @Override
+    public List<SeatTypeInfoResDTO> ListSeatQuery(List<String> orderId) {
+        List<SeatTypeInfoResDTO> list = new ArrayList<>();
+        for (String s : orderId) {
+            List<SeatInfoResDTO> seatInfoResDTOS = seatMapper.querySeatTypeInfo(s);
+            list.add(new SeatTypeInfoResDTO(s, seatInfoResDTOS));
+        }
+        return list;
     }
 }

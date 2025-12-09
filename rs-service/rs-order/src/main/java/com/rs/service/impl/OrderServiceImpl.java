@@ -10,6 +10,7 @@ import com.rs.client.ticket.SeatClient;
 import com.rs.client.ticket.TicketClient;
 import com.rs.dto.request.ticket.FetchSeatReqDTO;
 import com.rs.dto.response.ticket.ListTicketResDTO;
+import com.rs.dto.response.ticket.SeatTypeInfoResDTO;
 import com.rs.dto.response.user.PassengerResDTO;
 import com.rs.dto.response.ticket.FetchSeatResDTO;
 import com.rs.enums.RespCode;
@@ -386,6 +387,7 @@ public class OrderServiceImpl implements OrderService {
         resDTO.setStatus(0);
         resDTO.setCreateTime(LocalDateTime.now());
         resDTO.setExpireTime(LocalDateTime.now().plusMinutes(15));
+        rabbitClient.sendMsg("rs.ticket.order", "order.point", orderId);
         return resDTO;
     }
 
@@ -426,14 +428,6 @@ public class OrderServiceImpl implements OrderService {
         detailResDTO.setPassengers(passengers);
         detailResDTO.setPermissions(orderMapper.queryPermission(orderId));
         return detailResDTO;
-    }
-
-    @Override
-    public PageResult<OrderDetailResDTO> page(Integer pageNum, Integer pageSize, String orderId, Integer status) {
-        PageUtil.startPage(pageNum, pageSize);
-        Long userId = UserContext.get();
-        List<OrderDetailResDTO> orderDetailResDTOS = orderMapper.queryOrders(userId, orderId, status);
-        return PageUtil.buildPageResult(orderDetailResDTOS);
     }
 
     /**
@@ -492,9 +486,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderListResDTO> list() {
+    public PageResult<OrderListResDTO> list(Integer pageNum, Integer pageSize, String orderId, Integer status) {
+        PageUtil.startPage(pageNum, pageSize);
         Long userId = UserContext.get();
-        List<Order> orders = orderMapper.findByUserId(userId);
+        List<Order> orders = orderMapper.findByUserId(userId, orderId, status);
         List<OrderListResDTO> listResDTOS = new ArrayList<>();
         for (Order order : orders) {
             listResDTOS.add(BeanUtil.copyProperties(order, OrderListResDTO.class));
@@ -511,6 +506,15 @@ public class OrderServiceImpl implements OrderService {
                 }
             }
         }
-        return listResDTOS;
+        List<String> orderIds = listResDTOS.stream().map(OrderListResDTO::getOrderId).toList();
+        List<SeatTypeInfoResDTO> seatTypeInfoResDTOS = seatClient.ListSeatQuery(orderIds);
+        for (OrderListResDTO resDTO : listResDTOS) {
+            for (SeatTypeInfoResDTO seatTypeInfoResDTO : seatTypeInfoResDTOS) {
+                if (resDTO.getOrderId().equals(seatTypeInfoResDTO.getOrderId())) {
+                    resDTO.setSeat(seatTypeInfoResDTO.getSeatInfo());
+                }
+            }
+        }
+        return PageUtil.buildPageResultFromSource(orders, listResDTOS);
     }
 }

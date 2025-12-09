@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.ItemMapper">
+
+    <select id="getItemById" resultType="com.rs.model.mall.Item">
+        select *
+        from item
+        where id = #{id}
+    </select>
+    <select id="pageQuery" resultType="com.rs.model.mall.Item">
+        select * from item
+        <if test="category != null and category != ''">
+            where category = #{category}
+        </if>
+        <if test="sortBy != null and sortBy != ''">
+            order by ${sortBy}
+        </if>
+    </select>
+    <select id="getCategories" resultType="java.lang.String">
+        select distinct category
+        from item
+    </select>
+    <select id="selectAll" resultType="com.rs.model.mall.Item">
+        select *
+        from item
+    </select>
+</mapper>

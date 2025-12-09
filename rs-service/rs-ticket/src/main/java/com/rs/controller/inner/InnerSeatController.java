@@ -2,11 +2,14 @@ package com.rs.controller.inner;
 
 import com.rs.dto.request.ticket.FetchSeatReqDTO;
 import com.rs.dto.response.ticket.FetchSeatResDTO;
+import com.rs.dto.response.ticket.SeatTypeInfoResDTO;
 import com.rs.model.ticket.Seat;
 import com.rs.service.SeatService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,5 +37,10 @@ public class InnerSeatController {
     @GetMapping("/query/seatPosition")
     Seat querySeat(@RequestParam String orderId) {
         return seatService.querySeat(orderId);
+    }
+
+    @PostMapping("/query/seatPosition")
+    List<SeatTypeInfoResDTO> ListSeatQuery(@RequestBody List<String> orderIds) {
+        return seatService.ListSeatQuery(orderIds);
     }
 }

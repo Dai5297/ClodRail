@@ -1,8 +1,10 @@
 package com.rs.model.dto.response;
 
+import com.rs.dto.response.ticket.SeatInfoResDTO;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class OrderListResDTO {
@@ -41,6 +43,16 @@ public class OrderListResDTO {
      * 截止时间
      */
     private LocalDateTime endTime;
+
+    /**
+     * 金额
+     */
+    private Double amount;
+
+    /**
+     * 座位
+     */
+    private List<SeatInfoResDTO> seat;
 
     /**
      * 订单状态

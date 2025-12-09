@@ -35,4 +35,29 @@ public class PageUtil {
         pageResult.setRecords(pageInfo.getList());           // 当前页数据
         return pageResult;
     }
+
+    /**
+     * 构建自定义分页结果（从原始分页结果中获取真实总数）
+     *
+     * @param originalPageList 原始分页结果
+     * @param convertedList    转换后的数据列表
+     * @param <T>              原始数据类型
+     * @param <R>              转换后的数据类型
+     * @return 自定义分页结果对象
+     */
+    public static <T, R> PageResult<R> buildPageResultFromSource(List<T> originalPageList, List<R> convertedList) {
+        // originalPageList 必须是 PageHelper 返回的 Page<T>
+        if (!(originalPageList instanceof com.github.pagehelper.Page)) {
+            throw new IllegalArgumentException("originalPageList must be a PageHelper Page instance");
+        }
+
+        com.github.pagehelper.Page<T> page = (com.github.pagehelper.Page<T>) originalPageList;
+        PageResult<R> result = new PageResult<>();
+        result.setTotal(page.getTotal());          // 真实总数
+        result.setPages((long) page.getPages());   // 总页数
+        result.setCurrent((long) page.getPageNum());// 当前页
+        result.setSize((long) page.getPageSize());  // 每页大小
+        result.setRecords(convertedList);           // 转换后的数据
+        return result;
+    }
 }

@@ -1,9 +1,10 @@
 package com.rs.mapper;
 
+import com.rs.dto.request.ticket.FetchSeatReqDTO;
 import com.rs.dto.response.ticket.FetchSeatResDTO;
+import com.rs.dto.response.ticket.SeatInfoResDTO;
 import com.rs.model.domain.SeatInfo;
 import com.rs.model.dto.response.AvailableSeatResDTO;
-import com.rs.dto.request.ticket.FetchSeatReqDTO;
 import com.rs.model.ticket.Seat;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -45,4 +46,6 @@ public interface SeatMapper {
      * 获取座位位置
      */
     Seat querySeatPosition(String orderId);
+
+    List<SeatInfoResDTO> querySeatTypeInfo(String orderId);
 }

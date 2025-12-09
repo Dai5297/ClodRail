@@ -2,6 +2,7 @@ package com.rs.service;
 
 import com.rs.dto.request.ticket.FetchSeatReqDTO;
 import com.rs.dto.response.ticket.FetchSeatResDTO;
+import com.rs.dto.response.ticket.SeatTypeInfoResDTO;
 import com.rs.model.dto.response.AvailableSeatResDTO;
 import com.rs.model.ticket.Seat;
 
@@ -44,4 +45,11 @@ public interface SeatService {
      * @return 座位
      */
     Seat querySeat(String orderId);
+
+    /**
+     * 批量查询座位
+     * @param seatId 座位ID
+     * @return 座位
+     */
+    List<SeatTypeInfoResDTO> ListSeatQuery(List<String> seatId);
 }

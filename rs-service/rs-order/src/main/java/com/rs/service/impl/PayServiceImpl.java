@@ -1,6 +1,7 @@
 package com.rs.service.impl;
 
 import com.alipay.easysdk.factory.Factory;
+import com.rs.client.RabbitClient;
 import com.rs.mapper.OrderMapper;
 import com.rs.model.order.Order;
 import com.rs.service.PayService;
@@ -21,6 +22,8 @@ public class PayServiceImpl implements PayService {
     private final PayUtil payUtil;
 
     private final OrderMapper orderMapper;
+
+    private final RabbitClient rabbitClient;
 
     /**
      * 支付订单
@@ -53,6 +56,7 @@ public class PayServiceImpl implements PayService {
         if (Factory.Payment.Common().verifyNotify(params)) {
             orderMapper.updateAliPayStatus(orderId);
         }
+        rabbitClient.sendMsg("rs.ticket.order", "order.point", orderId);
         return "success";
     }
 }

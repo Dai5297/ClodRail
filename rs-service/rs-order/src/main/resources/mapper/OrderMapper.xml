@@ -20,6 +20,17 @@
         <result property="canCancel" column="can_cancel"/>
         <result property="canChange" column="can_change"/>
     </resultMap>
+    
+    <resultMap id="OrderDetailResDTO" type="com.rs.model.dto.response.OrderDetailResDTO">
+        <id property="orderId" column="order_id"/>
+        <result property="status" column="status"/>
+        <result property="totalAmount" column="amount"/>
+        <result property="ticketId" column="ticket_id"/>
+        <result property="voucherId" column="voucher_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="payTime" column="pay_time"/>
+        <result property="expireTime" column="expire_time"/>
+    </resultMap>
 
     <insert id="createOrder">
         INSERT INTO `order`
@@ -99,8 +110,8 @@
         from `order`
         where order_id = #{orderId}
     </select>
-    <select id="queryOrders" resultType="com.rs.model.dto.response.OrderDetailResDTO">
-        select *
+    <select id="queryOrders" resultMap="OrderDetailResDTO">
+        select order_id, status, amount, ticket_id, voucher_id, create_time, pay_time, expire_time
         from `order`
         <where>
             user_id = #{userId}
@@ -117,14 +128,24 @@
         select *
         from `order`
         where user_id = #{userId}
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        <if test="orderId != null">
+            and order_id = #{orderId}
+        </if>
         order by create_time desc
-        limit 1
     </select>
 
     <select id="queryById" resultType="com.rs.model.order.Order">
         select *
         from `order`
         where id = #{id}
+    </select>
+    <select id="querySeat" resultType="java.lang.String">
+        select seat_id
+        from order_seat
+        where order_id = #{orderId}
     </select>
 
 </mapper>

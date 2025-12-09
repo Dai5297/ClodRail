@@ -11,8 +11,6 @@ import org.apache.seata.rm.tcc.api.BusinessActionContextParameter;
 import org.apache.seata.rm.tcc.api.LocalTCC;
 import org.apache.seata.rm.tcc.api.TwoPhaseBusinessAction;
 
-import java.util.List;
-
 @LocalTCC
 public interface OrderService {
 
@@ -64,18 +62,9 @@ public interface OrderService {
     OrderDetailResDTO orderDetail(String orderId);
 
     /**
-     * 订单分页查询
-     *
-     * @param pageNum  页码（从1开始）
-     * @param pageSize 页大小
-     * @return 订单分页结果
-     */
-    PageResult<OrderDetailResDTO> page(Integer pageNum, Integer pageSize,String orderId, Integer status);
-
-    /**
      * 获取订单列表
      *
      * @return 订单列表
      */
-    List<OrderListResDTO> list();
+    PageResult<OrderListResDTO> list(Integer pageNum, Integer pageSize, String orderId, Integer status);
 }

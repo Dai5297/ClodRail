@@ -4,6 +4,7 @@ import com.rs.model.domain.Permissions;
 import com.rs.model.dto.response.OrderDetailResDTO;
 import com.rs.model.order.Order;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -89,5 +90,17 @@ public interface OrderMapper {
      * @param userId 用户ID
      * @return 订单信息
      */
-    List<Order> findByUserId(Long userId);
+    List<Order> findByUserId(
+            @Param("userId") Long userId,
+            @Param("orderId") String orderId,
+            @Param("status") Integer status
+    );
+
+    /**
+     * 查询订单座位信息
+     *
+     * @param orderId 订单ID
+     * @return 订单座位信息
+     */
+    List<String> querySeat(String orderId);
 }

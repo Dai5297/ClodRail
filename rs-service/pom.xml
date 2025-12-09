@@ -17,6 +17,7 @@
         <module>rs-ticket</module>
         <module>rs-order</module>
         <module>rs-assistant</module>
+        <module>rs-mall</module>
     </modules>
 
     <properties>

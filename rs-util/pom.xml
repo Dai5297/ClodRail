@@ -33,6 +33,7 @@
         <alioss.version>3.17.4</alioss.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <activation.version>1.1.1</activation.version>
+        <elasticsearch.version>7.12.1</elasticsearch.version>
     </properties>
 
     <modules>
@@ -46,6 +47,7 @@
         <module>rs-thirdparty</module>
         <module>rs-langchain4j</module>
         <module>rs-netty</module>
+        <module>rs-es</module>
     </modules>
 
     <dependencyManagement>
@@ -175,6 +177,13 @@
                 <version>1.8.0</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- es -->
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <version>${elasticsearch.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

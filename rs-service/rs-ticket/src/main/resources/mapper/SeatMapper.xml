@@ -57,6 +57,13 @@
         from seat
         where order_id = #{orderId}
     </select>
+    <select id="querySeatTypeInfo" resultType="com.rs.dto.response.ticket.SeatInfoResDTO">
+        select seat_type,
+               full_seat_code
+        from seat
+        where order_id = #{orderId}
+    </select>
+
 
     <update id="preOccupationSeat">
         update seat
