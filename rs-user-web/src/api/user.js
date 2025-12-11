@@ -7,7 +7,7 @@ import request from '@/utils/request.js'
 // 获取用户信息
 export const getUserInfo = () => {
   return request({
-    url: '/user/info',
+    url: '/customer/user/info',
     method: 'GET'
   })
 }
@@ -15,7 +15,7 @@ export const getUserInfo = () => {
 // 更新用户信息
 export const updateUserInfo = (data) => {
   return request({
-    url: '/user/info/update',
+    url: '/customer/user/info/update',
     method: 'POST',
     data
   })

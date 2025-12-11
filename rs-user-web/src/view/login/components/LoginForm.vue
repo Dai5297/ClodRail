@@ -193,7 +193,6 @@ const refreshCaptcha = async () => {
     const response = await getCaptcha()
     captchaCode.value = response.data || 'ABCD'
   } catch (error) {
-    console.error('获取验证码失败:', error)
     captchaCode.value = 'ABCD' // 默认验证码
   }
 }
@@ -223,7 +222,6 @@ const handleLogin = async () => {
     
     // 调用登录API
     const response = await login(loginData)
-    console.log(response)
     if (response.code === 200) {
       // 登录成功
       ErrorHandler.showSuccess('登录成功')

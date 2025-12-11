@@ -1,46 +1,52 @@
 <template>
-  <div class="profile-display">
-    <div class="info-section">
-      <h3 class="section-title">基本信息</h3>
-      <div class="info-grid">
-        <div class="info-item">
-          <label class="info-label">用户名</label>
-          <div class="info-value">{{ userInfo.username || '-' }}</div>
+  <div class="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
+    <div class="mb-10 last:mb-0">
+      <h3 class="text-lg font-semibold text-gray-900 border-b-2 border-gray-100 pb-3 mb-6 flex items-center gap-2">
+        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+        基本信息
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-gray-500">用户名</label>
+          <div class="text-gray-900 font-medium">{{ userInfo.username || '-' }}</div>
         </div>
-        <div class="info-item">
-          <label class="info-label">真实姓名</label>
-          <div class="info-value">{{ userInfo.realName || '-' }}</div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-gray-500">真实姓名</label>
+          <div class="text-gray-900 font-medium">{{ userInfo.realName || '-' }}</div>
         </div>
-        <div class="info-item">
-          <label class="info-label">手机号</label>
-          <div class="info-value">{{ userInfo.phone || '-' }}</div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-gray-500">手机号</label>
+          <div class="text-gray-900 font-medium">{{ userInfo.phone || '-' }}</div>
         </div>
-        <div class="info-item">
-          <label class="info-label">邮箱</label>
-          <div class="info-value">{{ userInfo.email || '-' }}</div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-gray-500">邮箱</label>
+          <div class="text-gray-900 font-medium">{{ userInfo.email || '-' }}</div>
         </div>
-        <div class="info-item">
-          <label class="info-label">性别</label>
-          <div class="info-value">{{ userInfo.gender || '-' }}</div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-gray-500">性别</label>
+          <div class="text-gray-900 font-medium">{{ userInfo.gender || '-' }}</div>
         </div>
-        <div class="info-item">
-          <label class="info-label">生日</label>
-          <div class="info-value">{{ userInfo.birthday || '-' }}</div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-gray-500">生日</label>
+          <div class="text-gray-900 font-medium">{{ userInfo.birthday || '-' }}</div>
         </div>
-        <div class="info-item">
-          <label class="info-label">身份证号</label>
-          <div class="info-value">{{ formatIdCard(userInfo.idCard) || '-' }}</div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-gray-500">身份证号</label>
+          <div class="text-gray-900 font-medium">{{ formatIdCard(userInfo.idCard) || '-' }}</div>
         </div>
-        <div class="info-item">
-          <label class="info-label">地址</label>
-          <div class="info-value">{{ userInfo.address || '-' }}</div>
+        <div class="flex flex-col gap-1.5 md:col-span-2">
+          <label class="text-sm font-medium text-gray-500">地址</label>
+          <div class="text-gray-900 font-medium">{{ userInfo.address || '-' }}</div>
         </div>
       </div>
     </div>
     
-    <div v-if="userInfo.introduction" class="info-section">
-      <h3 class="section-title">个人简介</h3>
-      <div class="introduction-content">
+    <div v-if="userInfo.introduction" class="mb-0">
+      <h3 class="text-lg font-semibold text-gray-900 border-b-2 border-gray-100 pb-3 mb-6 flex items-center gap-2">
+        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        个人简介
+      </h3>
+      <div class="bg-gray-5 rounded-lg p-6 text-gray-700 leading-relaxed border border-gray-100">
         {{ userInfo.introduction }}
       </div>
     </div>
@@ -65,72 +71,3 @@ const formatIdCard = (idCard) => {
   return idCard
 }
 </script>
-
-<style scoped>
-.profile-display {
-  padding: 24px;
-}
-
-.info-section {
-  margin-bottom: 32px;
-}
-
-.info-section:last-child {
-  margin-bottom: 0;
-}
-
-.section-title {
-  margin: 0 0 20px 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f2937;
-  border-bottom: 2px solid #e5e7eb;
-  padding-bottom: 8px;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.info-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #6b7280;
-}
-
-.info-value {
-  font-size: 16px;
-  color: #1f2937;
-  padding: 8px 0;
-  border-bottom: 1px solid #f3f4f6;
-  min-height: 24px;
-}
-
-.introduction-content {
-  padding: 16px;
-  background: #f9fafb;
-  border-radius: 6px;
-  border-left: 4px solid #3b82f6;
-  color: #374151;
-  line-height: 1.6;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .profile-display {
-    padding: 16px;
-  }
-  
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>

@@ -12,12 +12,12 @@ import request from '@/utils/request'
  */
 export const searchTickets = (params) => {
   return request({
-    url: '/tickets/search',
+    url: '/customer/tickets/search',
     method: 'get',
     params: {
       originStationId: params.originStationId,
       destinationStationId: params.destinationStationId,
-      departureDate: params.date,
+      departureDate: params.departureDate,
       pageNum: params.pageNum || 1,
       pageSize: params.pageSize || 10
     }
@@ -31,7 +31,7 @@ export const searchTickets = (params) => {
  */
 export const getTicketDetail = (ticketId) => {
   return request({
-    url: '/tickets/detail',
+    url: '/customer/tickets/detail',
     method: 'get',
     params: { ticketId }
   })
@@ -43,7 +43,7 @@ export const getTicketDetail = (ticketId) => {
  */
 export const getHotRoutes = () => {
   return request({
-    url: '/tickets/hot',
+    url: '/customer/tickets/hot',
     method: 'get'
   })
 }
@@ -51,16 +51,17 @@ export const getHotRoutes = () => {
 /**
  * 获取可用座位信息
  * @param {Object} params 查询参数
- * @param {number} params.trainId 列车ID
- * @param {string} params.date 出发日期
+ * @param {number} params.ticketId 车票ID（后端参数）
  * @param {number} params.seatType 座位类型
- * @param {number} params.carriageNumber 车厢号
  * @returns {Promise} 可用座位信息
  */
 export const getAvailableSeats = (params) => {
   return request({
-    url: '/seats/available',
+    url: '/customer/seats/available',
     method: 'get',
-    params: params
+    params: {
+      ticketId: params.ticketId,
+      seatType: params.seatType
+    }
   })
 }

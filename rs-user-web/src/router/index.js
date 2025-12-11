@@ -20,52 +20,22 @@ const router = createRouter({
                 },
                 {
                     path: 'ticketSearch',
-                    name: 'ticket-search',
-                    component: () => import('@/view/ticket-search/index.vue')
+                    redirect: '/ticket'
                 },
                 {
-                    path: 'ticketDetail',
+                    path: 'ticket-detail',
                     name: 'ticket-detail',
                     component: () => import('@/view/ticket-detail/index.vue')
                 },
                 {
-                    path: 'ticketPayment',
+                    path: 'ticket-payment',
                     name: 'ticket-payment',
                     component: () => import('@/view/ticket-payment/index.vue')
                 },
                 {
-                    path: 'order',
-                    name: 'order',
-                    component: () => import('@/view/order-detail/index.vue'),
-                    children: [
-                        {
-                            path: '/detail',
-                            name: 'order-detail',
-                            component: () => import('@/view/order-detail/index.vue')
-                        }
-                    ]
-                },
-                {
                     path: 'mall',
                     name: 'mall',
-                    component: () => import('@/view/mall-search/index.vue'),
-                    children: [
-                        {
-                            path: '/search',
-                            name: 'mall-search',
-                            component: () => import('@/view/mall-search/index.vue')
-                        },
-                        {
-                            path: '/detail',
-                            name: 'mall-detail',
-                            component: () => import('@/view/goods/index.vue')
-                        },
-                        {
-                            path: '/payment',
-                            name: 'mall-payment',
-                            component: () => import('@/view/mall-payment/index.vue')
-                        }
-                    ]
+                    component: () => import('@/view/mall/index.vue')
                 },
                 {
                     path: 'user',

@@ -88,7 +88,6 @@ const switchToLogin = () => {
 
 // 登录成功处理
 const handleLoginSuccess = (userData) => {
-  console.log('登录成功:', userData)
   
   // 跳转到首页或用户指定页面
   const redirect = router.currentRoute.value.query.redirect || '/'
@@ -97,13 +96,11 @@ const handleLoginSuccess = (userData) => {
 
 // 登录失败处理
 const handleLoginFailed = (error) => {
-  console.error('登录失败:', error)
   // 登录失败的处理逻辑已在LoginForm组件中实现
 }
 
 // 注册成功处理
 const handleRegisterSuccess = (userData) => {
-  console.log('注册成功:', userData)
   
   // 显示注册成功提示
   ElMessage.success(userData.message || '注册成功！')

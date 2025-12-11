@@ -1,116 +1,170 @@
 <template>
-  <div class="payment-page">
+  <div class="min-h-screen bg-gray-50 pb-10">
     <!-- 页面头部 -->
-    <div class="page-header">
-      <div class="container">
-        <el-button 
-          type="text" 
+    <div class="bg-white shadow-sm mb-5 sticky top-0 z-30">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <button 
           @click="goBack" 
-          class="back-btn"
+          class="flex items-center text-blue-600 hover:text-blue-800 transition-colors mb-2 text-sm"
         >
-          <el-icon><ArrowLeft /></el-icon>
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           返回订单详情
-        </el-button>
-        <h2 class="page-title">订单支付</h2>
+        </button>
+        <h2 class="text-2xl font-bold text-gray-900">订单支付</h2>
       </div>
     </div>
 
     <!-- 支付进度条 -->
-    <div class="progress-section">
-      <div class="container">
-        <el-steps :active="currentStep" align-center>
-          <el-step title="选择车票" icon="Tickets" />
-          <el-step title="填写信息" icon="User" />
-          <el-step title="确认支付" icon="CreditCard" />
-          <el-step title="支付完成" icon="Check" />
-        </el-steps>
+    <div class="bg-white border-b border-gray-200 py-8 mb-6">
+      <div class="max-w-3xl mx-auto px-4">
+        <div class="flex items-center justify-between relative">
+          <!-- 进度条背景线 -->
+          <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-200 -z-10"></div>
+          <!-- 进度条激活线 -->
+          <div class="absolute left-0 top-1/2 transform -translate-y-1/2 h-1 bg-blue-600 -z-10 transition-all duration-500" :style="{ width: `${(currentStep - 1) / 3 * 100}%` }"></div>
+          
+          <!-- 步骤项 -->
+          <div v-for="(step, index) in steps" :key="index" class="flex flex-col items-center bg-white px-2">
+            <div 
+              class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-colors duration-300"
+              :class="[
+                currentStep > index + 1 ? 'bg-blue-600 border-blue-600 text-white' : 
+                currentStep === index + 1 ? 'bg-blue-600 border-blue-600 text-white' : 
+                'bg-white border-gray-300 text-gray-400'
+              ]"
+            >
+              <span v-if="currentStep > index + 1">✓</span>
+              <span v-else>{{ index + 1 }}</span>
+            </div>
+            <span 
+              class="mt-2 text-xs font-medium transition-colors duration-300"
+              :class="currentStep >= index + 1 ? 'text-blue-600' : 'text-gray-400'"
+            >
+              {{ step.title }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- 加载状态 -->
-    <div v-if="loading" class="loading-container">
-      <el-skeleton :rows="5" animated />
+    <div v-if="loading" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div class="animate-pulse space-y-4">
+        <div class="h-4 bg-gray-200 rounded w-1/4"></div>
+        <div class="h-32 bg-gray-200 rounded"></div>
+        <div class="h-32 bg-gray-200 rounded"></div>
+      </div>
     </div>
 
     <!-- 主要内容 -->
-    <div v-else class="main-content">
-      <div class="container">
-        <div class="payment-layout">
-          <!-- 左侧：订单信息 -->
-          <div class="order-section">
-            <!-- 订单详情卡片 -->
-            <OrderInfoCard :order-info="orderInfo" />
+    <div v-else class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 左侧：订单信息 -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- 订单详情卡片 -->
+          <OrderInfoCard :order-info="orderInfo" />
 
-            <!-- 支付倒计时 -->
-            <CountdownCard :remaining-time="remainingTime" />
-          </div>
+          <!-- 支付倒计时 -->
+          <CountdownCard :remaining-time="remainingTime" />
+        </div>
 
-          <!-- 右侧：支付方式 -->
-          <div class="payment-section">
-            <PaymentMethodsCard
-              :payment-methods="paymentMethods"
-              :selected-method="selectedPaymentMethod"
-              :total-amount="orderInfo.totalAmount"
-              :processing="processing"
-              @select-method="selectPaymentMethod"
-              @pay="processPayment"
-            />
+        <!-- 右侧：支付方式 -->
+        <div class="space-y-6">
+          <PaymentMethodsCard
+            :payment-methods="paymentMethods"
+            :selected-method="selectedPaymentMethod"
+            :total-amount="orderInfo.totalAmount"
+            :processing="processing"
+            @select-method="selectPaymentMethod"
+            @pay="processPayment"
+          />
 
-            <!-- 支付说明 -->
-            <PaymentNoticeCard :remaining-time="remainingTime" />
-          </div>
+          <!-- 支付说明 -->
+          <PaymentNoticeCard :remaining-time="remainingTime" />
         </div>
       </div>
     </div>
 
     <!-- 支付成功弹窗 -->
-    <el-dialog
+    <Modal
       v-model="showSuccessModal"
       title="支付成功"
-      width="500px"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
       :show-close="false"
+      :close-on-click-modal="false"
     >
-      <div class="success-modal">
-        <div class="success-icon">
-          <el-icon size="60" color="#52c41a"><CircleCheck /></el-icon>
+      <div class="text-center py-6">
+        <div class="mb-5 inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-500">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
         </div>
-        <div class="success-content">
-          <h3 class="success-title">支付成功！</h3>
-          <p class="success-message">
-            您的订单已支付成功，车票信息已发送至您的手机和邮箱
-          </p>
-          <div class="success-info">
-            <div class="info-item">
-              <span class="label">订单号：</span>
-              <span class="value">{{ orderInfo.orderNumber }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">支付金额：</span>
-              <span class="value">￥{{ orderInfo.totalAmount }}</span>
-            </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">支付成功！</h3>
+        <p class="text-gray-500 mb-6">
+          您的订单已支付成功，车票信息已发送至您的手机和邮箱
+        </p>
+        <div class="bg-gray-50 rounded-lg p-4 text-left mb-6 space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500">订单号：</span>
+            <span class="font-medium text-gray-900">{{ orderInfo.orderNumber }}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500">支付金额：</span>
+            <span class="font-bold text-orange-600">￥{{ orderInfo.totalAmount }}</span>
           </div>
         </div>
       </div>
       
       <template #footer>
-        <div class="success-actions">
-          <el-button @click="goToOrders">查看订单</el-button>
-          <el-button type="primary" @click="goToHome">返回首页</el-button>
+        <div class="flex justify-center gap-3">
+          <button 
+            @click="goToOrders" 
+            class="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            查看订单
+          </button>
+          <button 
+            @click="goToHome" 
+            class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            返回首页
+          </button>
         </div>
       </template>
-    </el-dialog>
+    </Modal>
+
+    <!-- 订单超时弹窗 -->
+    <Modal
+      v-model="showTimeoutModal"
+      title="订单超时"
+      :show-close="false"
+      :close-on-click-modal="false"
+    >
+      <div class="text-center py-6">
+        <div class="mb-5 inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-500">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">订单已超时</h3>
+        <p class="text-gray-500">
+          很抱歉，您的订单因超时未支付已自动取消，请重新下单。
+        </p>
+      </div>
+      <template #footer>
+        <div class="flex justify-center">
+          <button 
+            @click="handleTimeoutConfirm" 
+            class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            确定
+          </button>
+        </div>
+      </template>
+    </Modal>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { 
-  ArrowLeft, CircleCheck, Tickets, User, Check
-} from '@element-plus/icons-vue'
+import toast from '@/components/Toast'
+import Modal from '@/components/Modal/Modal.vue'
 import request from '@/utils/request'
 import { payOrder, getOrderDetail } from '@/api/order'
 import { getTicketDetail } from '@/api/ticket'
@@ -126,9 +180,17 @@ const route = useRoute()
 const loading = ref(true)
 const processing = ref(false)
 const showSuccessModal = ref(false)
-const currentStep = ref(2) // 当前在支付步骤
+const showTimeoutModal = ref(false)
+const currentStep = ref(3) // 1:选择车票, 2:填写信息, 3:确认支付, 4:支付完成
 const remainingTime = ref(15 * 60) // 15分钟倒计时（秒）
 const timer = ref(null)
+
+const steps = [
+  { title: '选择车票' },
+  { title: '填写信息' },
+  { title: '确认支付' },
+  { title: '支付完成' }
+]
 
 // 订单信息
 const orderInfo = ref({
@@ -156,14 +218,12 @@ const paymentMethods = ref([
     id: 'alipay',
     name: '支付宝',
     description: '推荐使用，支付快捷安全',
-    icon: '/images/alipay.png',
     available: true
   },
   {
     id: 'wechat',
     name: '微信支付',
     description: '功能待开发',
-    icon: '/images/wechat-pay.png',
     available: false
   }
 ])
@@ -183,7 +243,7 @@ const loadOrderInfo = async () => {
     // 从路由参数获取orderId
     const orderId = route.query.orderId
     if (!orderId) {
-      ElMessage.error('订单ID缺失')
+      toast.error('订单ID缺失')
       router.back()
       return
     }
@@ -191,7 +251,7 @@ const loadOrderInfo = async () => {
     // 调用API获取订单详情
     const response = await getOrderDetail(orderId)
     if (response.code !== 200) {
-      ElMessage.error(response.message || '获取订单信息失败')
+      toast.error(response.message || '获取订单信息失败')
       router.back()
       return
     }
@@ -200,7 +260,7 @@ const loadOrderInfo = async () => {
     
     // 验证订单数据完整性
     if (!orderData.orderId || !orderData.totalAmount) {
-      ElMessage.error('订单数据不完整')
+      toast.error('订单数据不完整')
       router.back()
       return
     }
@@ -214,8 +274,7 @@ const loadOrderInfo = async () => {
           ticketInfo = ticketResponse.data
         }
       } catch (error) {
-        console.error('获取车票信息失败:', error)
-        ElMessage.warning('获取车票信息失败，部分信息可能不完整')
+        toast.warning('获取车票信息失败，部分信息可能不完整')
       }
     }
 
@@ -309,15 +368,14 @@ const loadOrderInfo = async () => {
       if (timeDiff > 0) {
         remainingTime.value = Math.floor(timeDiff / 1000)
       } else {
-        ElMessage.error('订单已过期')
+        toast.error('订单已过期')
         router.back()
         return
       }
     }
     
   } catch (error) {
-    console.error('获取订单信息失败:', error)
-    ElMessage.error('获取订单信息失败')
+    toast.error('获取订单信息失败')
     router.back()
   } finally {
     loading.value = false
@@ -327,7 +385,7 @@ const loadOrderInfo = async () => {
 // 选择支付方式
 const selectPaymentMethod = (method) => {
   if (!method.available) {
-    ElMessage.warning('该支付方式暂不可用')
+    toast.warning('该支付方式暂不可用')
     return
   }
   selectedPaymentMethod.value = method
@@ -336,17 +394,17 @@ const selectPaymentMethod = (method) => {
 // 处理支付
 const processPayment = async () => {
   if (!selectedPaymentMethod.value) {
-    ElMessage.warning('请选择支付方式')
+    toast.warning('请选择支付方式')
     return
   }
 
   if (!selectedPaymentMethod.value.available) {
-    ElMessage.warning('该支付方式暂不可用')
+    toast.warning('该支付方式暂不可用')
     return
   }
 
   if (selectedPaymentMethod.value.id === 'wechat') {
-    ElMessage.info('微信支付功能待开发，敬请期待')
+    toast.info('微信支付功能待开发，敬请期待')
     return
   }
 
@@ -356,14 +414,11 @@ const processPayment = async () => {
     // 调用支付宝支付API
     if (selectedPaymentMethod.value.id === 'alipay') {
       try {
-        ElMessage.info('正在跳转支付宝支付...')
+        toast.info('正在跳转支付宝支付...')
         
         // 调用后端支付接口，传入订单ID
         const response = await payOrder(orderInfo.value.orderId)
         
-        console.log('=== 支付接口响应 ===')
-        console.log('响应数据:', response)
-        console.log('==================')
         
         // 后端返回的是支付宝表单HTML
         if (response.code === 200 && response.data) {
@@ -388,52 +443,29 @@ const processPayment = async () => {
             }
             
             // 提示用户
-            ElMessage.success('正在跳转到支付宝支付页面...')
+            toast.success('正在跳转到支付宝支付页面...')
             
             // 注意：实际支付成功后，支付宝会通过回调通知后端
             // 前端可以通过轮询或websocket来获取支付状态更新
             // 这里先不显示成功弹窗，等用户从支付宝返回后再处理
           } else {
-            console.error('未找到支付表单')
-            ElMessage.error('支付表单加载失败')
+            toast.error('支付表单加载失败')
           }
         } else {
-          ElMessage.error(response.message || '获取支付信息失败')
+          toast.error(response.message || '获取支付信息失败')
         }
       } catch (apiError) {
-        console.error('支付API调用失败:', apiError)
         
         // 检查是否是404或接口不存在的错误
         if (apiError.response?.status === 404 || apiError.message?.includes('404')) {
-          ElMessageBox.confirm(
-            '后端支付接口调用失败，是否模拟支付成功？',
-            '提示',
-            {
-              confirmButtonText: '模拟支付',
-              cancelButtonText: '取消',
-              type: 'warning'
-            }
-          ).then(() => {
-            // 模拟支付成功
-            ElMessage.success('支付成功（模拟）！')
-            orderInfo.value.status = 1
-            if (timer.value) {
-              clearInterval(timer.value)
-              timer.value = null
-            }
-            showSuccessModal.value = true
-            currentStep.value = 3
-          }).catch(() => {
-            ElMessage.info('已取消支付')
-          })
+          toast.error('支付接口不存在，请联系管理员')
         } else {
-          ElMessage.error('支付失败：' + (apiError.message || '未知错误'))
+          toast.error('支付失败：' + (apiError.message || '未知错误'))
         }
       }
     }
   } catch (error) {
-    console.error('支付过程出错:', error)
-    ElMessage.error('支付失败，请重试')
+    toast.error('支付失败，请重试')
   } finally {
     processing.value = false
   }
@@ -441,12 +473,18 @@ const processPayment = async () => {
 
 // 前往订单页面
 const goToOrders = () => {
-  router.push('/orders')
+  router.push('/user/order')
 }
 
 // 返回首页
 const goToHome = () => {
   router.push('/')
+}
+
+// 订单超时确认
+const handleTimeoutConfirm = () => {
+  showTimeoutModal.value = false
+  router.push('/ticket')
 }
 
 // 启动倒计时
@@ -457,12 +495,7 @@ const startCountdown = () => {
     } else {
       // 倒计时结束，订单超时
       clearInterval(timer.value)
-      ElMessageBox.alert('订单已超时，请重新下单', '订单超时', {
-        confirmButtonText: '确定',
-        callback: () => {
-          router.push('/tickets')
-        }
-      })
+      showTimeoutModal.value = true
     }
   }, 1000)
 }
@@ -473,7 +506,7 @@ onMounted(async () => {
   const orderId = route.query.orderId
   
   if (!orderId) {
-    ElMessage.error('缺少订单ID，请重新下单')
+    toast.error('缺少订单ID，请重新下单')
     router.back()
     return
   }
@@ -497,106 +530,3 @@ onUnmounted(() => {
   }
 })
 </script>
-
-<style scoped>
-.payment-page {
-  min-height: 100vh;
-  background-color: #f8f9fa;
-}
-
-.page-header {
-  background: white;
-  padding: 20px 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.back-btn {
-  color: #1890ff;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-.page-title {
-  font-size: 24px;
-  color: #333;
-  margin: 0;
-}
-
-.progress-section {
-  background: white;
-  padding: 30px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.loading-container {
-  padding: 40px 20px;
-}
-
-.main-content {
-  padding: 30px 20px;
-}
-
-.payment-layout {
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 30px;
-}
-
-
-/* 支付成功弹窗 */
-.success-modal {
-  text-align: center;
-  padding: 20px 0;
-}
-
-.success-icon {
-  margin-bottom: 20px;
-}
-
-.success-title {
-  font-size: 20px;
-  color: #333;
-  margin: 0 0 12px 0;
-}
-
-.success-message {
-  color: #666;
-  margin: 0 0 20px 0;
-  line-height: 1.5;
-}
-
-.success-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-align: left;
-  background: #fafafa;
-  padding: 16px;
-  border-radius: 8px;
-}
-
-.info-item {
-  display: flex;
-  justify-content: space-between;
-}
-
-.success-actions {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .payment-layout {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-}
-</style>

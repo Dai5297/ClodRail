@@ -6,13 +6,14 @@ import request from '@/utils/request'
  */
 export const getStations = () => {
   return request({
-    url: '/stations',
+    url: '/customer/stations',
     method: 'get'
   })
 }
 
 /**
  * 根据关键词搜索站点
+ * 注意：后端暂未实现此接口，可使用 getStations 获取全部站点后前端过滤
  * @param {string} keyword 搜索关键词
  * @returns {Promise} 匹配的站点列表
  */
@@ -32,7 +33,7 @@ export const searchStations = (keyword) => {
  */
 export const getHotStations = () => {
   return request({
-    url: '/stations/hot',
+    url: '/customer/stations/hot',
     method: 'get'
   })
 }

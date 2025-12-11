@@ -16,27 +16,35 @@
             <h3>管理系统</h3>
         </div>
         <nav class="sidebar-menu">
-            <a href="index.html" class="menu-item active">
+            <a href="index.html" class="menu-item active" data-roles="SUPER_ADMIN,OPS,FINANCE,CS">
                 <i class="fas fa-tachometer-alt"></i>
                 <span>仪表板</span>
             </a>
-            <a href="pages/users.html" class="menu-item">
+            <a href="pages/users.html" class="menu-item" data-roles="SUPER_ADMIN,OPS">
                 <i class="fas fa-users"></i>
                 <span>用户管理</span>
             </a>
-            <a href="pages/trains.html" class="menu-item">
+            <a href="pages/trains.html" class="menu-item" data-roles="SUPER_ADMIN,OPS">
                 <i class="fas fa-train"></i>
                 <span>车次管理</span>
             </a>
-            <a href="pages/orders.html" class="menu-item">
+            <a href="pages/orders.html" class="menu-item" data-roles="SUPER_ADMIN,OPS,FINANCE">
                 <i class="fas fa-ticket-alt"></i>
                 <span>订单管理</span>
             </a>
-            <a href="pages/statistics.html" class="menu-item">
+            <a href="pages/statistics.html" class="menu-item" data-roles="SUPER_ADMIN,FINANCE">
                 <i class="fas fa-chart-bar"></i>
                 <span>数据统计</span>
             </a>
-            <a href="pages/settings.html" class="menu-item">
+            <a href="pages/assistant.html" class="menu-item" data-roles="SUPER_ADMIN,CS">
+                <i class="fas fa-headset"></i>
+                <span>客服运营</span>
+            </a>
+            <a href="pages/assistant-reply.html" class="menu-item" data-roles="SUPER_ADMIN,CS">
+                <i class="fas fa-comment-dots"></i>
+                <span>客服回复</span>
+            </a>
+            <a href="pages/settings.html" class="menu-item" data-roles="SUPER_ADMIN">
                 <i class="fas fa-cog"></i>
                 <span>系统设置</span>
             </a>
@@ -489,63 +497,7 @@
             ModalManager.show('userModal');
         }
 
-        // 添加系统指标样式
-        const systemMetricStyles = document.createElement('style');
-        systemMetricStyles.textContent = `
-            .system-metric {
-                text-align: center;
-            }
-            
-            .metric-label {
-                font-size: 14px;
-                color: #666;
-                margin-bottom: 8px;
-            }
-            
-            .metric-value {
-                font-size: 24px;
-                font-weight: 600;
-                color: #333;
-                margin-bottom: 10px;
-            }
-            
-            .metric-bar {
-                height: 6px;
-                background: #f0f0f0;
-                border-radius: 3px;
-                overflow: hidden;
-            }
-            
-            .metric-progress {
-                height: 100%;
-                border-radius: 3px;
-                transition: width 0.3s ease;
-            }
-            
-            .user-menu-item {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 12px 16px;
-                color: #333;
-                text-decoration: none;
-                border-radius: 6px;
-                transition: background-color 0.3s ease;
-            }
-            
-            .user-menu-item:hover {
-                background-color: #f8f9fa;
-            }
-            
-            .text-success {
-                color: #28a745;
-            }
-            
-            .text-info {
-                color: #17a2b8;
-            }
-        `;
-        document.head.appendChild(systemMetricStyles);
+        // 样式已移入 css/admin.css
     </script>
 </body>
 </html>

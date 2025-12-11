@@ -625,6 +625,7 @@
                         username: username,
                         name: '系统管理员',
                         role: 'admin',
+                        roles: ['SUPER_ADMIN','OPS','CS','FINANCE'],
                         loginTime: new Date().toISOString()
                     };
                 } else {
@@ -641,6 +642,7 @@
                             email: user.email,
                             phone: user.phone,
                             role: user.role,
+                            roles: user.role === 'admin' ? ['SUPER_ADMIN','OPS','CS','FINANCE'] : ['OPS'],
                             loginTime: new Date().toISOString()
                         };
                     }
@@ -656,8 +658,14 @@
                         localStorage.setItem('remember-username', username);
                     }
                     
-                    // 跳转到管理首页
-                    window.location.href = 'index.html';
+                    function getLandingByRoles(roles) {
+                        if (roles && roles.includes('SUPER_ADMIN')) return 'index.html';
+                        if (roles && roles.includes('CS')) return 'pages/assistant-reply.html';
+                        if (roles && roles.includes('OPS')) return 'pages/orders.html';
+                        if (roles && roles.includes('FINANCE')) return 'pages/statistics.html';
+                        return 'index.html';
+                    }
+                    window.location.href = getLandingByRoles(adminData.roles);
                 } else {
                     // 登录失败
                     showError('用户名或密码错误');
@@ -768,6 +776,7 @@
                         name: name,
                         phone: phone,
                         role: 'admin',
+                        roles: ['OPS'],
                         status: 'active',
                         createdAt: new Date().toISOString()
                     };

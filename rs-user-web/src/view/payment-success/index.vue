@@ -19,6 +19,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import PaymentResultCard from './components/PaymentResultCard.vue'
+import { getOrderDetail } from '@/api/order'
 
 const router = useRouter()
 const route = useRoute()
@@ -39,17 +40,14 @@ const goToHome = () => {
   router.push('/')
 }
 
-// 处理支付宝返回的参数
-const processAlipayReturn = () => {
+// 处理支付宝返回的参数并查询订单状态
+const processAlipayReturn = async () => {
   try {
     loading.value = true
 
     // 获取URL中的所有查询参数
     const queryParams = route.query
     
-    console.log('=== 支付宝回调参数 ===')
-    console.log('所有参数:', queryParams)
-    console.log('==================')
 
     // 支付宝返回的关键参数
     const {
@@ -57,47 +55,73 @@ const processAlipayReturn = () => {
       trade_no,      // 支付宝交易号
       total_amount,  // 交易金额
       timestamp,     // 时间戳
-      trade_status,  // 交易状态
-      sign,          // 签名
+      trade_status,  // 交易状态（可能不存在）
     } = queryParams
 
     // 验证必要参数
     if (!out_trade_no) {
-      console.error('缺少订单号参数')
       paymentSuccess.value = false
       resultMessage.value = '支付结果获取失败，请查看订单状态'
       loading.value = false
       return
     }
 
-    // 设置订单信息
+    // 🔥 关键修复：调用后端接口查询订单实际状态
+    
+    // 等待一下，让后端异步回调有时间处理
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    const response = await getOrderDetail(out_trade_no)
+    
+    // 响应拦截器返回的数据结构：{ success, data, code, message }
+    const orderDetail = response.data
+
+    // 设置订单信息（优先使用后端返回的数据）
     orderInfo.value = {
-      out_trade_no,
-      trade_no,
-      total_amount,
-      timestamp,
-      trade_status
+      out_trade_no: orderDetail.orderId || out_trade_no,
+      trade_no: trade_no || '---',
+      total_amount: orderDetail.totalAmount || total_amount,
+      timestamp: timestamp || new Date().toISOString(),
+      trade_status: orderDetail.status,
+      createTime: orderDetail.createTime,
+      payTime: orderDetail.payTime,
+      passengers: orderDetail.passengers,
     }
 
-    // 判断支付状态
-    // TRADE_SUCCESS 或 TRADE_FINISHED 表示支付成功
-    if (trade_status === 'TRADE_SUCCESS' || trade_status === 'TRADE_FINISHED') {
+    // 判断支付状态（根据后端返回的订单状态）
+    // 订单状态：0-待支付，1-已支付，2-已取消，3-已退款
+    if (orderDetail.status === 1) {
       paymentSuccess.value = true
       resultMessage.value = '您的订单已支付成功，感谢您的购买！'
       ElMessage.success('支付成功！')
+    } else if (orderDetail.status === 0) {
+      paymentSuccess.value = false
+      resultMessage.value = '订单尚未支付成功，请稍后查看订单状态'
+      ElMessage.warning('支付处理中，请稍后查看订单状态')
     } else {
       paymentSuccess.value = false
-      resultMessage.value = `支付状态：${trade_status || '未知'}`
-      ElMessage.warning('支付状态异常，请查看订单详情')
+      resultMessage.value = `订单状态异常：${getOrderStatusText(orderDetail.status)}`
+      ElMessage.error('订单状态异常')
     }
 
     loading.value = false
   } catch (error) {
-    console.error('处理支付结果失败:', error)
     paymentSuccess.value = false
     resultMessage.value = '支付结果处理失败，请查看订单状态'
     loading.value = false
+    ElMessage.error('查询订单状态失败')
   }
+}
+
+// 获取订单状态文本
+const getOrderStatusText = (status) => {
+  const statusMap = {
+    0: '待支付',
+    1: '已支付',
+    2: '已取消',
+    3: '已退款'
+  }
+  return statusMap[status] || '未知状态'
 }
 
 // 组件挂载时初始化

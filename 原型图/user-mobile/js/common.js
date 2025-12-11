@@ -312,7 +312,7 @@ const BottomNav = {
             }
             
             // 更新图标
-            const icon = item.querySelector('.nav-icon');
+            const icon = item.querySelector('.nav-icons');
             if (icon) {
                 if (item.classList.contains('active')) {
                     icon.classList.add('active');

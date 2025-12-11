@@ -1,14 +1,16 @@
 <template>
-  <div class="user-center">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col lg:flex-row gap-8 h-[calc(100vh-80px)] overflow-hidden">
     <!-- 侧边栏 -->
-    <UserSidebar 
-      :user-info="userInfo"
-      :user-level="userLevel"
-      :menu-items="menuItems"
-    />
+    <aside class="w-full lg:w-72 flex-shrink-0 overflow-y-auto hidden-scrollbar">
+      <UserSidebar 
+        :user-info="userInfo"
+        :user-level="userLevel"
+        :menu-items="menuItems"
+      />
+    </aside>
 
     <!-- 主内容区域 -->
-    <main class="content-area">
+    <main class="flex-1 h-full flex flex-col overflow-hidden">
       <RouterView :key="$route.fullPath"></RouterView>
     </main>
   </div>
@@ -16,7 +18,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { User, Document, UserFilled, Star, Lock } from '@element-plus/icons-vue'
 import { getUserInfo } from '@/api/user.js'
 import UserSidebar from '@/view/user/components/UserSidebar.vue'
 
@@ -33,31 +34,31 @@ const menuItems = ref([
   {
     path: '/user',
     label: '个人信息',
-    icon: User,
+    icon: 'ri-user-line',
     exact: true
   },
   {
     path: '/user/order',
     label: '我的订单',
-    icon: Document,
+    icon: 'ri-file-list-line',
     exact: false
   },
   {
     path: '/user/contact',
     label: '常用联系人',
-    icon: UserFilled,
+    icon: 'ri-team-line',
     exact: false
   },
   {
     path: '/user/point',
     label: '积分管理',
-    icon: Star,
+    icon: 'ri-copper-coin-line',
     exact: false
   },
   {
     path: '/user/security',
     label: '账号安全',
-    icon: Lock,
+    icon: 'ri-shield-check-line',
     exact: false
   }
 ])
@@ -67,11 +68,9 @@ const fetchUserInfo = async () => {
     const data = await getUserInfo()
     if (data.code === 200) {
       userInfo.value = data.data || {}
-    } else {
-      console.error('获取用户信息失败:', data?.message || '未知错误')
     }
   } catch (error) {
-    console.error('获取用户信息失败:', error)
+    console.error('获取用户信息失败', error)
   }
 }
 
@@ -79,24 +78,3 @@ onMounted(() => {
   fetchUserInfo()
 })
 </script>
-
-<style scoped>
-.user-center {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f5f5f5;
-  gap: 20px;
-  padding: 20px;
-}
-
-.content-area {
-  flex: 1;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  min-height: calc(100vh - 40px);
-}
-</style>

@@ -1,143 +1,220 @@
 <template>
-  <div class="profile-form">
-    <el-form
-      ref="profileFormRef"
-      :model="formData"
-      :rules="profileRules"
-      label-width="100px"
-      label-position="left"
-    >
-      <div class="form-section">
-        <h3 class="section-title">基本信息</h3>
-        <el-row :gutter="24">
-          <el-col :span="12">
-            <el-form-item label="用户名" prop="username">
-              <el-input v-model="formData.username" disabled />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="真实姓名" prop="realName">
-              <el-input v-model="formData.realName" />
-            </el-form-item>
-          </el-col>
-        </el-row>
+  <div class="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
+    <form @submit.prevent class="space-y-8">
+      <div class="space-y-6">
+        <h3 class="text-lg font-semibold text-gray-900 border-b-2 border-gray-100 pb-3 flex items-center gap-2">
+          <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+          基本信息
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- 用户名 (只读) -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">用户名</label>
+            <input 
+              type="text" 
+              v-model="formData.username" 
+              disabled
+              class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed focus:outline-none"
+            />
+          </div>
 
-        <el-row :gutter="24">
-          <el-col :span="12">
-            <el-form-item label="手机号" prop="phone">
-              <el-input v-model="formData.phone" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="邮箱" prop="email">
-              <el-input v-model="formData.email" />
-            </el-form-item>
-          </el-col>
-        </el-row>
+          <!-- 真实姓名 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
+              真实姓名 <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              v-model="formData.realName" 
+              class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+              :class="{'border-red-500 focus:border-red-500 focus:ring-red-500/20': errors.realName}"
+              placeholder="请输入真实姓名"
+              @input="clearError('realName')"
+            />
+            <p v-if="errors.realName" class="mt-1 text-xs text-red-500">{{ errors.realName }}</p>
+          </div>
 
-        <el-row :gutter="24">
-          <el-col :span="12">
-            <el-form-item label="性别" prop="gender">
-              <el-select v-model="formData.gender" placeholder="请选择性别">
-                <el-option label="男" value="男" />
-                <el-option label="女" value="女" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="生日" prop="birthday">
-              <el-date-picker
-                v-model="formData.birthday"
-                type="date"
-                placeholder="选择日期"
-                format="YYYY-MM-DD"
-                value-format="YYYY-MM-DD"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
+          <!-- 手机号 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
+              手机号 <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="tel" 
+              v-model="formData.phone" 
+              class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+              :class="{'border-red-500 focus:border-red-500 focus:ring-red-500/20': errors.phone}"
+              placeholder="请输入手机号"
+              @input="clearError('phone')"
+            />
+            <p v-if="errors.phone" class="mt-1 text-xs text-red-500">{{ errors.phone }}</p>
+          </div>
 
-        <el-row :gutter="24">
-          <el-col :span="12">
-            <el-form-item label="身份证号" prop="idCard">
-              <el-input v-model="formData.idCard" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="头像链接" prop="icon">
-              <el-input v-model="formData.icon" placeholder="请输入头像链接" />
-            </el-form-item>
-          </el-col>
-        </el-row>
+          <!-- 邮箱 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
+              邮箱 <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="email" 
+              v-model="formData.email" 
+              class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+              :class="{'border-red-500 focus:border-red-500 focus:ring-red-500/20': errors.email}"
+              placeholder="请输入邮箱"
+              @input="clearError('email')"
+            />
+            <p v-if="errors.email" class="mt-1 text-xs text-red-500">{{ errors.email }}</p>
+          </div>
 
-        <el-form-item label="地址" prop="address">
-          <el-input v-model="formData.address" />
-        </el-form-item>
+          <!-- 性别 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">性别</label>
+            <select 
+              v-model="formData.gender"
+              class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors appearance-none"
+            >
+              <option value="" disabled>请选择性别</option>
+              <option value="男">男</option>
+              <option value="女">女</option>
+            </select>
+          </div>
 
-        <el-form-item label="个人简介" prop="introduction">
-          <el-input
-            v-model="formData.introduction"
-            type="textarea"
-            :rows="4"
-            placeholder="请输入个人简介"
-          />
-        </el-form-item>
+          <!-- 生日 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">生日</label>
+            <input 
+              type="date" 
+              v-model="formData.birthday" 
+              class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+            />
+          </div>
+
+          <!-- 身份证号 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
+              身份证号 <span class="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              v-model="formData.idCard" 
+              class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+              :class="{'border-red-500 focus:border-red-500 focus:ring-red-500/20': errors.idCard}"
+              placeholder="请输入身份证号"
+              @input="clearError('idCard')"
+            />
+            <p v-if="errors.idCard" class="mt-1 text-xs text-red-500">{{ errors.idCard }}</p>
+          </div>
+
+          <!-- 头像链接 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">头像链接</label>
+            <input 
+              type="text" 
+              v-model="formData.icon" 
+              class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+              placeholder="请输入头像链接"
+            />
+          </div>
+
+          <!-- 地址 -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">地址</label>
+            <input 
+              type="text" 
+              v-model="formData.address" 
+              class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+              placeholder="请输入详细地址"
+            />
+          </div>
+
+          <!-- 个人简介 -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">个人简介</label>
+            <textarea 
+              v-model="formData.introduction" 
+              rows="4"
+              class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors resize-y"
+              placeholder="请输入个人简介"
+            ></textarea>
+          </div>
+        </div>
       </div>
-    </el-form>
+    </form>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 
-// 表单引用
-const profileFormRef = ref()
-
-// Props
-defineProps({
+const props = defineProps({
   formData: {
     type: Object,
     default: () => ({})
   }
 })
 
-// Events
-const emit = defineEmits(['validate'])
+// 错误信息状态
+const errors = reactive({
+  realName: '',
+  phone: '',
+  email: '',
+  idCard: ''
+})
 
-// 表单验证规则
-const profileRules = {
-  realName: [
-    { required: true, message: '请输入真实姓名', trigger: 'blur' }
-  ],
-  phone: [
-    { required: true, message: '请输入手机号', trigger: 'blur' },
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
-  ],
-  email: [
-    { required: true, message: '请输入邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
-  ],
-  idCard: [
-    { pattern: /^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/, message: '请输入正确的身份证号', trigger: 'blur' }
-  ]
+// 清除错误
+const clearError = (field) => {
+  errors[field] = ''
 }
 
-// 暴露验证方法给父组件
-const validate = async () => {
-  if (!profileFormRef.value) return false
-  try {
-    await profileFormRef.value.validate()
-    return true
-  } catch (error) {
-    return false
+// 验证逻辑
+const validate = () => {
+  let isValid = true
+  
+  // 验证真实姓名
+  if (!props.formData.realName) {
+    errors.realName = '请输入真实姓名'
+    isValid = false
+  } else if (props.formData.realName.length < 2 || props.formData.realName.length > 20) {
+    errors.realName = '真实姓名长度在 2 到 20 个字符'
+    isValid = false
   }
+
+  // 验证手机号
+  if (!props.formData.phone) {
+    errors.phone = '请输入手机号'
+    isValid = false
+  } else if (!/^1[3-9]\d{9}$/.test(props.formData.phone)) {
+    errors.phone = '请输入正确的手机号'
+    isValid = false
+  }
+
+  // 验证邮箱
+  if (!props.formData.email) {
+    errors.email = '请输入邮箱'
+    isValid = false
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(props.formData.email)) {
+    errors.email = '请输入正确的邮箱格式'
+    isValid = false
+  }
+
+  // 验证身份证号
+  if (!props.formData.idCard) {
+    errors.idCard = '请输入身份证号'
+    isValid = false
+  } else if (!/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(props.formData.idCard)) {
+    errors.idCard = '请输入正确的身份证号'
+    isValid = false
+  }
+
+  return Promise.resolve(isValid)
 }
 
-// 清除验证
+// 清除验证状态
 const clearValidate = () => {
-  if (profileFormRef.value) {
-    profileFormRef.value.clearValidate()
-  }
+  Object.keys(errors).forEach(key => {
+    errors[key] = ''
+  })
 }
 
 // 暴露方法给父组件
@@ -146,55 +223,3 @@ defineExpose({
   clearValidate
 })
 </script>
-
-<style scoped>
-.profile-form {
-  padding: 24px;
-}
-
-.form-section {
-  margin-bottom: 24px;
-}
-
-.form-section:last-child {
-  margin-bottom: 0;
-}
-
-.section-title {
-  margin: 0 0 20px 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f2937;
-  border-bottom: 2px solid #e5e7eb;
-  padding-bottom: 8px;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .profile-form {
-    padding: 16px;
-  }
-}
-
-/* Element Plus 组件样式覆盖 */
-:deep(.el-form-item__label) {
-  font-weight: 500;
-  color: #374151;
-}
-
-:deep(.el-input__wrapper) {
-  border-radius: 6px;
-}
-
-:deep(.el-select) {
-  width: 100%;
-}
-
-:deep(.el-date-editor) {
-  width: 100%;
-}
-
-:deep(.el-textarea__inner) {
-  border-radius: 6px;
-}
-</style>

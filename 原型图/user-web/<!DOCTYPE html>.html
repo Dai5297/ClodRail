@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudRail - 现代铁路服务系统 UI展示</title>
+
+    <!-- 1. 核心样式库 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 2. 图标库 Remix Icon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- 3. 字体配置 (Google Fonts) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- 4. Tailwind 主题配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', '"Noto Sans SC"', 'sans-serif'],
+                    },
+                    colors: {
+                        // 定义品牌主色调：静谧蓝
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb', // 主色
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'float': '0 10px 40px -10px rgba(0, 0, 0, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 隐藏滚动条但允许滚动 */
+        .hide-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scroll {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 玻璃拟态效果 */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-600 font-sans antialiased selection:bg-brand-100 selection:text-brand-900">
+
+    <!-- =========================================
+         全局导航栏 (Navbar)
+         ========================================= -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-slate-100 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer">
+                    <div
+                        class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-500/30">
+                        <i class="ri-train-wifi-line text-xl"></i>
+                    </div>
+                    <span class="font-bold text-xl text-slate-900 tracking-tight">CloudRail</span>
+                </div>
+
+                <!-- 菜单 (PC端) -->
+                <div class="hidden md:flex space-x-1">
+                    <a href="#home"
+                        class="px-5 py-2 text-brand-600 font-semibold bg-brand-50 rounded-full transition-colors">首页</a>
+                    <a href="#ticket"
+                        class="px-5 py-2 text-slate-500 hover:text-slate-900 font-medium rounded-full transition-colors">车票预订</a>
+                    <a href="#user"
+                        class="px-5 py-2 text-slate-500 hover:text-slate-900 font-medium rounded-full transition-colors">个人中心</a>
+                    <a href="#mall"
+                        class="px-5 py-2 text-slate-500 hover:text-slate-900 font-medium rounded-full transition-colors">商城</a>
+                </div>
+
+                <!-- 登录/用户状态 -->
+                <div class="flex items-center gap-4">
+                    <button class="text-slate-400 hover:text-brand-600 transition">
+                        <i class="ri-search-line text-xl"></i>
+                    </button>
+                    <button class="text-slate-400 hover:text-brand-600 transition">
+                        <i class="ri-customer-service-2-line text-xl"></i>
+                    </button>
+                    <div class="w-px h-6 bg-slate-200 mx-1"></div>
+                    <button
+                        class="px-6 py-2.5 bg-brand-600 text-white text-sm font-bold rounded-xl hover:bg-brand-700 transition shadow-lg shadow-brand-500/20">
+                        登录
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 占位符，防止导航栏遮挡内容 -->
+    <div class="h-20"></div>
+
+    <main class="space-y-24 pb-24">
+
+        <!-- =========================================
+             1. 首页 / 搜索模块 (Home / Search)
+             ========================================= -->
+        <section id="home" class="relative pt-16 px-4">
+            <!-- 装饰背景球 -->
+            <div
+                class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-brand-100/50 rounded-full blur-3xl -z-10">
+            </div>
+
+            <div class="max-w-5xl mx-auto text-center mb-12">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-semibold text-brand-600 mb-6 shadow-sm">
+                    <span class="flex h-2 w-2 relative">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                    </span>
+                    系统运行正常 • 全网售票中
+                </div>
+                <h1 class="text-4xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+                    探索下一站<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-cyan-500">美好旅程</span>
+                </h1>
+                <p class="text-lg text-slate-500 max-w-2xl mx-auto">连接全国 3000+ 车站，极速出票，智能行程规划。让每一次出发都变得简单。</p>
+            </div>
+
+            <!-- 核心搜索卡片 -->
+            <div class="max-w-4xl mx-auto bg-white rounded-3xl p-2 shadow-float border border-slate-100">
+                <div class="flex flex-col md:flex-row gap-2">
+                    <!-- 出发 -->
+                    <div class="flex-1 relative group cursor-pointer hover:bg-slate-50 rounded-2xl p-4 transition">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">出发地</label>
+                        <div class="flex items-center gap-3">
+                            <i class="ri-map-pin-line text-brand-500 text-xl"></i>
+                            <input type="text" value="北京 Beijing"
+                                class="w-full bg-transparent font-bold text-xl text-slate-800 outline-none cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- 交换按钮 -->
+                    <div class="flex items-center justify-center">
+                        <button
+                            class="w-10 h-10 rounded-full bg-slate-50 hover:bg-brand-50 text-slate-400 hover:text-brand-600 transition flex items-center justify-center border border-slate-100">
+                            <i class="ri-arrow-left-right-line"></i>
+                        </button>
+                    </div>
+
+                    <!-- 到达 -->
+                    <div class="flex-1 relative group cursor-pointer hover:bg-slate-50 rounded-2xl p-4 transition">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">目的地</label>
+                        <div class="flex items-center gap-3">
+                            <i class="ri-map-pin-time-line text-brand-500 text-xl"></i>
+                            <input type="text" placeholder="城市/车站"
+                                class="w-full bg-transparent font-bold text-xl text-slate-800 outline-none cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- 日期 -->
+                    <div
+                        class="flex-1 relative group cursor-pointer hover:bg-slate-50 rounded-2xl p-4 transition border-l border-slate-50 md:border-none">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">出发日期</label>
+                        <div class="flex items-center gap-3">
+                            <i class="ri-calendar-event-line text-brand-500 text-xl"></i>
+                            <div class="font-bold text-xl text-slate-800">10月24日 <span
+                                    class="text-sm font-normal text-slate-400">周二</span></div>
+                        </div>
+                    </div>
+
+                    <!-- 按钮 -->
+                    <button
+                        class="md:w-32 bg-brand-600 hover:bg-brand-700 text-white rounded-2xl font-bold text-lg shadow-lg shadow-brand-500/30 transition-all active:scale-95 flex items-center justify-center gap-2 py-4 md:py-0">
+                        <i class="ri-search-2-line"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- =========================================
+             2. 车票列表 & 下单页风格 (Ticket List)
+             ========================================= -->
+        <section id="ticket" class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="h-px flex-1 bg-slate-200"></div>
+                <h2 class="text-slate-400 text-sm font-bold uppercase tracking-widest">Ticket Selection UI</h2>
+                <div class="h-px flex-1 bg-slate-200"></div>
+            </div>
+
+            <!-- 车票卡片容器 -->
+            <div class="space-y-4">
+                <!-- 单张车票卡片 -->
+                <div
+                    class="bg-white rounded-2xl p-6 border border-slate-100 shadow-soft hover:shadow-lg hover:border-brand-200 transition-all group cursor-pointer">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                        <!-- 车次信息 -->
+                        <div class="flex items-center gap-8 w-full md:w-auto">
+                            <div class="text-center min-w-[80px]">
+                                <div class="text-3xl font-bold text-slate-900 font-sans">08:00</div>
+                                <div class="text-sm text-slate-500 font-medium">北京南</div>
+                            </div>
+
+                            <div class="flex flex-col items-center flex-1 md:w-32">
+                                <span class="text-xs font-medium text-slate-400 mb-1">4小时18分</span>
+                                <div class="w-full h-1 bg-slate-100 rounded-full relative overflow-hidden">
+                                    <div class="absolute left-0 top-0 h-full w-1/2 bg-brand-200"></div> <!-- 模拟进度 -->
+                                </div>
+                                <span class="mt-1 px-2 py-0.5 bg-brand-50 text-brand-600 text-xs font-bold rounded">G21
+                                    复兴号</span>
+                            </div>
+
+                            <div class="text-center min-w-[80px]">
+                                <div class="text-3xl font-bold text-slate-900 font-sans">12:18</div>
+                                <div class="text-sm text-slate-500 font-medium">上海虹桥</div>
+                            </div>
+                        </div>
+
+                        <!-- 席别价格 -->
+                        <div
+                            class="flex items-center justify-between w-full md:w-auto gap-8 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-8">
+                            <div class="space-y-1 text-right">
+                                <div class="flex items-baseline justify-end gap-1">
+                                    <span class="text-xs text-slate-500">二等座</span>
+                                    <span class="text-xl font-bold text-brand-600">¥553</span>
+                                </div>
+                                <div class="flex items-baseline justify-end gap-1 opacity-50">
+                                    <span class="text-xs text-slate-500">一等座</span>
+                                    <span class="text-lg font-bold text-slate-700">¥933</span>
+                                </div>
+                            </div>
+
+                            <button
+                                class="px-6 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-brand-600 transition shadow-lg shadow-slate-900/10 group-hover:shadow-brand-500/20">
+                                预订
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 展开的下单面板 (模拟) -->
+                <div class="bg-brand-50/50 rounded-2xl p-6 border border-brand-100 border-dashed relative">
+                    <div
+                        class="absolute -top-3 left-8 w-6 h-6 bg-brand-50/50 border-l border-t border-brand-100 rotate-45">
+                    </div>
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="ri-user-add-line"></i> 乘客信息
+                    </h3>
+                    <div class="flex flex-wrap gap-3 mb-6">
+                        <!-- 选中乘客 -->
+                        <div
+                            class="bg-white border-2 border-brand-500 text-brand-700 px-4 py-3 rounded-xl shadow-sm flex items-center gap-3 cursor-pointer">
+                            <i class="ri-checkbox-circle-fill text-xl"></i>
+                            <div>
+                                <div class="font-bold leading-none">王小明</div>
+                                <div class="text-xs opacity-80 mt-1">身份证 1101************</div>
+                            </div>
+                        </div>
+                        <!-- 未选中 -->
+                        <div
+                            class="bg-white border border-slate-200 text-slate-600 px-4 py-3 rounded-xl hover:border-brand-300 transition cursor-pointer flex items-center gap-3">
+                            <i class="ri-checkbox-blank-circle-line text-xl text-slate-300"></i>
+                            <div>
+                                <div class="font-bold leading-none">李测试</div>
+                                <div class="text-xs opacity-60 mt-1">身份证 3205************</div>
+                            </div>
+                        </div>
+                        <!-- 添加 -->
+                        <button
+                            class="px-4 py-3 rounded-xl border border-dashed border-slate-300 text-slate-400 hover:text-brand-600 hover:border-brand-400 transition flex items-center gap-2 font-medium">
+                            <i class="ri-add-line"></i> 添加乘客
+                        </button>
+                    </div>
+                    <div class="flex justify-end">
+                        <button
+                            class="px-8 py-3 bg-brand-600 text-white font-bold rounded-xl shadow-lg shadow-brand-500/30 hover:scale-105 transition transform">
+                            提交订单 (¥553)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- =========================================
+             3. 个人中心 & 积分商城 (User & Mall)
+             ========================================= -->
+        <section id="user" class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="h-px flex-1 bg-slate-200"></div>
+                <h2 class="text-slate-400 text-sm font-bold uppercase tracking-widest">Dashboard & Mall UI</h2>
+                <div class="h-px flex-1 bg-slate-200"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                <!-- 左侧：个人中心卡片 -->
+                <div class="col-span-1 bg-white rounded-3xl p-8 border border-slate-100 shadow-soft h-full">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-16 h-16 rounded-full bg-slate-100 p-1 border border-slate-200">
+                            <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="avatar"
+                                class="rounded-full bg-slate-200">
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900">Alex Chen</h3>
+                            <span
+                                class="px-2 py-1 bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 text-xs font-bold rounded">金牌会员</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="bg-slate-50 p-4 rounded-2xl text-center">
+                            <div class="text-2xl font-bold text-slate-900">12,400</div>
+                            <div class="text-xs text-slate-500 font-medium mt-1">可用积分</div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-2xl text-center">
+                            <div class="text-2xl font-bold text-slate-900">3</div>
+                            <div class="text-xs text-slate-500 font-medium mt-1">优惠券</div>
+                        </div>
+                    </div>
+
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="#"
+                                class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium transition">
+                                <span class="flex items-center gap-3"><i class="ri-file-list-3-line text-lg"></i>
+                                    我的订单</span>
+                                <i class="ri-arrow-right-s-line text-slate-400"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#"
+                                class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium transition">
+                                <span class="flex items-center gap-3"><i class="ri-wallet-3-line text-lg"></i>
+                                    钱包支付</span>
+                                <i class="ri-arrow-right-s-line text-slate-400"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 右侧：积分商城展示 -->
+                <div class="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <!-- 商品卡片 1 -->
+                    <div
+                        class="bg-white rounded-3xl p-4 border border-slate-100 shadow-soft hover:-translate-y-1 transition duration-300 group">
+                        <div
+                            class="aspect-video bg-slate-100 rounded-2xl mb-4 relative overflow-hidden flex items-center justify-center">
+                            <i class="ri-cup-line text-6xl text-slate-300 group-hover:scale-110 transition"></i>
+                            <span
+                                class="absolute top-3 right-3 bg-white/80 backdrop-blur text-xs font-bold px-2 py-1 rounded-lg">新品</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-lg">CR 高铁纪念保温杯</h4>
+                        <div class="flex justify-between items-end mt-2">
+                            <div class="text-brand-600 font-bold">2,500 <span
+                                    class="text-xs text-slate-400 font-normal">积分</span></div>
+                            <button
+                                class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-brand-600 transition"><i
+                                    class="ri-add-line"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- 商品卡片 2 -->
+                    <div
+                        class="bg-white rounded-3xl p-4 border border-slate-100 shadow-soft hover:-translate-y-1 transition duration-300 group">
+                        <div
+                            class="aspect-video bg-slate-100 rounded-2xl mb-4 relative overflow-hidden flex items-center justify-center">
+                            <i class="ri-vip-crown-line text-6xl text-slate-300 group-hover:scale-110 transition"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-lg">商务座休息室券</h4>
+                        <div class="flex justify-between items-end mt-2">
+                            <div class="text-brand-600 font-bold">1,000 <span
+                                    class="text-xs text-slate-400 font-normal">积分</span></div>
+                            <button
+                                class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-brand-600 transition"><i
+                                    class="ri-add-line"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- =========================================
+             4. 登录 & 客服 (Login & Chat)
+             ========================================= -->
+        <section class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+
+            <!-- 登录表单样式 -->
+            <div class="bg-white p-8 rounded-3xl shadow-float border border-slate-50 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-brand-50 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-6 relative z-10">账号登录</h3>
+                <form class="space-y-4 relative z-10">
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase ml-1 mb-1 block">邮箱 / 手机</label>
+                        <input type="text"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition"
+                            placeholder="hello@example.com">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase ml-1 mb-1 block">密码</label>
+                        <input type="password"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition"
+                            placeholder="••••••••">
+                    </div>
+                    <button
+                        class="w-full bg-brand-600 text-white font-bold py-3.5 rounded-xl hover:bg-brand-700 transition shadow-lg shadow-brand-500/25 mt-2">
+                        安全登录
+                    </button>
+                    <div class="text-center text-sm text-slate-400 mt-4">
+                        没有账号？ <a href="#" class="text-brand-600 font-bold hover:underline">立即注册</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 客服对话界面 -->
+            <div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-6 px-4">智能客服</h3>
+                <div
+                    class="bg-white rounded-3xl border border-slate-100 shadow-soft overflow-hidden h-[400px] flex flex-col">
+                    <!-- 聊天头部 -->
+                    <div
+                        class="p-4 border-b border-slate-50 bg-white/80 backdrop-blur flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                            <span class="font-bold text-slate-700">AI 助手 CloudBot</span>
+                        </div>
+                        <i class="ri-more-fill text-slate-400"></i>
+                    </div>
+
+                    <!-- 消息区域 -->
+                    <div class="flex-1 bg-slate-50 p-4 space-y-4 overflow-y-auto">
+                        <!-- 机器人消息 -->
+                        <div class="flex gap-3">
+                            <div
+                                class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 flex-shrink-0">
+                                <i class="ri-robot-2-line"></i>
+                            </div>
+                            <div
+                                class="bg-white p-3 rounded-2xl rounded-tl-none text-sm text-slate-600 shadow-sm border border-slate-100 max-w-[80%]">
+                                您好！我是您的专属出行助理。您可以问我关于车票退改签、列车时刻或行李规定的问题。
+                            </div>
+                        </div>
+
+                        <!-- 用户消息 -->
+                        <div class="flex gap-3 flex-row-reverse">
+                            <div class="w-8 h-8 rounded-full bg-slate-200 flex-shrink-0"></div>
+                            <div
+                                class="bg-brand-600 p-3 rounded-2xl rounded-tr-none text-sm text-white shadow-md shadow-brand-500/20 max-w-[80%]">
+                                学生票怎么核验？
+                            </div>
+                        </div>
+
+                        <!-- 机器人消息 -->
+                        <div class="flex gap-3">
+                            <div
+                                class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 flex-shrink-0">
+                                <i class="ri-robot-2-line"></i>
+                            </div>
+                            <div
+                                class="bg-white p-3 rounded-2xl rounded-tl-none text-sm text-slate-600 shadow-sm border border-slate-100 max-w-[80%]">
+                                学生旅客每学年需在乘车前到车站指定窗口或自动售票机办理一次本人居民身份证件与学生优惠卡的核验手续。
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 输入框 -->
+                    <div class="p-3 bg-white border-t border-slate-50">
+                        <div class="flex items-center gap-2 bg-slate-50 rounded-xl px-3 py-2">
+                            <i
+                                class="ri-add-circle-line text-slate-400 text-xl cursor-pointer hover:text-brand-600"></i>
+                            <input type="text" placeholder="输入消息..."
+                                class="flex-1 bg-transparent border-none outline-none text-sm text-slate-700 placeholder-slate-400">
+                            <button class="p-2 bg-brand-600 rounded-lg text-white hover:bg-brand-700 transition"><i
+                                    class="ri-send-plane-fill"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white border-t border-slate-100 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex justify-center items-center gap-2 mb-4 text-slate-900 font-bold text-xl">
+                <i class="ri-train-wifi-line text-brand-600"></i> CloudRail
+            </div>
+            <div class="flex justify-center gap-8 mb-8 text-sm text-slate-500">
+                <a href="#" class="hover:text-brand-600 transition">关于我们</a>
+                <a href="#" class="hover:text-brand-600 transition">服务条款</a>
+                <a href="#" class="hover:text-brand-600 transition">隐私政策</a>
+                <a href="#" class="hover:text-brand-600 transition">联系合作</a>
+            </div>
+            <p class="text-xs text-slate-400">&copy; 2024 CloudRail System. All rights reserved. Designed for Demo.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

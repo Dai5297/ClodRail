@@ -41,6 +41,28 @@ class AdminUtils {
         }, duration);
     }
 
+    // 权限判定
+    static getCurrentRoles() {
+        const user = this.storage.get('admin-user');
+        return (user && user.roles) ? user.roles : [];
+    }
+
+    static hasAnyRole(required) {
+        const roles = this.getCurrentRoles();
+        if (!required || required.length === 0) return true;
+        return required.some(r => roles.includes(r));
+    }
+
+    static applyPermissions(root = document) {
+        const nodes = root.querySelectorAll('[data-roles]');
+        nodes.forEach(el => {
+            const list = (el.getAttribute('data-roles') || '').split(',').map(s => s.trim()).filter(Boolean);
+            if (!AdminUtils.hasAnyRole(list)) {
+                el.style.display = 'none';
+            }
+        });
+    }
+
     static createMessageContainer() {
         const container = document.createElement('div');
         container.id = 'message-container';
@@ -525,6 +547,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 初始化消息样式
     initMessageStyles();
+
+    // 应用权限控制
+    AdminUtils.applyPermissions();
 });
 
 // 检查管理员认证
@@ -649,63 +674,78 @@ class MockDataGenerator {
     
     static generateTrains(count = 30) {
         const trains = [];
-        const cities = ['北京', '上海', '广州', '深圳', '杭州', '南京', '武汉', '成都', '西安', '重庆'];
-        const trainTypes = ['G', 'D', 'C', 'K', 'T'];
-        
+        const stations = ['北京南', '上海虹桥', '广州南', '深圳北', '杭州东', '南京南', '武汉', '成都东', '西安北', '重庆北'];
+        const trainTypes = ['G', 'D', 'C', 'Z', 'T', 'K'];
         for (let i = 1; i <= count; i++) {
-            const type = trainTypes[Math.floor(Math.random() * trainTypes.length)];
-            const number = type + (Math.floor(Math.random() * 9000) + 1000);
-            const fromCity = cities[Math.floor(Math.random() * cities.length)];
-            let toCity = cities[Math.floor(Math.random() * cities.length)];
-            while (toCity === fromCity) {
-                toCity = cities[Math.floor(Math.random() * cities.length)];
-            }
-            
-            trains.push({
-                id: i,
-                number: number,
-                name: `${fromCity}-${toCity}`,
-                fromCity: fromCity,
-                toCity: toCity,
-                departureTime: '08:00',
-                arrivalTime: '12:00',
-                duration: '4小时',
-                price: Math.floor(Math.random() * 500) + 100,
-                seats: Math.floor(Math.random() * 1000) + 500,
-                availableSeats: Math.floor(Math.random() * 200) + 50,
-                status: Math.random() > 0.1 ? 'active' : 'inactive'
-            });
+            const trainType = trainTypes[Math.floor(Math.random() * trainTypes.length)];
+            const trainNumber = trainType + (Math.floor(Math.random() * 9000) + 1000);
+            const startStation = stations[Math.floor(Math.random() * stations.length)];
+            let endStation = stations[Math.floor(Math.random() * stations.length)];
+            while (endStation === startStation) endStation = stations[Math.floor(Math.random() * stations.length)];
+            const depHour = Math.floor(Math.random() * 24);
+            const depMin = Math.floor(Math.random() * 60);
+            const arrHour = (depHour + Math.floor(Math.random() * 6) + 1) % 24;
+            const arrMin = Math.floor(Math.random() * 60);
+            const departureTime = `${String(depHour).padStart(2,'0')}:${String(depMin).padStart(2,'0')}`;
+            const arrivalTime = `${String(arrHour).padStart(2,'0')}:${String(arrMin).padStart(2,'0')}`;
+            const durationHours = (arrHour - depHour + 24) % 24 || 1;
+            const duration = `${durationHours}小时${Math.floor(Math.random()*60)}分钟`;
+            const prices = {
+                business: Math.floor(Math.random()*400)+600,
+                firstClass: Math.floor(Math.random()*200)+300,
+                secondClass: Math.floor(Math.random()*100)+120,
+                standing: Math.floor(Math.random()*60)+60
+            };
+            const minPrice = Math.min(...Object.values(prices));
+            const seatConfig = {
+                business: Math.floor(Math.random()*60)+20,
+                firstClass: Math.floor(Math.random()*200)+80,
+                secondClass: Math.floor(Math.random()*400)+200,
+                standing: Math.floor(Math.random()*200)+100
+            };
+            const status = ['active','suspended','maintenance'][Math.floor(Math.random()*3)];
+            trains.push({ id: i, trainNumber, trainType, startStation, endStation, departureTime, arrivalTime, duration, prices, minPrice, seatConfig, status });
         }
-        
         return trains;
     }
     
     static generateOrders(count = 100) {
         const orders = [];
-        const statuses = ['pending', 'paid', 'cancelled', 'refunded'];
+        const statuses = ['pending', 'paid', 'cancelled', 'refunded', 'completed', 'refund_pending'];
         const trains = this.generateTrains(10);
-        
         for (let i = 1; i <= count; i++) {
             const train = trains[Math.floor(Math.random() * trains.length)];
-            const seatCount = Math.floor(Math.random() * 4) + 1;
-            
+            const passengerCount = Math.floor(Math.random() * 4) + 1;
+            const ticketPrice = train.minPrice + Math.floor(Math.random()*50);
+            const serviceFee = Math.floor(ticketPrice * 0.05);
+            const totalAmount = ticketPrice * passengerCount + serviceFee;
+            const status = statuses[Math.floor(Math.random() * statuses.length)];
             orders.push({
                 id: i,
-                orderNo: `ORD${Date.now()}${i.toString().padStart(3, '0')}`,
-                userId: Math.floor(Math.random() * 50) + 1,
-                userName: `用户${i}`,
-                trainNumber: train.number,
-                fromCity: train.fromCity,
-                toCity: train.toCity,
-                departureDate: new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000),
-                seatCount: seatCount,
-                totalAmount: train.price * seatCount,
-                status: statuses[Math.floor(Math.random() * statuses.length)],
-                createTime: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-                payTime: Math.random() > 0.3 ? new Date() : null
+                orderNumber: `ORD${Date.now()}${String(i).padStart(3,'0')}`,
+                username: `用户${i}`,
+                trainNumber: train.trainNumber,
+                startStation: train.startStation,
+                endStation: train.endStation,
+                seatType: ['商务座','一等座','二等座','无座'][Math.floor(Math.random()*4)],
+                passengerCount,
+                ticketPrice,
+                serviceFee,
+                totalAmount,
+                status,
+                createTime: new Date(Date.now() - Math.random()*30*24*60*60*1000),
+                payTime: Math.random()>0.5 ? new Date() : null,
+                departureTime: new Date(Date.now() + Math.random()*30*24*60*60*1000),
+                contactPhone: `138${Math.floor(Math.random() * 100000000).toString().padStart(8, '0')}`,
+                contactEmail: `user${i}@example.com`,
+                passengers: Array.from({length: passengerCount}).map((_,idx)=>({
+                    name: `乘客${idx+1}`,
+                    idNumber: `4201************${String(idx).padStart(2,'0')}`,
+                    type: ['成人','学生','儿童'][Math.floor(Math.random()*3)]
+                })),
+                seatNumbers: Array.from({length: passengerCount}).map(()=>`${['01A','02B','03C','04D'][Math.floor(Math.random()*4)]}`).join(', ')
             });
         }
-        
         return orders;
     }
 }

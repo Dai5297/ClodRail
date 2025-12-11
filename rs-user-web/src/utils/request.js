@@ -35,7 +35,6 @@ request.interceptors.response.use((response) => {
     }
 }, (error) => {
     // 处理网络错误
-    console.error('请求错误:', error)
     return Promise.reject(error)
 })
 

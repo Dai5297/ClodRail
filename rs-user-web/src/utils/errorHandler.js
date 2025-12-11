@@ -11,7 +11,6 @@ export class ErrorHandler {
    * @param {boolean} showNotification - 是否显示通知
    */
   static handleApiError(error, defaultMessage = '操作失败', showNotification = false) {
-    console.error('API Error:', error)
     
     let message = defaultMessage
     let type = 'error'

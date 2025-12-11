@@ -127,7 +127,6 @@ const drawPic = () => {
 };
 
 onMounted(() => {
-  console.log(props.identifyCode)
   drawPic();
 });
 

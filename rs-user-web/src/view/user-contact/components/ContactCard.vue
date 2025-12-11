@@ -1,73 +1,80 @@
 <template>
-  <el-card class="contact-card" shadow="hover">
-    <div class="contact-header">
-      <div class="contact-name">
-        <span class="name">{{ contact.name }}</span>
-        <el-tag 
-          v-if="contact.isDefault === 1" 
-          type="success" 
-          size="small"
-          class="default-tag"
-        >
-          默认
-        </el-tag>
-        <el-tag 
-          :type="contact.status === 1 ? 'success' : 'danger'" 
-          size="small"
-        >
-          {{ contact.status === 1 ? '启用' : '禁用' }}
-        </el-tag>
+  <div class="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-all duration-300 overflow-hidden group">
+    <div class="p-5 border-b border-slate-100 flex justify-between items-start bg-slate-50/50">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">
+          {{ contact.name ? contact.name.charAt(0) : '' }}
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-800 text-lg">{{ contact.name }}</span>
+            <span 
+              v-if="contact.isDefault === 1" 
+              class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
+            >
+              默认
+            </span>
+          </div>
+          <div class="mt-1">
+            <span 
+              :class="[
+                'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium',
+                contact.status === 1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+              ]"
+            >
+              {{ contact.status === 1 ? '启用' : '禁用' }}
+            </span>
+          </div>
+        </div>
       </div>
-      <div class="contact-actions">
-        <el-button 
-          type="primary" 
-          size="small" 
-          text
+      <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <button 
           @click="handleEdit"
+          class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+          title="编辑"
         >
-          <el-icon><Edit /></el-icon>
-          编辑
-        </el-button>
-        <el-button 
-          type="danger" 
-          size="small" 
-          text
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </button>
+        <button 
           @click="handleDelete"
+          class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+          title="删除"
         >
-          <el-icon><Delete /></el-icon>
-          删除
-        </el-button>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
       </div>
     </div>
     
-    <div class="contact-info">
-      <div class="info-row">
-        <span class="label">乘客类型：</span>
-        <span class="value">{{ formatPassengerType(contact.passengerType) }}</span>
+    <div class="p-5 space-y-3">
+      <div class="flex justify-between items-center text-sm">
+        <span class="text-slate-500">乘客类型</span>
+        <span class="font-medium text-slate-700">{{ formatPassengerType(contact.passengerType) }}</span>
       </div>
-      <div class="info-row">
-        <span class="label">身份证号：</span>
-        <span class="value">{{ formatIdCard(contact.idCard) }}</span>
+      <div class="flex justify-between items-center text-sm">
+        <span class="text-slate-500">身份证号</span>
+        <span class="font-medium text-slate-700 font-mono">{{ formatIdCard(contact.idCard) }}</span>
       </div>
-      <div class="info-row">
-        <span class="label">手机号码：</span>
-        <span class="value">{{ contact.phone }}</span>
+      <div class="flex justify-between items-center text-sm">
+        <span class="text-slate-500">手机号码</span>
+        <span class="font-medium text-slate-700 font-mono">{{ contact.phone }}</span>
       </div>
-      <div class="info-row" v-if="contact.email">
-        <span class="label">邮箱地址：</span>
-        <span class="value">{{ contact.email }}</span>
+      <div v-if="contact.email" class="flex justify-between items-center text-sm">
+        <span class="text-slate-500">邮箱地址</span>
+        <span class="font-medium text-slate-700 truncate max-w-[180px]" :title="contact.email">{{ contact.email }}</span>
       </div>
-      <div class="info-row" v-if="contact.remark">
-        <span class="label">备注信息：</span>
-        <span class="value">{{ contact.remark }}</span>
+      <div v-if="contact.remark" class="pt-2 border-t border-slate-100 mt-2">
+        <p class="text-xs text-slate-500 mb-1">备注信息</p>
+        <p class="text-sm text-slate-600 line-clamp-2">{{ contact.remark }}</p>
       </div>
     </div>
-  </el-card>
+  </div>
 </template>
 
 <script setup>
-import { Edit, Delete } from '@element-plus/icons-vue'
-
 const props = defineProps({
   contact: {
     type: Object,

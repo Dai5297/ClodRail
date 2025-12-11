@@ -1,27 +1,44 @@
 <template>
-  <div class="page-header">
-    <div class="header-info">
-      <h2 class="page-title">个人信息</h2>
-      <p class="page-desc">查看和管理您的个人基本信息</p>
+  <div class="bg-white rounded-xl shadow-sm p-6 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border border-gray-100">
+    <div class="flex-1">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">个人信息</h2>
+      <p class="text-gray-500 text-sm">查看和管理您的个人基本信息</p>
     </div>
-    <div class="page-actions">
-      <el-button v-if="!isEditing" type="primary" @click="handleStartEdit">
-        <el-icon><Edit /></el-icon>
+    <div class="flex gap-3">
+      <button 
+        v-if="!isEditing" 
+        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm hover:shadow active:scale-95"
+        @click="handleStartEdit"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+        </svg>
         编辑信息
-      </el-button>
-      <div v-else class="edit-actions">
-        <el-button type="primary" @click="handleSubmit" :loading="loading">
-          保存修改
-        </el-button>
-        <el-button @click="handleCancel">取消</el-button>
+      </button>
+      <div v-else class="flex gap-3">
+        <button 
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm hover:shadow active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          @click="handleSubmit" 
+          :disabled="loading"
+        >
+          <svg v-if="loading" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ loading ? '保存中...' : '保存修改' }}
+        </button>
+        <button 
+          class="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors font-medium active:scale-95"
+          @click="handleCancel"
+        >
+          取消
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { Edit } from '@element-plus/icons-vue'
-
 // Props
 defineProps({
   isEditing: {
@@ -49,56 +66,3 @@ const handleCancel = () => {
   emit('cancel')
 }
 </script>
-
-<style scoped>
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
-  padding: 24px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.header-info {
-  flex: 1;
-}
-
-.page-title {
-  margin: 0 0 8px 0;
-  font-size: 24px;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.page-desc {
-  margin: 0;
-  color: #6b7280;
-  font-size: 14px;
-}
-
-.page-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.edit-actions {
-  display: flex;
-  gap: 12px;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .page-header {
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-  }
-  
-  .page-actions {
-    justify-content: flex-end;
-  }
-}
-</style>

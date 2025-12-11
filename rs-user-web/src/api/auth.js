@@ -8,7 +8,7 @@ import request from '@/utils/request.js'
 // 用户登录
 export const login = (data) => {
   return request({
-    url: '/account/login/username',
+    url: '/customer/auth/login/username',
     method: 'POST',
     data
   })
@@ -17,7 +17,7 @@ export const login = (data) => {
 // 用户登出
 export const logout = () => {
   return request({
-    url: '/account/logout',
+    url: '/customer/auth/logout',
     method: 'POST'
   })
 }
@@ -25,7 +25,7 @@ export const logout = () => {
 // 获取验证码
 export const getCaptcha = () => {
   return request({
-    url: '/account/captcha',
+    url: '/customer/auth/captcha',
     method: 'GET'
   })
 }
@@ -33,7 +33,7 @@ export const getCaptcha = () => {
 // 获取手机验证码
 export const getPhoneCode = (data) => {
   return request({
-    url: '/account/captcha/phone',
+    url: '/customer/auth/captcha/phone',
     method: 'GET',
     params: data
   })
@@ -42,7 +42,7 @@ export const getPhoneCode = (data) => {
 // 用户注册
 export const register = (data) => {
   return request({
-    url: '/account/register',
+    url: '/customer/auth/register',
     method: 'POST',
     data
   })
@@ -51,7 +51,7 @@ export const register = (data) => {
 // 重置密码
 export const resetPassword = (data) => {
   return request({
-    url: '/account/password/reset',
+    url: '/customer/auth/password/reset',
     method: 'POST',
     data
   })
@@ -60,7 +60,7 @@ export const resetPassword = (data) => {
 // 更换手机号 - 确认更换
 export const changePhone = (data) => {
   return request({
-    url: '/account/phone/change',
+    url: '/customer/auth/phone/change',
     method: 'POST',
     data
   })
@@ -69,7 +69,7 @@ export const changePhone = (data) => {
 // 更换邮箱 - 发送验证码
 export const sendEmailChangeCode = (data) => {
   return request({
-    url: '/account/email/change/code',
+    url: '/customer/auth/email/change/code',
     method: 'POST',
     params: data
   })
@@ -78,16 +78,17 @@ export const sendEmailChangeCode = (data) => {
 // 更换邮箱 - 确认更换
 export const changeEmail = (data) => {
   return request({
-    url: '/account/email/change',
+    url: '/customer/auth/email/change',
     method: 'POST',
     data
   })
 }
 
+// 注意：实名认证接口后端暂未实现
 // 实名认证 - 提交认证信息
 export const submitIdentityVerification = (data) => {
   return request({
-    url: '/account/identity/verify',
+    url: '/customer/auth/identity/verify',
     method: 'POST',
     data
   })

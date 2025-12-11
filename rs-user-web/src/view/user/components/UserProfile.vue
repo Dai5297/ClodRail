@@ -1,8 +1,14 @@
 <template>
-  <div class="user-profile">
-    <div class="user-avatar">{{ displayName }}</div>
-    <div class="user-name">{{ userInfo.realName || '用户' }}</div>
-    <div class="user-level">{{ userLevel }}</div>
+  <div class="bg-white rounded-3xl p-8 shadow-sm text-center relative overflow-hidden border border-slate-100">
+    <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+    <div class="relative z-10">
+      <div class="w-24 h-24 mx-auto rounded-full border-4 border-white shadow-md bg-white flex items-center justify-center text-3xl font-bold text-primary mb-4 overflow-hidden">
+        <img v-if="userInfo.avatar" :src="userInfo.avatar" class="w-full h-full object-cover" />
+        <span v-else>{{ displayName }}</span>
+      </div>
+      <h3 class="text-xl font-bold text-slate-900">{{ userInfo.realName || userInfo.username || '用户' }}</h3>
+      <p class="text-slate-500 text-sm mt-1">{{ userLevel }}</p>
+    </div>
   </div>
 </template>
 
@@ -16,7 +22,8 @@ const props = defineProps({
       realName: '',
       username: '',
       phone: '',
-      email: ''
+      email: '',
+      avatar: ''
     })
   },
   userLevel: {
@@ -26,45 +33,7 @@ const props = defineProps({
 })
 
 const displayName = computed(() => {
-  return props.userInfo.realName?.charAt(0) || 'U'
+  const name = props.userInfo.realName || props.userInfo.username || 'U'
+  return name.charAt(0).toUpperCase()
 })
 </script>
-
-<style scoped>
-.user-profile {
-  text-align: center;
-  margin-bottom: 24px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.user-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #1890FF, #096dd9);
-  margin: 0 auto 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.user-name {
-  font-size: 18px;
-  font-weight: 600;
-  color: #262626;
-  margin-bottom: 8px;
-}
-
-.user-level {
-  font-size: 14px;
-  color: #8c8c8c;
-  background: #f0f0f0;
-  padding: 4px 12px;
-  border-radius: 12px;
-  display: inline-block;
-}
-</style>

@@ -184,7 +184,6 @@ const loadHotStations = async () => {
       }
     }
   } catch (error) {
-    console.error('加载热门车站失败:', error)
     ElMessage.error('加载热门车站数据失败')
     // 使用备用数据
     hotStations.value = []
@@ -369,7 +368,6 @@ const handleSearch = async () => {
       searchLoading.value = false
     }
   } catch (error) {
-    console.error('表单验证失败:', error)
     searchLoading.value = false
   }
 }

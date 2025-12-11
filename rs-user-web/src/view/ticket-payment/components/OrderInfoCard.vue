@@ -1,62 +1,68 @@
 <template>
-  <div class="order-info-card">
-    <h3 class="card-title">
-      <el-icon><Document /></el-icon>
+  <div class="bg-white rounded-xl p-6 mb-5 shadow-sm border border-gray-100">
+    <h3 class="flex items-center gap-2 text-lg font-medium text-gray-900 mb-6">
+      <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
       订单信息
     </h3>
     
-    <div class="order-details">
-      <div class="train-info">
-        <div class="train-header">
-          <span class="train-number">{{ orderInfo.trainCode }}</span>
-          <span class="train-date">{{ formatDate(orderInfo.date) }}</span>
+    <div class="flex flex-col gap-6">
+      <!-- Train Info -->
+      <div class="bg-blue-50/50 rounded-lg p-5 border border-blue-100">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="text-xl font-bold text-blue-600">{{ orderInfo.trainCode }}</span>
+          <span class="text-sm text-gray-500">{{ formatDate(orderInfo.date) }}</span>
         </div>
-        <div class="route-info">
-          <div class="route-item">
-            <div class="time-display">
-              <span class="time">{{ formatTime(orderInfo.startTime) }}</span>
-              <span class="date">{{ formatDate(orderInfo.startTime) }}</span>
+        <div class="flex items-center justify-between relative">
+          <div class="flex flex-col">
+            <div class="flex items-baseline gap-2 mb-1">
+              <span class="text-2xl font-bold text-gray-900">{{ formatTime(orderInfo.startTime) }}</span>
+              <span class="text-xs text-gray-400">{{ formatDate(orderInfo.startTime) }}</span>
             </div>
-            <span class="station">{{ orderInfo.originStation?.name || '出发站' }}</span>
+            <span class="text-base text-gray-700 font-medium">{{ orderInfo.originStation?.name || '出发站' }}</span>
           </div>
-          <div class="route-arrow">
-            <el-icon><ArrowRight /></el-icon>
+          
+          <div class="flex flex-col items-center px-4 flex-1">
+            <svg class="w-16 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
           </div>
-          <div class="route-item">
-            <div class="time-display">
-              <span class="time">{{ formatTime(orderInfo.endTime) }}</span>
-              <span class="date">{{ formatDate(orderInfo.endTime) }}</span>
+          
+          <div class="flex flex-col items-end">
+            <div class="flex items-baseline gap-2 mb-1">
+              <span class="text-2xl font-bold text-gray-900">{{ formatTime(orderInfo.endTime) }}</span>
+              <span class="text-xs text-gray-400">{{ formatDate(orderInfo.endTime) }}</span>
             </div>
-            <span class="station">{{ orderInfo.destinationStation?.name || '到达站' }}</span>
+            <span class="text-base text-gray-700 font-medium">{{ orderInfo.destinationStation?.name || '到达站' }}</span>
           </div>
         </div>
       </div>
 
-      <div class="passenger-info">
-        <h4 class="section-title">乘客信息</h4>
-        <div class="passenger-list">
+      <!-- Passenger Info -->
+      <div>
+        <h4 class="text-sm font-semibold text-gray-900 mb-3 pl-2 border-l-4 border-blue-500">乘客信息</h4>
+        <div class="grid gap-3">
           <div 
             v-for="(passenger, index) in orderInfo.passengers" 
             :key="index"
-            class="passenger-item"
+            class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-100"
           >
-            <div class="passenger-details">
-              <div class="passenger-main">
-                <span class="passenger-name">{{ passenger.name }}</span>
-                <span class="passenger-type-badge">{{ getPassengerTypeText(passenger.passengerType) }}</span>
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center gap-2">
+                <span class="font-medium text-gray-900">{{ passenger.name }}</span>
+                <span class="text-xs font-medium text-blue-600 bg-blue-50 border border-blue-100 rounded px-1.5 py-0.5">
+                  {{ getPassengerTypeText(passenger.passengerType) }}
+                </span>
               </div>
-              <span class="seat-info">{{ orderInfo.seatType?.name || orderInfo.seatTypeName || '二等座' }} {{ passenger.seatPosition }}座</span>
+              <span class="text-sm text-gray-500">{{ orderInfo.seatType?.name || orderInfo.seatTypeName || '二等座' }} {{ passenger.seatPosition }}座</span>
             </div>
-            <div class="passenger-meta">
-              <div class="price-detail">
-                <span class="base-price" v-if="passenger.discount > 0">
+            <div class="text-right">
+              <div class="flex flex-col items-end gap-0.5">
+                <span v-if="passenger.discount > 0" class="text-xs text-gray-400 line-through">
                   原价：￥{{ passenger.basePrice?.toFixed(2) || '0.00' }}
                 </span>
-                <span class="discount" v-if="passenger.discount > 0">
+                <span v-if="passenger.discount > 0" class="text-xs text-red-500">
                   优惠：-￥{{ passenger.discount?.toFixed(2) || '0.00' }}
                 </span>
-                <span class="actual-price">
-                  实付：￥{{ passenger.actualPrice?.toFixed(2) || orderInfo.ticketPrice?.toFixed(2) || '0.00' }}
+                <span class="text-lg font-bold text-orange-500">
+                  ￥{{ passenger.actualPrice?.toFixed(2) || orderInfo.ticketPrice?.toFixed(2) || '0.00' }}
                 </span>
               </div>
             </div>
@@ -64,38 +70,42 @@
         </div>
       </div>
 
-      <div class="order-summary">
-        <div class="summary-item">
-          <span class="label">订单号：</span>
-          <span class="value">{{ orderInfo.orderNumber }}</span>
-        </div>
-        <div class="summary-item">
-          <span class="label">订单状态：</span>
-          <span class="value">{{ getOrderStatusText(orderInfo.status) }}</span>
-        </div>
-        <div class="summary-item">
-          <span class="label">座位类型：</span>
-          <span class="value">{{ orderInfo.seatTypeName }}</span>
-        </div>
-        <div class="summary-item">
-          <span class="label">乘客数量：</span>
-          <span class="value">{{ orderInfo.passengers.length }}人</span>
-        </div>
-        <div class="summary-item">
-          <span class="label">创建时间：</span>
-          <span class="value">{{ formatDateTime(orderInfo.createTime) }}</span>
-        </div>
-        <div class="summary-item" v-if="orderInfo.baseAmount && orderInfo.baseAmount !== orderInfo.totalAmount">
-          <span class="label">原价金额：</span>
-          <span class="value">￥{{ orderInfo.baseAmount?.toFixed(2) }}</span>
-        </div>
-        <div class="summary-item" v-if="orderInfo.discountAmount > 0">
-          <span class="label">优惠金额：</span>
-          <span class="value discount-value">-￥{{ orderInfo.discountAmount?.toFixed(2) }}</span>
-        </div>
-        <div class="summary-item total">
-          <span class="label">应付金额：</span>
-          <span class="value">￥{{ orderInfo.totalAmount?.toFixed(2) }}</span>
+      <!-- Order Summary -->
+      <div class="border-t border-gray-100 pt-4 mt-2">
+        <div class="grid gap-2 text-sm">
+          <div class="flex justify-between text-gray-500">
+            <span>订单号</span>
+            <span class="text-gray-900 font-mono">{{ orderInfo.orderNumber }}</span>
+          </div>
+          <div class="flex justify-between text-gray-500">
+            <span>订单状态</span>
+            <span class="text-gray-900">{{ getOrderStatusText(orderInfo.status) }}</span>
+          </div>
+          <div class="flex justify-between text-gray-500">
+            <span>座位类型</span>
+            <span class="text-gray-900">{{ orderInfo.seatTypeName }}</span>
+          </div>
+          <div class="flex justify-between text-gray-500">
+            <span>乘客数量</span>
+            <span class="text-gray-900">{{ orderInfo.passengers.length }}人</span>
+          </div>
+          <div class="flex justify-between text-gray-500">
+            <span>创建时间</span>
+            <span class="text-gray-900">{{ formatDateTime(orderInfo.createTime) }}</span>
+          </div>
+           <div class="flex justify-between text-gray-500" v-if="orderInfo.baseAmount && orderInfo.baseAmount !== orderInfo.totalAmount">
+            <span>原价金额</span>
+            <span class="text-gray-900">￥{{ orderInfo.baseAmount?.toFixed(2) }}</span>
+          </div>
+           <div class="flex justify-between text-gray-500" v-if="orderInfo.discountAmount > 0">
+            <span>优惠金额</span>
+            <span class="text-red-500">-￥{{ orderInfo.discountAmount?.toFixed(2) }}</span>
+          </div>
+          
+          <div class="flex justify-between items-center pt-2 mt-2 border-t border-dashed border-gray-200">
+            <span class="text-base font-semibold text-gray-900">应付金额</span>
+            <span class="text-2xl font-bold text-orange-500">￥{{ orderInfo.totalAmount?.toFixed(2) }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -103,8 +113,6 @@
 </template>
 
 <script setup>
-import { Document, ArrowRight } from '@element-plus/icons-vue'
-
 const props = defineProps({
   orderInfo: {
     type: Object,
@@ -167,225 +175,3 @@ const getPassengerTypeText = (type) => {
   return typeMap[type] || '成人'
 }
 </script>
-
-<style scoped>
-.order-info-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-.card-title {
-  font-size: 18px;
-  color: #333;
-  margin: 0 0 20px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.train-info {
-  margin-bottom: 24px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.train-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.train-number {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1890ff;
-}
-
-.train-date {
-  color: #666;
-  font-size: 14px;
-}
-
-.route-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.route-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.time-display {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.time {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-  line-height: 1;
-}
-
-.date {
-  font-size: 10px;
-  color: #999;
-  line-height: 1;
-  margin-top: 2px;
-}
-
-.station {
-  font-size: 14px;
-  color: #666;
-}
-
-.route-arrow {
-  color: #1890ff;
-}
-
-.section-title {
-  font-size: 16px;
-  color: #333;
-  margin: 0 0 12px 0;
-}
-
-.passenger-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.passenger-item {
-  padding: 12px;
-  background: #fafafa;
-  border-radius: 8px;
-}
-
-.passenger-details {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.passenger-main {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.passenger-name {
-  font-weight: 600;
-  color: #333;
-  font-size: 15px;
-}
-
-.passenger-type-badge {
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background-color: #e6f7ff;
-  color: #1890ff;
-  font-weight: 500;
-}
-
-.seat-info {
-  color: #1890ff;
-  font-size: 14px;
-}
-
-.passenger-meta {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.price-detail {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  font-size: 12px;
-}
-
-.base-price {
-  color: #999;
-  text-decoration: line-through;
-}
-
-.discount {
-  color: #52c41a;
-  font-weight: 500;
-}
-
-.actual-price {
-  color: #ff6b35;
-  font-weight: 600;
-  font-size: 14px;
-}
-
-.order-summary {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.summary-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 0;
-}
-
-.summary-item.total {
-  border-top: 1px solid #f0f0f0;
-  padding-top: 12px;
-  margin-top: 8px;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.label {
-  color: #666;
-}
-
-.value {
-  color: #333;
-}
-
-.summary-item.total .value {
-  color: #ff6b35;
-  font-size: 20px;
-}
-
-.discount-value {
-  color: #52c41a;
-  font-weight: 500;
-}
-
-@media (max-width: 768px) {
-  .route-info {
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .passenger-details,
-  .passenger-meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
-}
-</style>
-

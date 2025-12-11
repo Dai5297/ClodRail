@@ -1,65 +1,36 @@
 <template>
-  <ul class="menu-list">
-    <li v-for="item in menuItems" :key="item.path" class="menu-item">
-      <router-link 
-        :to="item.path" 
-        class="menu-link" 
-        :exact-active-class="item.exact ? 'active' : ''"
-        :active-class="!item.exact ? 'active' : ''"
-      >
-        <el-icon class="menu-icon">
-          <component :is="item.icon" />
-        </el-icon>
-        <span>{{ item.label }}</span>
-      </router-link>
-    </li>
-  </ul>
+  <nav class="space-y-1">
+    <router-link 
+      v-for="item in menuItems" 
+      :key="item.path"
+      :to="item.path"
+      class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-primary font-medium transition-colors"
+      :class="{ 'bg-blue-50 text-primary': isExactActive(item) }"
+    >
+      <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 group-hover:text-primary transition-colors">
+        <i :class="item.icon"></i>
+      </div>
+      {{ item.label }}
+    </router-link>
+  </nav>
 </template>
 
 <script setup>
+import { useRoute } from 'vue-router'
+
 defineProps({
   menuItems: {
     type: Array,
     default: () => []
   }
 })
+
+const route = useRoute()
+
+const isExactActive = (item) => {
+  if (item.exact) {
+    return route.path === item.path
+  }
+  return route.path.startsWith(item.path) && (item.path !== '/user' || route.path === '/user')
+}
 </script>
-
-<style scoped>
-.menu-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.menu-item {
-  margin-bottom: 8px;
-}
-
-.menu-link {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  color: #595959;
-  text-decoration: none;
-  border-radius: 6px;
-  transition: all 0.3s;
-  font-size: 14px;
-}
-
-.menu-link:hover {
-  background-color: #f0f8ff;
-  color: #1890FF;
-}
-
-.menu-link.active {
-  background-color: #e6f7ff;
-  color: #1890FF;
-  font-weight: 500;
-}
-
-.menu-icon {
-  margin-right: 12px;
-  font-size: 16px;
-}
-</style>

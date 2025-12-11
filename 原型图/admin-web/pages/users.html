@@ -146,7 +146,7 @@
                         <button class="btn btn-success btn-sm" onclick="batchUpdateStatus('active')">
                             <i class="fas fa-check"></i> 批量启用
                         </button>
-                        <button class="btn btn-danger btn-sm" onclick="batchDeleteUsers()">
+                        <button class="btn btn-danger btn-sm" data-roles="SUPER_ADMIN" onclick="batchDeleteUsers()">
                             <i class="fas fa-trash"></i> 批量删除
                         </button>
                     </div>
@@ -304,7 +304,7 @@
                         <button class="btn btn-sm btn-warning" onclick="editUser(${user.id})" title="编辑">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})" title="删除">
+                        <button class="btn btn-sm btn-danger" data-roles="SUPER_ADMIN" onclick="deleteUser(${user.id})" title="删除">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>

@@ -1,199 +1,170 @@
 <template>
-  <div class="search-section">
-    <div class="search-container">
-      <h2 v-if="showTitle" class="search-title">
-        <el-icon size="28" color="#1890ff">
-          <Tickets />
-        </el-icon>
-        车票查询
-      </h2>
-      
-      <el-form 
-        :model="searchForm" 
-        class="search-form"
-        :rules="searchRules"
-        ref="searchFormRef"
-      >
-        <div class="form-row">
-          <el-form-item label="出发地" prop="originStationId" class="form-group">
-            <el-select
-              v-model="searchForm.originStationId"
-              placeholder="请选择出发站"
-              class="form-input"
-              filterable
-              clearable
-            >
-              <el-option
-                v-for="station in stations"
-                :key="station.id"
-                :label="`${station.name} (${station.code})`"
-                :value="station.id"
-              />
-            </el-select>
-          </el-form-item>
-
-          <div class="exchange-btn" @click="exchangeStations">
-            <el-icon size="20" color="#1890ff">
-              <Switch />
-            </el-icon>
-          </div>
-
-          <el-form-item label="目的地" prop="destinationStationId" class="form-group">
-            <el-select
-              v-model="searchForm.destinationStationId"
-              placeholder="请选择到达站"
-              class="form-input"
-              filterable
-              clearable
-            >
-              <el-option
-                v-for="station in stations"
-                :key="station.id"
-                :label="`${station.name} (${station.code})`"
-                :value="station.id"
-              />
-            </el-select>
-          </el-form-item>
-
-          <el-form-item label="出发日期" prop="date" class="form-group">
-            <el-date-picker
-              v-model="searchForm.date"
-              type="date"
-              placeholder="请选择出发日期"
-              class="form-input"
-              :disabled-date="disabledDate"
-              format="YYYY-MM-DD"
-              value-format="YYYY-MM-DD"
+  <div class="bg-white rounded-3xl shadow-soft p-2 mb-8 border border-slate-100/50 max-w-6xl mx-auto">
+    <div class="bg-slate-50/50 rounded-2xl p-6">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+        <!-- Origin -->
+        <div class="md:col-span-3 group">
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">出发地</label>
+          <div class="relative">
+            <i class="ri-map-pin-line absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-primary transition-colors z-10"></i>
+            <a-select
+              v-model:value="searchForm.originStationId"
+              show-search
+              placeholder="出发站"
+              class="w-full !h-12 custom-search-select"
+              :options="stationOptions"
+              :filter-option="filterOption"
+              :bordered="false"
             />
-          </el-form-item>
-
-          <div class="search-btn-group">
-            <el-button 
-              type="primary" 
-              size="large" 
-              @click="handleSearch"
-              :loading="searchLoading"
-              class="search-btn"
-            >
-              <el-icon><Search /></el-icon>
-              {{ searchButtonText }}
-            </el-button>
           </div>
         </div>
-      </el-form>
+
+        <!-- Swap -->
+        <div class="md:col-span-1 flex justify-center pb-2">
+          <button @click="exchangeStations" class="w-10 h-10 rounded-full bg-white hover:bg-blue-50 text-slate-400 hover:text-primary shadow-sm hover:shadow transition-all border border-slate-200 hover:border-blue-200 flex items-center justify-center transform hover:rotate-180 duration-300">
+            <i class="ri-arrow-left-right-line text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Destination -->
+        <div class="md:col-span-3 group">
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">目的地</label>
+          <div class="relative">
+            <i class="ri-map-pin-time-line absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-primary transition-colors z-10"></i>
+            <a-select
+              v-model:value="searchForm.destinationStationId"
+              show-search
+              placeholder="到达站"
+              class="w-full !h-12 custom-search-select"
+              :options="stationOptions"
+              :filter-option="filterOption"
+              :bordered="false"
+            />
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="md:col-span-3 group">
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">出发日期</label>
+          <div class="relative">
+            <i class="ri-calendar-line absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-primary transition-colors z-10"></i>
+            <a-date-picker
+              v-model:value="searchForm.date"
+              class="w-full !h-12 custom-search-picker"
+              placeholder="选择日期"
+              value-format="YYYY-MM-DD"
+              :disabled-date="disabledDate"
+              :bordered="false"
+              :show-suffix-icon="false"
+            >
+            </a-date-picker>
+          </div>
+        </div>
+
+        <!-- Button -->
+        <div class="md:col-span-2">
+          <button 
+            @click="handleSearch" 
+            class="w-full h-12 bg-primary hover:bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            <span v-if="!searchLoading">{{ searchButtonText }}</span>
+            <i v-else class="ri-loader-4-line animate-spin text-xl"></i>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue'
-import { ElMessage } from 'element-plus'
-import { Tickets, Switch, Search } from '@element-plus/icons-vue'
+import { ref, reactive, onMounted, watch, computed } from 'vue'
+import { message } from 'ant-design-vue'
 import { getStations } from '@/api/station'
+import dayjs from 'dayjs'
+import { pinyin } from 'pinyin-pro'
 
-// 定义 props
 const props = defineProps({
-  // 初始搜索参数
   initialParams: {
     type: Object,
     default: () => ({})
   },
-  // 是否显示标题
   showTitle: {
     type: Boolean,
     default: true
   },
-  // 搜索按钮文本
   searchButtonText: {
     type: String,
     default: '搜索车次'
   }
 })
 
-// 定义 emits
 const emit = defineEmits(['search'])
 
-// 表单引用
-const searchFormRef = ref()
 const searchLoading = ref(false)
-
-// 搜索表单数据
 const searchForm = reactive({
-  originStationId: null,
-  destinationStationId: null,
-  date: ''
+  originStationId: undefined,
+  destinationStationId: undefined,
+  date: undefined
 })
 
-// 表单验证规则
-const searchRules = {
-  originStationId: [
-    { required: true, message: '请选择出发站', trigger: 'change' }
-  ],
-  destinationStationId: [
-    { required: true, message: '请选择到达站', trigger: 'change' }
-  ],
-  date: [
-    { required: true, message: '请选择出发日期', trigger: 'change' }
-  ]
-}
-
-// 数据
 const stations = ref([])
 
-// 初始化默认日期
-const initDefaultDate = () => {
-  const today = new Date()
-  searchForm.date = today.toISOString().split('T')[0]
+const stationOptions = computed(() => {
+  return stations.value.map(s => ({
+    value: s.id,
+    label: s.name,
+    code: s.code
+  }))
+})
+
+const filterOption = (input, option) => {
+  const query = input.toLowerCase()
+  const name = option.label.toLowerCase()
+  const code = option.code ? option.code.toLowerCase() : ''
+  const pinyinFirst = pinyin(option.label, { pattern: 'first', toneType: 'none' }).toLowerCase()
+  const pinyinFull = pinyin(option.label, { toneType: 'none' }).toLowerCase()
+  
+  return name.includes(query) || code.includes(query) || pinyinFirst.includes(query) || pinyinFull.includes(query)
 }
 
-// 禁用过去的日期
-const disabledDate = (time) => {
-  return time.getTime() < Date.now() - 8.64e7
+const disabledDate = (current) => {
+  return current && current < dayjs().startOf('day')
 }
 
-// 交换出发站和到达站
 const exchangeStations = () => {
   const temp = searchForm.originStationId
   searchForm.originStationId = searchForm.destinationStationId
   searchForm.destinationStationId = temp
 }
 
-// 获取站点列表
 const loadStations = async () => {
   try {
     const response = await getStations()
     if (response.code === 200) {
       stations.value = response.data
     } else {
-      ElMessage.error(response.message || '获取站点列表失败')
+      message.error(response.message || '获取站点列表失败')
     }
   } catch (error) {
-    console.error('获取站点列表失败:', error)
-    ElMessage.error('获取站点列表失败')
+    message.error('获取站点列表失败')
   }
 }
 
-// 搜索车票
 const handleSearch = async () => {
-  try {
-    const valid = await searchFormRef.value.validate()
-    if (valid) {
-      searchLoading.value = true
-      // 触发搜索事件，将搜索参数传递给父组件
-      emit('search', {
-        originStationId: searchForm.originStationId,
-        destinationStationId: searchForm.destinationStationId,
-        date: searchForm.date
-      })
-      searchLoading.value = false
-    }
-  } catch (error) {
-    console.error('搜索参数验证失败:', error)
-    searchLoading.value = false
+  if (!searchForm.originStationId || !searchForm.destinationStationId || !searchForm.date) {
+    message.warning('请完善搜索条件')
+    return
   }
+  
+  searchLoading.value = true
+  emit('search', {
+    originStationId: searchForm.originStationId,
+    destinationStationId: searchForm.destinationStationId,
+    date: searchForm.date
+  })
+  searchLoading.value = false
 }
 
-// 初始化搜索参数
 const initSearchParams = () => {
   if (props.initialParams.originStationId) {
     searchForm.originStationId = parseInt(props.initialParams.originStationId)
@@ -203,100 +174,74 @@ const initSearchParams = () => {
   }
   if (props.initialParams.date) {
     searchForm.date = props.initialParams.date
+  } else {
+    searchForm.date = dayjs().format('YYYY-MM-DD')
   }
 }
 
-// 监听初始参数变化
 watch(() => props.initialParams, () => {
   initSearchParams()
 }, { deep: true, immediate: true })
 
-// 暴露方法给父组件
-defineExpose({
-  searchForm,
-  handleSearch,
-  exchangeStations
-})
-
-// 组件挂载时初始化
 onMounted(async () => {
-  initDefaultDate()
   await loadStations()
   initSearchParams()
 })
 </script>
 
-<style scoped>
-.search-section {
-  background-color: white;
-  padding: 30px 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+<style>
+.custom-search-select .ant-select-selector {
+  background-color: white !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.75rem !important; /* rounded-xl */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  padding-left: 36px !important;
+  transition: all 0.2s !important;
+}
+.custom-search-select:hover .ant-select-selector {
+  border-color: #cbd5e1 !important;
+}
+.custom-search-select.ant-select-focused .ant-select-selector {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1) !important;
+}
+.custom-search-select .ant-select-selection-item {
+  font-weight: 500;
+  color: #1e293b;
+}
+.custom-search-select .ant-select-selection-placeholder {
+  color: #94a3b8;
 }
 
-.search-container {
-  max-width: 1200px;
-  margin: 0 auto;
+.custom-search-picker .ant-picker {
+  background-color: white !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  height: 100% !important;
+  padding-left: 46px !important;
+  transition: all 0.2s !important;
 }
-
-.search-title {
-  text-align: center;
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #1890ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-weight: 600;
+.custom-search-picker:hover .ant-picker {
+  border-color: #cbd5e1 !important;
 }
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr 1fr auto;
-  gap: 20px;
-  align-items: end;
+.custom-search-picker.ant-picker-focused {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1) !important;
 }
-
-.form-group {
-  margin-bottom: 0;
+.custom-search-picker input {
+  font-weight: 500;
+  color: #1e293b !important;
+  padding-left: 25px !important;
 }
-
-.form-input {
-  width: 100%;
+.custom-search-picker input::placeholder {
+  color: #94a3b8 !important;
 }
-
-.exchange-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background-color: #f0f9ff;
-  border: 1px solid #1890ff;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.exchange-btn:hover {
-  background-color: #1890ff;
-  color: white;
-}
-
-.search-btn {
-  height: 40px;
-  padding: 0 30px;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  
-  .exchange-btn {
-    display: none;
-  }
+/* Hide default calendar icon */
+.custom-search-picker .ant-picker-suffix {
+  display: none !important;
 }
 </style>

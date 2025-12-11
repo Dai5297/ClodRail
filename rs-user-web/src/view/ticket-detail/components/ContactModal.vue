@@ -1,62 +1,71 @@
 <template>
-  <el-dialog
+  <Modal
       v-model="visible"
       title="选择乘客"
-      width="600px"
-      :close-on-click-modal="false"
-      @close="handleClose"
   >
-    <div class="contact-modal">
-      <div class="contact-list">
+    <div class="max-h-[400px] overflow-y-auto">
+      <div class="flex flex-col gap-2">
         <div
             v-for="contact in contacts"
             :key="contact.id"
-            class="contact-item"
-            :class="{ 'selected': isContactSelected(contact) }"
+            class="flex justify-between items-center p-4 border rounded-lg cursor-pointer transition-all duration-300"
+            :class="{
+              'border-blue-500 bg-blue-50/50': isContactSelected(contact),
+              'border-gray-100 hover:border-blue-300 hover:bg-gray-50': !isContactSelected(contact)
+            }"
             @click="handleToggleContact(contact)"
         >
-          <div class="contact-info">
-            <div class="contact-name">
-              {{ contact.name }}
-              <span class="contact-type-tag">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-base font-semibold text-gray-900">{{ contact.name }}</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 border border-blue-100 rounded-full px-2 py-0.5">
                 {{ getPassengerTypeText(contact.passengerType) }}
               </span>
             </div>
-            <div class="contact-details">
-              <span class="contact-phone">{{ contact.phone }}</span>
+            <div class="flex gap-3 text-sm text-gray-500">
+              <span>{{ contact.phone }}</span>
             </div>
           </div>
-          <div class="contact-actions">
-            <el-checkbox
-                :model-value="isContactSelected(contact)"
-                @change="handleToggleContact(contact)"
-            />
+          <div class="ml-4">
+            <div class="w-5 h-5 border-2 rounded flex items-center justify-center transition-colors"
+                 :class="isContactSelected(contact) ? 'bg-blue-600 border-blue-600' : 'border-gray-300 bg-white'">
+              <svg v-if="isContactSelected(contact)" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
           </div>
         </div>
       </div>
 
-      <div v-if="contacts.length === 0" class="no-contacts">
-        <el-empty description="暂无联系人，请先添加联系人信息"/>
+      <div v-if="contacts.length === 0" class="py-10 text-center">
+        <div class="bg-gray-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+          <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </div>
+        <p class="text-gray-500 text-sm">暂无联系人，请先添加联系人信息</p>
       </div>
     </div>
 
     <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="handleClose">取消</el-button>
-        <el-button
-            type="primary"
+      <div class="flex justify-end gap-3">
+        <button
+            @click="handleClose"
+            class="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          取消
+        </button>
+        <button
             @click="handleConfirm"
             :disabled="tempSelectedContacts.length === 0"
+            class="px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           确认选择 ({{ tempSelectedContacts.length }})
-        </el-button>
+        </button>
       </div>
     </template>
-  </el-dialog>
+  </Modal>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
+import Modal from '@/components/Modal/Modal.vue'
 
 const props = defineProps({
   modelValue: {
@@ -129,76 +138,4 @@ const handleConfirm = () => {
   visible.value = false
 }
 </script>
-
-<style scoped>
-.contact-modal {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.contact-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.contact-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  border: 1px solid #f0f0f0;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.contact-item:hover {
-  border-color: #1890ff;
-  background-color: #f0f9ff;
-}
-
-.contact-item.selected {
-  border-color: #1890ff;
-  background-color: #f0f9ff;
-}
-
-.contact-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.contact-type-tag {
-  font-size: 12px;
-  font-weight: 400;
-  color: #1890ff;
-  background-color: #f0f9ff;
-  border: 1px solid #d4edda;
-  border-radius: 12px;
-  padding: 2px 8px;
-}
-
-.contact-details {
-  display: flex;
-  gap: 12px;
-  font-size: 14px;
-  color: #666;
-}
-
-.no-contacts {
-  padding: 40px 0;
-  text-align: center;
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-</style>
 

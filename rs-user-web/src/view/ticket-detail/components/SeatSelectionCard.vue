@@ -1,57 +1,71 @@
 <template>
-  <div class="seat-selection-card">
-    <h3 class="card-title">
-      <el-icon>
-        <Grid/>
-      </el-icon>
+  <div class="bg-white rounded-xl p-6 mb-5 shadow-sm border border-gray-100">
+    <h3 class="flex items-center gap-2 text-lg font-medium text-gray-900 mb-5">
+      <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
       选择座位类型
     </h3>
 
-    <div class="seat-types">
+    <div class="flex flex-col gap-4">
       <div
           v-for="seatType in seatTypes"
           :key="seatType.type"
-          class="seat-type-item"
+          class="border-2 rounded-lg p-5 cursor-pointer transition-all duration-300 w-full"
           :class="{
-            'selected': selectedSeatType?.type === seatType.type,
-            'sold-out': seatType.remainingSeats === 0 
+            'border-blue-500 bg-blue-50/50': selectedSeatType?.type === seatType.type,
+            'border-gray-100 hover:border-blue-300': selectedSeatType?.type !== seatType.type,
+            'bg-gray-50 opacity-60 cursor-not-allowed border-gray-100': seatType.remainingSeats === 0
           }"
           @click="handleSelectSeatType(seatType)"
       >
-        <div class="seat-type-header">
-          <div class="seat-name">{{ seatType.name }}</div>
-          <div class="seat-price">￥{{ seatType.price }}</div>
+        <div class="flex justify-between items-center mb-3">
+          <div class="text-base font-semibold text-gray-900">{{ seatType.name }}</div>
+          <div class="text-xl font-semibold text-orange-500">￥{{ seatType.price }}</div>
         </div>
-        <div class="seat-info">
-          <div class="remaining">
+        <div class="flex justify-between items-center">
+          <div class="text-sm" :class="seatType.remainingSeats > 0 ? 'text-green-500' : 'text-gray-400'">
             {{ seatType.remainingSeats > 0 ? `余票${seatType.remainingSeats}张` : '无票' }}
           </div>
-          <div class="features">{{ seatType.features }}</div>
+          <div class="text-xs text-gray-400">{{ seatType.features }}</div>
         </div>
 
         <!-- 座位位置选择下拉菜单 -->
         <div
             v-if="selectedSeatType?.type === seatType.type && seatPositions[seatType.type] && seatPositions[seatType.type].length > 0"
-            class="seat-position-dropdown"
+            class="mt-4 pt-4 border-t border-blue-100"
             @click.stop
         >
-          <div class="position-title">选择座位位置：</div>
-          <div class="position-options">
+          <div class="text-sm text-gray-700 mb-3 font-medium">选择座位位置：</div>
+          <div class="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-2">
             <div
                 v-for="position in seatPositions[seatType.type]"
                 :key="position.code"
-                class="position-option"
                 :class="{
-                  'selected': selectedPositions.includes(position.code),
-                  'disabled': position.remainingSeats === 0 
+                  'border-blue-500 bg-blue-50': getPositionCount(position.code) > 0,
+                  'border-gray-200 hover:border-blue-300 hover:bg-blue-50/30': getPositionCount(position.code) === 0,
+                  'bg-gray-50 opacity-60 cursor-not-allowed': position.remainingSeats === 0
                 }"
-                @click="handleTogglePosition(position.code)"
+                class="relative border rounded-md p-3 cursor-pointer transition-all duration-300 bg-white text-center"
+                @click="handleMainClick(position.code)"
             >
-              <div class="position-header">
-                <span class="position-code">{{ position.code }}</span>
-                <span class="position-name">{{ position.name }}</span>
+              <div v-if="getPositionCount(position.code) > 0" 
+                   class="absolute -top-3 -right-3 flex items-center bg-white rounded-full shadow-md border border-gray-200 overflow-hidden z-20"
+                   @click.stop
+              >
+                <button 
+                  class="w-7 h-7 flex items-center justify-center hover:bg-gray-100 text-gray-600 font-bold transition-colors"
+                  @click="handleUpdateCount(position.code, -1)"
+                >−</button>
+                <span class="w-6 text-center text-sm font-bold text-blue-600 select-none bg-blue-50 h-7 flex items-center justify-center">{{ getPositionCount(position.code) }}</span>
+                <button 
+                  class="w-7 h-7 flex items-center justify-center hover:bg-gray-100 text-blue-600 font-bold transition-colors"
+                  @click="handleUpdateCount(position.code, 1)"
+                >+</button>
               </div>
-              <div class="position-remaining">余{{ position.remainingSeats }}张</div>
+              <div class="flex items-center justify-center gap-2 mb-2">
+                <span class="text-lg font-bold text-blue-500 bg-blue-50 border border-blue-100 rounded px-2 min-w-[24px] text-center">{{ position.code }}</span>
+                <span class="text-sm text-gray-500 font-medium">{{ position.name }}</span>
+              </div>
+              <div class="text-xs font-medium" :class="position.remainingSeats > 0 ? 'text-green-500' : 'text-gray-400'">余{{ position.remainingSeats }}张</div>
             </div>
           </div>
         </div>
@@ -61,8 +75,6 @@
 </template>
 
 <script setup>
-import { Grid } from '@element-plus/icons-vue'
-
 const props = defineProps({
   seatTypes: {
     type: Array,
@@ -82,179 +94,25 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['select-seat-type', 'toggle-position'])
+const emit = defineEmits(['select-seat-type', 'update-position-count'])
 
 const handleSelectSeatType = (seatType) => {
   emit('select-seat-type', seatType)
 }
 
-const handleTogglePosition = (positionCode) => {
-  emit('toggle-position', positionCode)
+const handleUpdateCount = (positionCode, delta) => {
+  emit('update-position-count', positionCode, delta)
+}
+
+const handleMainClick = (positionCode) => {
+  // 只有当数量为0时，点击卡片主体才增加
+  if (getPositionCount(positionCode) === 0) {
+    handleUpdateCount(positionCode, 1)
+  }
+}
+
+const getPositionCount = (positionCode) => {
+  return props.selectedPositions.filter(p => p === positionCode).length
 }
 </script>
-
-<style scoped>
-.seat-selection-card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.card-title {
-  font-size: 18px;
-  color: #333;
-  margin: 0 0 20px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.seat-types {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.seat-type-item {
-  border: 2px solid #f0f0f0;
-  border-radius: 8px;
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.3s;
-  width: 100%;
-}
-
-.seat-type-item:hover {
-  border-color: #1890ff;
-}
-
-.seat-type-item.selected {
-  border-color: #1890ff;
-  background-color: #f0f9ff;
-}
-
-.seat-type-item.sold-out {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.seat-type-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.seat-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
-
-.seat-price {
-  font-size: 20px;
-  font-weight: 600;
-  color: #ff6b35;
-}
-
-.seat-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.remaining {
-  font-size: 14px;
-  color: #52c41a;
-}
-
-.features {
-  font-size: 12px;
-  color: #999;
-}
-
-.seat-position-dropdown {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #f0f0f0;
-}
-
-.position-title {
-  font-size: 14px;
-  color: #333;
-  margin-bottom: 12px;
-  font-weight: 500;
-}
-
-.position-options {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 8px;
-}
-
-.position-option {
-  border: 1px solid #d9d9d9;
-  border-radius: 6px;
-  padding: 12px;
-  cursor: pointer;
-  transition: all 0.3s;
-  background: white;
-  text-align: center;
-}
-
-.position-option:hover {
-  border-color: #1890ff;
-  background-color: #f0f9ff;
-}
-
-.position-option.selected {
-  border-color: #1890ff;
-  background-color: #e6f7ff;
-}
-
-.position-option.disabled {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.position-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.position-code {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1890ff;
-  background-color: #f0f9ff;
-  border: 1px solid #d4edda;
-  border-radius: 4px;
-  padding: 2px 8px;
-  min-width: 24px;
-  text-align: center;
-}
-
-.position-name {
-  font-size: 14px;
-  color: #666;
-  font-weight: 500;
-}
-
-.position-remaining {
-  font-size: 12px;
-  color: #52c41a;
-  font-weight: 500;
-}
-
-.position-option.disabled .position-remaining {
-  color: #999;
-}
-</style>
 

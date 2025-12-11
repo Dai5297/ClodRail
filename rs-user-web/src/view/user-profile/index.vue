@@ -1,5 +1,5 @@
 <template>
-  <div class="user-profile-page">
+  <div class="space-y-6">
     <!-- 页面标题 -->
     <PageHeader
       :is-editing="isEditing"
@@ -10,7 +10,7 @@
     />
 
     <!-- 个人信息展示/编辑 -->
-    <div class="profile-content">
+    <div class="transition-all duration-300">
       <!-- 信息展示模式 -->
       <ProfileDisplay v-if="!isEditing" :user-info="userInfo" />
 
@@ -26,8 +26,8 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
 import { getUserInfo, updateUserInfo } from '@/api/user.js'
+import toast from '@/components/Toast'
 import PageHeader from '@/view/user-profile/components/PageHeader.vue'
 import ProfileDisplay from '@/view/user-profile/components/ProfileDisplay.vue'
 import ProfileForm from '@/view/user-profile/components/ProfileForm.vue'
@@ -74,8 +74,7 @@ const fetchUserInfo = async () => {
       Object.assign(profileForm, response.data)
     }
   } catch (error) {
-    console.error('获取用户信息失败:', error)
-    ElMessage.error('获取用户信息失败')
+    toast.error('获取用户信息失败')
   }
 }
 
@@ -108,7 +107,7 @@ const handleSubmit = async () => {
     
     const response = await updateUserInfo(profileForm)
     if (response.code === 200) {
-      ElMessage.success('个人信息更新成功')
+      toast.success('个人信息更新成功')
       // 更新用户信息并退出编辑模式
       Object.assign(userInfo, profileForm)
       isEditing.value = false
@@ -117,11 +116,10 @@ const handleSubmit = async () => {
         window.location.reload()
       }, 1000) // 延迟1秒刷新，让用户看到成功提示
     } else {
-      ElMessage.error(response.message || '更新失败')
+      toast.error(response.message || '更新失败')
     }
   } catch (error) {
-    console.error('更新个人信息失败:', error)
-    ElMessage.error('更新个人信息失败')
+    toast.error('更新个人信息失败')
   } finally {
     loading.value = false
   }
@@ -132,25 +130,3 @@ onMounted(() => {
   fetchUserInfo()
 })
 </script>
-
-<style scoped>
-.user-profile-page {
-  padding: 24px;
-  background: #f5f7fa;
-  min-height: 100vh;
-}
-
-.profile-content {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .user-profile-page {
-    padding: 16px;
-  }
-}
-</style>

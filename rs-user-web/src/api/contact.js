@@ -7,7 +7,7 @@ import request from '@/utils/request.js'
 // 获取联系人列表
 export const getContactList = (params = {}) => {
   return request({
-    url: '/contact/page',
+    url: '/customer/contact/page',
     method: 'GET',
     params
   })
@@ -16,7 +16,7 @@ export const getContactList = (params = {}) => {
 // 根据ID获取联系人详情
 export const getContactById = (contactId) => {
   return request({
-    url: `/contact/${contactId}`,
+    url: `/customer/contact/${contactId}`,
     method: 'GET'
   })
 }
@@ -24,7 +24,7 @@ export const getContactById = (contactId) => {
 // 添加联系人
 export const addContact = (data) => {
   return request({
-    url: '/contact/add',
+    url: '/customer/contact/add',
     method: 'POST',
     data
   })
@@ -33,7 +33,7 @@ export const addContact = (data) => {
 // 更新联系人
 export const updateContact = (data) => {
   return request({
-    url: `/contact/update`,
+    url: '/customer/contact/update',
     method: 'PUT',
     data
   })
@@ -42,7 +42,7 @@ export const updateContact = (data) => {
 // 删除联系人
 export const deleteContact = (contactId) => {
   return request({
-    url: `/contact/${contactId}`,
+    url: `/customer/contact/${contactId}`,
     method: 'DELETE'
   })
 }

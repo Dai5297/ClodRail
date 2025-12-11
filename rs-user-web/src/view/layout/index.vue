@@ -1,25 +1,23 @@
 <template>
-  <div class="common-layout">
-    <el-container>
-      <el-header class="header">
-        <Header
-            :username="username"
-            :user-avatar="userAvatar"
-            :on-go-to-user-center="goToUserCenter"
-            :on-logout="handleLogout"
-        />
-      </el-header>
-      <el-main class="main">
-        <router-view/>
-      </el-main>
-    </el-container>
+  <div class="min-h-screen flex flex-col bg-background font-sans">
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-100 fixed w-full top-0 z-50 h-20 shadow-sm transition-all duration-300">
+      <Header
+          :username="username"
+          :user-avatar="userAvatar"
+          :on-go-to-user-center="goToUserCenter"
+          :on-logout="handleLogout"
+      />
+    </header>
+    <main class="flex-grow pt-20">
+      <router-view/>
+    </main>
   </div>
 </template>
 
 <script setup>
 import {onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
-import {ElMessage} from 'element-plus'
+import {message} from 'ant-design-vue'
 import Header from '@/view/layout/components/Header.vue'
 import {getUserInfo} from "@/api/user.js";
 import {logout} from "@/api/auth.js";
@@ -42,7 +40,7 @@ const handleLogout = async () => {
     await logout()
     localStorage.removeItem('token')
     localStorage.removeItem('userInfo')
-    ElMessage.success('退出登录成功')
+    message.success('退出登录成功')
     router.push('/login')
   } catch (error) {
     // 即使API调用失败，也要清除本地存储并跳转
@@ -56,14 +54,12 @@ const handleLogout = async () => {
 const userInfo = async () => {
   try {
     const response = await getUserInfo()
-    console.log(response)
     if (response.code === 200) {
       username.value = response.data.realName == null ? response.data.username : response.data.realName
       userAvatar.value = response.data.avatar
     }
   } catch (error) {
-    console.error('获取用户信息失败:', error)
-    ElMessage.error('获取用户信息失败')
+    message.error('获取用户信息失败')
   }
 }
 
@@ -78,29 +74,3 @@ onMounted(() => {
   userInfo()
 })
 </script>
-
-<style scoped>
-.common-layout {
-  width: 100%;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-}
-
-.header {
-  background-color: #fff;
-  border-bottom: 1px solid #e8e8e8;
-  padding: 0 24px;
-  height: 64px !important;
-  line-height: 64px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.main {
-  padding: 0;
-  margin: 0;
-  height: calc(100vh - 64px);
-  overflow-y: auto;
-}
-
-</style>

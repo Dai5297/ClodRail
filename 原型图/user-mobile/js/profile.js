@@ -289,7 +289,7 @@ const ProfileApp = {
         
         // 设置按钮点击
         document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('settings-icon')) {
+            if (e.target.classList.contains('settings-icons')) {
                 this.handleMenuAction('settings');
             }
         });

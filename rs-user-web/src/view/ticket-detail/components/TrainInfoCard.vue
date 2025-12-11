@@ -1,49 +1,51 @@
 <template>
-  <div class="train-info-card">
-    <div class="train-header">
-      <div class="train-number">{{ ticketDetail.trainCode }}</div>
-      <div class="train-type">{{ ticketDetail.trainType }}</div>
-      <div class="train-date">{{ formatDate(ticketDetail.departureDate) }}</div>
+  <div class="bg-white rounded-xl p-8 mb-6 shadow-sm border border-gray-100">
+    <div class="flex items-center gap-5 mb-8 pb-5 border-b border-gray-100">
+      <div class="text-3xl font-bold text-blue-600">{{ ticketDetail.trainCode }}</div>
+      <div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-medium">{{ ticketDetail.trainType }}</div>
+      <div class="text-gray-500 text-base">{{ formatDate(ticketDetail.departureDate) }}</div>
     </div>
 
-    <div class="route-info">
-      <div class="station-info departure">
-        <div class="time-display">
-          <div class="time">{{ formatTime(ticketDetail.startTime) }}</div>
-          <div class="date">{{ formatDate(ticketDetail.startTime) }}</div>
+    <div class="grid grid-cols-[1fr_auto_1fr] gap-10 items-center max-w-4xl mx-auto">
+      <!-- Departure -->
+      <div class="text-left">
+        <div class="mb-2">
+          <div class="text-4xl font-bold text-gray-900 leading-none mb-1">{{ formatTime(ticketDetail.startTime) }}</div>
+          <div class="text-xs text-gray-400">{{ formatDate(ticketDetail.startTime) }}</div>
         </div>
-        <div class="station">{{ ticketDetail.originStation.name }}</div>
-        <div class="platform">{{ ticketDetail.originStation.platform }}站台</div>
+        <div class="text-xl text-gray-800 mb-1 font-medium">{{ ticketDetail.originStation.name }}</div>
+        <div class="text-sm text-gray-500">{{ ticketDetail.originStation.platform }}站台</div>
       </div>
 
-      <div class="journey-info">
-        <div class="duration">
-          <el-icon>
-            <Clock/>
-          </el-icon>
+      <!-- Journey Info -->
+      <div class="flex flex-col items-center gap-3 w-full">
+        <div class="flex items-center gap-1.5 text-gray-500 text-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           <span>{{ formatDuration(ticketDetail.duration) }}</span>
         </div>
-        <div class="route-line">
-          <div class="line"></div>
-          <div class="stops">{{ ticketDetail.stopCount }}站</div>
+        <div class="flex flex-col items-center w-full gap-1">
+          <div class="w-32 h-0.5 bg-gradient-to-r from-blue-500 to-green-500 rounded-full relative">
+            <div class="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-500 rounded-full border-2 border-white"></div>
+            <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-green-500 rounded-full border-2 border-white"></div>
+          </div>
+          <div class="text-xs text-gray-400">{{ ticketDetail.stopCount }}站</div>
         </div>
       </div>
 
-      <div class="station-info arrival">
-        <div class="time-display">
-          <div class="time">{{ formatTime(ticketDetail.endTime) }}</div>
-          <div class="date">{{ formatDate(ticketDetail.endTime) }}</div>
+      <!-- Arrival -->
+      <div class="text-right">
+        <div class="mb-2">
+          <div class="text-4xl font-bold text-gray-900 leading-none mb-1">{{ formatTime(ticketDetail.endTime) }}</div>
+          <div class="text-xs text-gray-400">{{ formatDate(ticketDetail.endTime) }}</div>
         </div>
-        <div class="station">{{ ticketDetail.destinationStation.name }}</div>
-        <div class="platform">{{ ticketDetail.destinationStation.platform }}站台</div>
+        <div class="text-xl text-gray-800 mb-1 font-medium">{{ ticketDetail.destinationStation.name }}</div>
+        <div class="text-sm text-gray-500">{{ ticketDetail.destinationStation.platform }}站台</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { Clock } from '@element-plus/icons-vue'
-
 const props = defineProps({
   ticketDetail: {
     type: Object,
@@ -102,136 +104,4 @@ const formatDuration = (isoDuration) => {
   }
 }
 </script>
-
-<style scoped>
-.train-info-card {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.train-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.train-number {
-  font-size: 28px;
-  font-weight: 600;
-  color: #1890ff;
-}
-
-.train-type {
-  background: #f0f9ff;
-  color: #1890ff;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
-}
-
-.train-date {
-  color: #666;
-  font-size: 16px;
-}
-
-.route-info {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 40px;
-  align-items: center;
-}
-
-.station-info {
-  text-align: center;
-}
-
-.station-info.departure {
-  text-align: left;
-}
-
-.station-info.arrival {
-  text-align: right;
-}
-
-.time-display {
-  margin-bottom: 8px;
-}
-
-.time {
-  font-size: 32px;
-  font-weight: 600;
-  color: #333;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.date {
-  font-size: 12px;
-  color: #999;
-  line-height: 1;
-}
-
-.station {
-  font-size: 18px;
-  color: #333;
-  margin-bottom: 4px;
-}
-
-.platform {
-  font-size: 14px;
-  color: #999;
-}
-
-.journey-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.duration {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: #666;
-  font-size: 14px;
-}
-
-.route-line {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-}
-
-.line {
-  width: 100px;
-  height: 2px;
-  background: linear-gradient(to right, #1890ff, #52c41a);
-  border-radius: 1px;
-}
-
-.stops {
-  font-size: 12px;
-  color: #999;
-}
-
-@media (max-width: 768px) {
-  .route-info {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .station-info.departure,
-  .station-info.arrival {
-    text-align: center;
-  }
-}
-</style>
 

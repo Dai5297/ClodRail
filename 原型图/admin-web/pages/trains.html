@@ -152,13 +152,13 @@
                     
                     <!-- 批量操作 -->
                     <div class="batch-actions" id="batchActions" style="display: none; margin-top: 15px;">
-                        <button class="btn btn-warning btn-sm" onclick="batchUpdateStatus('suspended')">
+                        <button class="btn btn-warning btn-sm" data-roles="SUPER_ADMIN,OPS" onclick="batchUpdateStatus('suspended')">
                             <i class="fas fa-pause"></i> 批量停运
                         </button>
-                        <button class="btn btn-success btn-sm" onclick="batchUpdateStatus('active')">
+                        <button class="btn btn-success btn-sm" data-roles="SUPER_ADMIN,OPS" onclick="batchUpdateStatus('active')">
                             <i class="fas fa-play"></i> 批量启用
                         </button>
-                        <button class="btn btn-danger btn-sm" onclick="batchDeleteTrains()">
+                        <button class="btn btn-danger btn-sm" data-roles="SUPER_ADMIN" onclick="batchDeleteTrains()">
                             <i class="fas fa-trash"></i> 批量删除
                         </button>
                     </div>
