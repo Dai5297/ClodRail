@@ -10,4 +10,6 @@ public class PassengerResDTO {
     private String name;
 
     private Integer passengerType;
+
+    private String idCard;
 }

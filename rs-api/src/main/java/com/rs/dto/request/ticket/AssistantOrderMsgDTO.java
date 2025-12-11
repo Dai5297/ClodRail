@@ -2,6 +2,8 @@ package com.rs.dto.request.ticket;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class AssistantOrderMsgDTO {
 
@@ -11,9 +13,9 @@ public class AssistantOrderMsgDTO {
 
     private String endStation;
 
-    private String startTime;
+    private LocalDateTime startTime;
 
-    private String endTime;
+    private LocalDateTime endTime;
 
     private String trainNumber;
 

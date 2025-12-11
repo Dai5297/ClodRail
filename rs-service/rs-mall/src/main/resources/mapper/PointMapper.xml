@@ -26,4 +26,36 @@
     <select id="getPointBalance" resultType="com.rs.model.mall.PointBalance">
         select * from point_balance where user_id = #{userId}
     </select>
+
+    <!-- 扣减积分（消费） -->
+    <update id="deductPoints">
+        UPDATE point_balance
+        SET current_points = current_points - #{points},
+            total_spent = total_spent + #{points},
+            update_time = NOW()
+        WHERE user_id = #{userId}
+          AND current_points >= #{points}
+    </update>
+
+    <!-- 添加积分消费明细 -->
+    <insert id="addSpendDetail">
+        INSERT INTO `point-detail` (user_id, type, point, comment, create_time, create_by, update_time, update_by)
+        VALUES (#{userId}, 2, #{point}, #{comment}, NOW(), #{createBy}, NOW(), #{updateBy})
+    </insert>
+
+    <!-- 分页查询积分明细 -->
+    <select id="queryPointHistory" resultType="com.rs.model.mall.PointDetail">
+        SELECT * FROM `point-detail`
+        WHERE user_id = #{userId}
+        <if test="type != null">
+            AND type = #{type}
+        </if>
+        <if test="startDate != null and startDate != ''">
+            AND DATE(create_time) &gt;= #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND DATE(create_time) &lt;= #{endDate}
+        </if>
+        ORDER BY create_time DESC
+    </select>
 </mapper>

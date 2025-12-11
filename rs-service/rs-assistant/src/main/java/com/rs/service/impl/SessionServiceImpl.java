@@ -52,7 +52,7 @@ public class SessionServiceImpl implements SessionService {
                     JSONArray messages = JSONUtil.parseArray(content);
                     if (!messages.isEmpty()) {
                         JSONObject lastMsg = messages.getJSONObject(messages.size() - 1);
-                        String lastMsgContent = lastMsg.getStr("text", "");
+                        String lastMsgContent = lastMsg.getStr("content", "");
                         session.setLastMessage(lastMsgContent.length() > 30
                                 ? lastMsgContent.substring(0, 30) + "..."
                                 : lastMsgContent);
@@ -62,7 +62,7 @@ public class SessionServiceImpl implements SessionService {
                         for (int i = 0; i < messages.size(); i++) {
                             JSONObject msg = messages.getJSONObject(i);
                             if ("USER".equals(msg.getStr("type"))) {
-                                String msgContent = msg.getStr("text", "");
+                                String msgContent = msg.getStr("content", "");
                                 title = msgContent.length() > 20
                                         ? msgContent.substring(0, 20) + "..."
                                         : msgContent;
@@ -124,15 +124,7 @@ public class SessionServiceImpl implements SessionService {
 
                     // 转换消息类型
                     message.setType("USER".equals(type) ? "user" : "ai");
-                    if ("USER".equals(type)) {
-                        JSONArray object = (JSONArray) jsonMsg.get("contents");
-                        JSONObject userMsg = (JSONObject) object.get(0);
-                        if (object != null &&  userMsg.get("type").equals("TEXT")) {
-                            message.setContent(userMsg.getStr("text"));
-                        }
-                    } else {
-                        message.setContent(jsonMsg.getStr("text", ""));
-                    }
+                    message.setContent(jsonMsg.getStr("content", ""));
 
                     // 解析时间戳
                     String timestamp = jsonMsg.getStr("timestamp");
@@ -193,4 +185,3 @@ public class SessionServiceImpl implements SessionService {
         }
     }
 }
-

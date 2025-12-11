@@ -11,5 +11,9 @@ public class Passenger {
 
     private Integer passengerType;
 
+    private String idCard;
+
     private String seatPosition;
+
+    private Double actualPrice;
 }

@@ -30,6 +30,7 @@
         <id property="passengerId" column="id"/>
         <result property="name" column="name"/>
         <result property="passengerType" column="passenger_type"/>
+        <result property="idCard" column="id_card"/>
     </resultMap>
 
     <insert id="addContact">
@@ -115,7 +116,7 @@
     </select>
 
     <select id="queryPassenger" resultMap="PassengerResultMap">
-        select id, name, passenger_type
+        select id, name, passenger_type, id_card
         from contact
         where id = #{passengerId}
     </select>

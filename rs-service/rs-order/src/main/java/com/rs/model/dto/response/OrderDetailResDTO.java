@@ -1,5 +1,6 @@
 package com.rs.model.dto.response;
 
+import com.rs.dto.response.ticket.SeatInfoResDTO;
 import com.rs.model.domain.Passenger;
 import com.rs.model.domain.Permissions;
 import com.rs.model.domain.PriceDetail;
@@ -31,4 +32,18 @@ public class OrderDetailResDTO {
     private LocalDateTime payTime;
 
     private LocalDateTime expireTime;
+
+    private String trainNumber;
+
+    private String startStation;
+
+    private String endStation;
+
+    private String startTime;
+
+    private String endTime;
+
+    private List<SeatInfoResDTO> seat;
+
+    private Double price;
 }

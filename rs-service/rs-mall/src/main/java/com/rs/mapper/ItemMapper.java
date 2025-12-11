@@ -15,4 +15,22 @@ public interface ItemMapper {
     List<String> getCategories();
 
     List<Item> selectAll();
+
+    /**
+     * 扣减库存
+     *
+     * @param itemId   商品ID
+     * @param quantity 数量
+     * @return 影响行数
+     */
+    int deductStock(Long itemId, Integer quantity);
+
+    /**
+     * 增加销量
+     *
+     * @param itemId   商品ID
+     * @param quantity 数量
+     * @return 影响行数
+     */
+    int increaseSold(Long itemId, Integer quantity);
 }

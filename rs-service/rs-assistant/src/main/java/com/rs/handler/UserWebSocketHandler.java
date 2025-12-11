@@ -90,6 +90,7 @@ public class UserWebSocketHandler extends SimpleChannelInboundHandler<WebSocketF
         String messageText = ((TextWebSocketFrame) msg).text();
         Message message = JSONUtil.toBean(messageText, Message.class);
         message.setTo(assistant);
+        message.setFrom(user.getId() + "");
         messageText = JSONUtil.toJsonStr(message);
         if (Objects.equals(message.getType(), USER_TYPE)) {
             rabbitClient.sendMsg("rs.assistant.msg", "assistant.user", messageText);

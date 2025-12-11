@@ -369,8 +369,7 @@ mvn spring-boot:run
 - **用户服务**：`http://localhost:18001/doc.html`
 - **车票服务**：`http://localhost:18002/doc.html`
 - **订单服务**：`http://localhost:18003/doc.html`
-- **积分商城**：`http://localhost:1
-- 8004/doc.html`
+- **积分商城**：`http://localhost:18004/doc.html`
 
 详细接口文档见 `docs/` 目录。
 

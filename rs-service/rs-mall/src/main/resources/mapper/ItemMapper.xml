@@ -26,4 +26,22 @@
         select *
         from item
     </select>
+
+    <!-- 扣减库存 -->
+    <update id="deductStock">
+        UPDATE item
+        SET stock = stock - #{quantity},
+            update_time = NOW()
+        WHERE id = #{itemId}
+          AND stock >= #{quantity}
+          AND status = 1
+    </update>
+
+    <!-- 增加销量 -->
+    <update id="increaseSold">
+        UPDATE item
+        SET sold = sold + #{quantity},
+            update_time = NOW()
+        WHERE id = #{itemId}
+    </update>
 </mapper>

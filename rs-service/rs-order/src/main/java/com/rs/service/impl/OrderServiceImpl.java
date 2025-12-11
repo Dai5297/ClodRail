@@ -8,8 +8,10 @@ import com.rs.client.RabbitClient;
 import com.rs.client.user.ContactClient;
 import com.rs.client.ticket.SeatClient;
 import com.rs.client.ticket.TicketClient;
+import com.rs.dto.request.ticket.AssistantOrderMsgDTO;
 import com.rs.dto.request.ticket.FetchSeatReqDTO;
 import com.rs.dto.response.ticket.ListTicketResDTO;
+import com.rs.dto.response.ticket.SeatInfoResDTO;
 import com.rs.dto.response.ticket.SeatTypeInfoResDTO;
 import com.rs.dto.response.user.PassengerResDTO;
 import com.rs.dto.response.ticket.FetchSeatResDTO;
@@ -394,16 +396,40 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDetailResDTO orderDetail(String orderId) {
         OrderDetailResDTO detailResDTO = orderMapper.queryDetail(orderId);
+
+        // 补充车次信息
+        try {
+            AssistantOrderMsgDTO ticketMsg = ticketClient.queryOrderMsgDetail(detailResDTO.getTicketId());
+            if (ticketMsg != null) {
+                detailResDTO.setTrainNumber(ticketMsg.getTrainNumber());
+                detailResDTO.setStartStation(ticketMsg.getStartStation());
+                detailResDTO.setEndStation(ticketMsg.getEndStation());
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                detailResDTO.setStartTime(ticketMsg.getStartTime().format(formatter));
+                detailResDTO.setEndTime(ticketMsg.getEndTime().format(formatter));
+            }
+        } catch (Exception e) {
+            log.error("获取车票信息失败: {}", orderId, e);
+        }
+
         List<Long> passengerIds = orderMapper.queryPassengers(orderId);
         PriceDetail priceDetail = new PriceDetail();
         List<Passenger> passengers = new ArrayList<>();
         List<PriceDetail.Breakdown> breakdowns = new ArrayList<>();
+        List<SeatInfoResDTO> seatList = new ArrayList<>();
         Double totalBaseAmount = 0D;
         Double totalDiscountAmount = 0D;
         for (PassengerResDTO passengerResDTO : contactClient.queryPassenger(passengerIds)) {
             Passenger passenger = BeanUtil.copyProperties(passengerResDTO, Passenger.class);
             Seat seat = seatClient.querySeat(orderId);
             passenger.setSeatPosition(seat.getFullSeatCode());
+
+            // 设置座位信息
+            SeatInfoResDTO seatInfo = new SeatInfoResDTO();
+            seatInfo.setSeatType(seat.getSeatType());
+            seatInfo.setFullSeatCode(seat.getFullSeatCode());
+            seatList.add(seatInfo);
+
             passengers.add(passenger);
             PriceDetail.Breakdown breakdown = new PriceDetail.Breakdown();
             breakdown.setPassengerName(passenger.getName());
@@ -418,6 +444,7 @@ public class OrderServiceImpl implements OrderService {
             } else {
                 breakdown.setActualPrice(breakdown.getBasePrice());
             }
+            passenger.setActualPrice(breakdown.getActualPrice());
             breakdowns.add(breakdown);
         }
         priceDetail.setBreakdown(breakdowns);
@@ -425,6 +452,8 @@ public class OrderServiceImpl implements OrderService {
         priceDetail.setDiscountAmount(totalDiscountAmount);
         priceDetail.setTotalAmount(totalBaseAmount - totalDiscountAmount);
         detailResDTO.setPriceDetail(priceDetail);
+        detailResDTO.setPrice(priceDetail.getTotalAmount());
+        detailResDTO.setSeat(seatList);
         detailResDTO.setPassengers(passengers);
         detailResDTO.setPermissions(orderMapper.queryPermission(orderId));
         return detailResDTO;
