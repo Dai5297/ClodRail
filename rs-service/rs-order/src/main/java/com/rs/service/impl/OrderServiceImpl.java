@@ -5,9 +5,10 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.rs.annotation.Lock;
 import com.rs.client.RabbitClient;
-import com.rs.client.user.ContactClient;
 import com.rs.client.ticket.SeatClient;
 import com.rs.client.ticket.TicketClient;
+import com.rs.client.user.ContactClient;
+import com.rs.client.user.UserClient;
 import com.rs.dto.request.ticket.AssistantOrderMsgDTO;
 import com.rs.dto.request.ticket.FetchSeatReqDTO;
 import com.rs.dto.response.ticket.ListTicketResDTO;
@@ -26,6 +27,7 @@ import com.rs.model.dto.request.OrderCreateReqDTO;
 import com.rs.model.dto.response.OrderCreateResDTO;
 import com.rs.model.dto.response.OrderDetailResDTO;
 import com.rs.model.dto.response.OrderListResDTO;
+import com.rs.model.dto.response.OrderStatisticsResDTO;
 import com.rs.model.order.Order;
 import com.rs.model.ticket.Seat;
 import com.rs.service.OrderService;
@@ -44,6 +46,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -52,6 +55,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.concurrent.TimeUnit;
 
 import static com.rs.constant.RedisKeyConstant.*;
@@ -67,6 +71,8 @@ public class OrderServiceImpl implements OrderService {
     private final TicketClient ticketClient;
 
     private final ContactClient contactClient;
+
+    private final UserClient userClient;
 
     private final RedisIdUtil redisIdUtil;
 
@@ -92,8 +98,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderCreateResDTO createOrder(BusinessActionContext context, OrderCreateReqDTO reqDTO) {
         // 预检查时间冲突车票
-        // TODO 方便测试取消时间冲突验证
-        // preCheckRepeatTime(reqDTO);
+        preCheckRepeatTime(reqDTO);
         String hotKey = TICKET_HOT + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy:MM:dd"));
         Boolean isHotTicket = stringRedisTemplate.opsForSet().isMember(hotKey, String.valueOf(reqDTO.getTicketId()));
         if (Boolean.TRUE.equals(isHotTicket)) {
@@ -421,20 +426,25 @@ public class OrderServiceImpl implements OrderService {
         Double totalDiscountAmount = 0D;
         for (PassengerResDTO passengerResDTO : contactClient.queryPassenger(passengerIds)) {
             Passenger passenger = BeanUtil.copyProperties(passengerResDTO, Passenger.class);
-            Seat seat = seatClient.querySeat(orderId);
-            passenger.setSeatPosition(seat.getFullSeatCode());
+            Long seatId = orderMapper.querySeatIdByPassenger(orderId, passengerResDTO.getPassengerId());
+            Seat seat = seatId == null ? null : seatClient.querySeatById(seatId);
+            if (seat != null) {
+                passenger.setSeatPosition(seat.getFullSeatCode());
+            }
 
             // 设置座位信息
             SeatInfoResDTO seatInfo = new SeatInfoResDTO();
-            seatInfo.setSeatType(seat.getSeatType());
-            seatInfo.setFullSeatCode(seat.getFullSeatCode());
+            if (seat != null) {
+                seatInfo.setSeatType(seat.getSeatType());
+                seatInfo.setFullSeatCode(seat.getFullSeatCode());
+            }
             seatList.add(seatInfo);
 
             passengers.add(passenger);
             PriceDetail.Breakdown breakdown = new PriceDetail.Breakdown();
             breakdown.setPassengerName(passenger.getName());
             breakdown.setPassengerType(passenger.getPassengerType());
-            Double basePrice = ticketClient.queryTicketPrice(detailResDTO.getTicketId(), seat.getSeatType());
+            Double basePrice = seat == null ? 0D : ticketClient.queryTicketPrice(detailResDTO.getTicketId(), seat.getSeatType());
             breakdown.setBasePrice(basePrice);
             totalBaseAmount += breakdown.getBasePrice();
             if (passenger.getPassengerType() != 1) {
@@ -545,5 +555,321 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         return PageUtil.buildPageResultFromSource(orders, listResDTOS);
+    }
+
+    @Override
+    public PageResult<OrderListResDTO> adminPage(Integer pageNum, Integer pageSize, String orderId, Integer status,
+                                                Long userId, LocalDateTime startTime, LocalDateTime endTime) {
+        PageUtil.startPage(pageNum, pageSize);
+        List<Order> orders = orderMapper.findAdminPage(orderId, status, userId, startTime, endTime);
+        if (orders == null || orders.isEmpty()) {
+            return PageUtil.buildPageResult(List.of());
+        }
+
+        List<OrderListResDTO> listResDTOS = new ArrayList<>();
+        for (Order order : orders) {
+            listResDTOS.add(BeanUtil.copyProperties(order, OrderListResDTO.class));
+        }
+
+        List<Long> ticketIds = listResDTOS.stream()
+                .map(OrderListResDTO::getTicketId)
+                .filter(id -> id != null && id > 0)
+                .distinct()
+                .toList();
+        if (!ticketIds.isEmpty()) {
+            List<ListTicketResDTO> ticketList = ticketClient.list(ticketIds);
+            Map<Long, ListTicketResDTO> ticketMap = ticketList.stream()
+                    .collect(Collectors.toMap(ListTicketResDTO::getId, t -> t));
+            for (OrderListResDTO dto : listResDTOS) {
+                ListTicketResDTO ticket = ticketMap.get(dto.getTicketId());
+                if (ticket != null) {
+                    dto.setTrainNumber(ticket.getTrainNumber());
+                    dto.setStartStation(ticket.getStartStation());
+                    dto.setEndStation(ticket.getEndStation());
+                    dto.setStartTime(ticket.getStartTime());
+                    dto.setEndTime(ticket.getEndTime());
+                }
+            }
+        }
+
+        List<Long> userIds = listResDTOS.stream()
+                .map(OrderListResDTO::getUserId)
+                .filter(id -> id != null && id > 0)
+                .distinct()
+                .toList();
+        if (!userIds.isEmpty()) {
+            try {
+                Map<Long, String> usernameMap = userClient.usernameList(userIds);
+                for (OrderListResDTO dto : listResDTOS) {
+                    if (dto.getUserId() != null && usernameMap.containsKey(dto.getUserId())) {
+                        dto.setUsername(usernameMap.get(dto.getUserId()));
+                    }
+                }
+            } catch (Exception e) {
+                log.error("获取用户名列表失败", e);
+            }
+        }
+
+        List<String> orderIds = listResDTOS.stream()
+                .map(OrderListResDTO::getOrderId)
+                .filter(id -> id != null && !id.isBlank())
+                .distinct()
+                .toList();
+        if (!orderIds.isEmpty()) {
+            try {
+                List<SeatTypeInfoResDTO> seatTypeInfoResDTOS = seatClient.ListSeatQuery(orderIds);
+                for (OrderListResDTO dto : listResDTOS) {
+                    for (SeatTypeInfoResDTO seatTypeInfoResDTO : seatTypeInfoResDTOS) {
+                        if (dto.getOrderId().equals(seatTypeInfoResDTO.getOrderId())) {
+                            dto.setSeat(seatTypeInfoResDTO.getSeatInfo());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.error("获取订单座位信息失败", e);
+            }
+        }
+
+        return PageUtil.buildPageResultFromSource(orders, listResDTOS);
+    }
+
+    @Override
+    public OrderDetailResDTO adminDetail(String orderId) {
+        return orderDetail(orderId);
+    }
+
+    @Override
+    public void adminCancel(String orderId) {
+        Order order = orderMapper.queryByOrderId(orderId);
+        if (order == null) {
+            throw new CommonException(RespCode.ORDER_NOT_EXIST, "订单不存在");
+        }
+        Integer currentStatus = order.getStatus();
+        if (currentStatus == null) {
+            throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "订单状态异常");
+        }
+
+        // 允许取消：待支付(0)
+        if (currentStatus != 0) {
+            throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "当前状态不允许取消");
+        }
+
+        int updated = orderMapper.updateStatus(orderId, 0, 3);
+        if (updated <= 0) {
+            throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "取消失败，订单状态已变更");
+        }
+    }
+
+    @Override
+    public void adminRefund(String orderId) {
+        Order order = orderMapper.queryByOrderId(orderId);
+        if (order == null) {
+            throw new CommonException(RespCode.ORDER_NOT_EXIST, "订单不存在");
+        }
+        Integer currentStatus = order.getStatus();
+        if (currentStatus == null) {
+            throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "订单状态异常");
+        }
+
+        // 允许退款/退票：已支付(1) 或 已出票(2)
+        if (currentStatus != 1 && currentStatus != 2) {
+            throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "当前状态不允许退票/退款");
+        }
+
+        int updated = orderMapper.updateStatus(orderId, currentStatus, 4);
+        if (updated <= 0) {
+            throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "退款失败，订单状态已变更");
+        }
+    }
+
+    @Override
+    public OrderStatisticsResDTO statistics(LocalDate startDate, LocalDate endDate, String groupBy) {
+        LocalDate end = endDate;
+        if (end == null) {
+            end = LocalDate.now();
+        }
+        LocalDate start = startDate;
+        if (start == null) {
+            start = end.minusDays(6);
+        }
+        if (start.isAfter(end)) {
+            LocalDate tmp = start;
+            start = end;
+            end = tmp;
+        }
+
+        LocalDateTime startTime = start.atStartOfDay();
+        LocalDateTime endTime = end.plusDays(1).atStartOfDay();
+
+        List<Order> orders = orderMapper.findByCreateTimeRange(startTime, endTime);
+
+        OrderStatisticsResDTO resDTO = new OrderStatisticsResDTO();
+
+        OrderStatisticsResDTO.Overview overview = new OrderStatisticsResDTO.Overview();
+        long totalOrders = orders.size();
+        double totalAmountDouble = orders.stream()
+                .map(Order::getAmount)
+                .filter(a -> a != null)
+                .mapToDouble(a -> a)
+                .sum();
+        long completedCount = orders.stream()
+                .filter(o -> o.getStatus() != null && (o.getStatus() == 1 || o.getStatus() == 2))
+                .count();
+
+        BigDecimal totalAmount = BigDecimal.valueOf(totalAmountDouble);
+        BigDecimal avgOrderAmount = totalOrders > 0
+                ? totalAmount.divide(BigDecimal.valueOf(totalOrders), 2, BigDecimal.ROUND_HALF_UP)
+                : BigDecimal.ZERO;
+        BigDecimal completionRate = totalOrders > 0
+                ? BigDecimal.valueOf(completedCount)
+                        .divide(BigDecimal.valueOf(totalOrders), 4, BigDecimal.ROUND_HALF_UP)
+                : BigDecimal.ZERO;
+
+        overview.setTotalOrders(totalOrders);
+        overview.setTotalAmount(totalAmount);
+        overview.setAvgOrderAmount(avgOrderAmount);
+        overview.setCompletionRate(completionRate);
+        resDTO.setOverview(overview);
+
+        Map<Integer, Long> statusCountMap = orders.stream()
+                .filter(o -> o.getStatus() != null)
+                .collect(Collectors.groupingBy(Order::getStatus, Collectors.counting()));
+        List<OrderStatisticsResDTO.StatusDistributionItem> statusItems = new ArrayList<>();
+        for (Map.Entry<Integer, Long> entry : statusCountMap.entrySet()) {
+            OrderStatisticsResDTO.StatusDistributionItem item = new OrderStatisticsResDTO.StatusDistributionItem();
+            item.setStatus(entry.getKey());
+            item.setName(getStatusName(entry.getKey()));
+            item.setCount(entry.getValue());
+            BigDecimal percentage = totalOrders > 0
+                    ? BigDecimal.valueOf(entry.getValue() * 100.0 / totalOrders)
+                            .setScale(2, BigDecimal.ROUND_HALF_UP)
+                    : BigDecimal.ZERO;
+            item.setPercentage(percentage);
+            statusItems.add(item);
+        }
+        resDTO.setStatusDistribution(statusItems);
+
+        Map<LocalDate, List<Order>> dateOrderMap = orders.stream()
+                .filter(o -> o.getCreateTime() != null)
+                .collect(Collectors.groupingBy(o -> o.getCreateTime().toLocalDate()));
+        List<OrderStatisticsResDTO.TrendDataItem> trendItems = new ArrayList<>();
+        dateOrderMap.keySet().stream().sorted().forEach(date -> {
+            List<Order> dailyOrders = dateOrderMap.get(date);
+            long count = dailyOrders.size();
+            double amountSum = dailyOrders.stream()
+                    .map(Order::getAmount)
+                    .filter(a -> a != null)
+                    .mapToDouble(a -> a)
+                    .sum();
+            OrderStatisticsResDTO.TrendDataItem item = new OrderStatisticsResDTO.TrendDataItem();
+            item.setDate(date.toString());
+            item.setOrderCount(count);
+            item.setAmount(BigDecimal.valueOf(amountSum));
+            trendItems.add(item);
+        });
+        resDTO.setTrendData(trendItems);
+
+        return resDTO;
+    }
+
+    @Override
+    public List<OrderListResDTO> recentOrders(Integer limit) {
+        Integer queryLimit = limit;
+        if (queryLimit == null || queryLimit <= 0) {
+            queryLimit = 5;
+        }
+
+        List<Order> orders = orderMapper.findRecent(queryLimit);
+        if (orders == null || orders.isEmpty()) {
+            return List.of();
+        }
+
+        List<OrderListResDTO> listResDTOS = new ArrayList<>();
+        for (Order order : orders) {
+            OrderListResDTO dto = BeanUtil.copyProperties(order, OrderListResDTO.class);
+            listResDTOS.add(dto);
+        }
+
+        List<Long> ticketIds = listResDTOS.stream()
+                .map(OrderListResDTO::getTicketId)
+                .filter(id -> id != null && id > 0)
+                .distinct()
+                .toList();
+
+        if (!ticketIds.isEmpty()) {
+            List<ListTicketResDTO> ticketList = ticketClient.list(ticketIds);
+            Map<Long, ListTicketResDTO> ticketMap = ticketList.stream()
+                    .collect(Collectors.toMap(ListTicketResDTO::getId, t -> t));
+            for (OrderListResDTO dto : listResDTOS) {
+                ListTicketResDTO ticket = ticketMap.get(dto.getTicketId());
+                if (ticket != null) {
+                    dto.setTrainNumber(ticket.getTrainNumber());
+                    dto.setStartStation(ticket.getStartStation());
+                    dto.setEndStation(ticket.getEndStation());
+                    dto.setStartTime(ticket.getStartTime());
+                    dto.setEndTime(ticket.getEndTime());
+                }
+            }
+        }
+
+        List<Long> userIds = listResDTOS.stream()
+                .map(OrderListResDTO::getUserId)
+                .filter(id -> id != null && id > 0)
+                .distinct()
+                .toList();
+
+        Map<Long, String> usernameMap = Map.of();
+        if (!userIds.isEmpty()) {
+            try {
+                usernameMap = userClient.usernameList(userIds);
+            } catch (Exception e) {
+                log.error("获取用户名列表失败", e);
+                usernameMap = Map.of();
+            }
+        }
+
+        for (OrderListResDTO dto : listResDTOS) {
+            if (dto.getUserId() != null && usernameMap.containsKey(dto.getUserId())) {
+                dto.setUsername(usernameMap.get(dto.getUserId()));
+            }
+        }
+
+        return listResDTOS;
+    }
+
+    @Override
+    public List<OrderListResDTO> recentOrdersBase(Integer limit) {
+        Integer queryLimit = limit;
+        if (queryLimit == null || queryLimit <= 0) {
+            queryLimit = 5;
+        }
+
+        List<Order> orders = orderMapper.findRecent(queryLimit);
+        if (orders == null || orders.isEmpty()) {
+            return List.of();
+        }
+
+        List<OrderListResDTO> listResDTOS = new ArrayList<>();
+        for (Order order : orders) {
+            OrderListResDTO dto = BeanUtil.copyProperties(order, OrderListResDTO.class);
+            listResDTOS.add(dto);
+        }
+        return listResDTOS;
+    }
+
+    private String getStatusName(Integer status) {
+        if (status == null) {
+            return "未知";
+        }
+        return switch (status) {
+            case 0 -> "待支付";
+            case 1 -> "已支付";
+            case 2 -> "已出票";
+            case 3 -> "已取消";
+            case 4 -> "已退票";
+            case 5 -> "已改签";
+            case 6 -> "已过期";
+            default -> "未知";
+        };
     }
 }

@@ -15,4 +15,10 @@
         where role = #{role}
           and type = 1
     </select>
+
+    <select id="queryAllApis" resultType="com.rs.model.customer.AdminPermission">
+        select *
+        from admin_permission
+        where type = 2
+    </select>
 </mapper>

@@ -34,6 +34,7 @@
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <activation.version>1.1.1</activation.version>
         <elasticsearch.version>7.12.1</elasticsearch.version>
+        <xxl-job.version>2.3.0</xxl-job.version>
     </properties>
 
     <modules>
@@ -48,6 +49,8 @@
         <module>rs-langchain4j</module>
         <module>rs-netty</module>
         <module>rs-es</module>
+        <module>rs-canal</module>
+        <module>rs-xxl-job</module>
     </modules>
 
     <dependencyManagement>
@@ -185,6 +188,14 @@
                 <artifactId>elasticsearch-rest-high-level-client</artifactId>
                 <version>${elasticsearch.version}</version>
             </dependency>
+
+            <!-- xxl-job -->
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${xxl-job.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>

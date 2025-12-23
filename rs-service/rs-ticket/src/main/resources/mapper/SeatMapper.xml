@@ -56,6 +56,13 @@
         select *
         from seat
         where order_id = #{orderId}
+        limit 1
+    </select>
+    <select id="querySeatById" resultType="com.rs.model.ticket.Seat">
+        select *
+        from seat
+        where id = #{seatId}
+        limit 1
     </select>
     <select id="querySeatTypeInfo" resultType="com.rs.dto.response.ticket.SeatInfoResDTO">
         select seat_type,

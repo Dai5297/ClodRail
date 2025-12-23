@@ -46,6 +46,8 @@ public interface SeatService {
      */
     Seat querySeat(String orderId);
 
+    Seat querySeatById(Long seatId);
+
     /**
      * 批量查询座位
      * @param seatId 座位ID

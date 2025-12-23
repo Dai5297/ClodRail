@@ -6,6 +6,7 @@ import com.rs.model.order.Order;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -58,6 +59,10 @@ public interface OrderMapper {
      */
     void updateAliPayStatus(String orderId);
 
+    int updateStatus(@Param("orderId") String orderId,
+                     @Param("expectStatus") Integer expectStatus,
+                     @Param("status") Integer status);
+
     /**
      * 根据订单ID查询订单信息
      *
@@ -103,4 +108,48 @@ public interface OrderMapper {
      * @return 订单座位信息
      */
     List<String> querySeat(String orderId);
+
+    Long querySeatIdByPassenger(@Param("orderId") String orderId,
+                                @Param("passengerId") Long passengerId);
+
+    List<Order> findRecent(@Param("limit") Integer limit);
+
+    /**
+     * 根据创建时间范围查询订单
+     *
+     * @param startTime 开始时间
+     * @param endTime   结束时间
+     * @return 订单列表
+     */
+    List<Order> findByCreateTimeRange(@Param("startTime") LocalDateTime startTime,
+                                      @Param("endTime") LocalDateTime endTime);
+
+    List<Order> findAdminPage(@Param("orderId") String orderId,
+                              @Param("status") Integer status,
+                              @Param("userId") Long userId,
+                              @Param("startTime") LocalDateTime startTime,
+                              @Param("endTime") LocalDateTime endTime);
+
+    /**
+     * 扫描过期未支付订单
+     *
+     * @param now   当前时间
+     * @param limit 扫描数量限制
+     * @return 过期未支付订单ID列表
+     */
+    List<String> findExpiredUnpaidOrderIds(@Param("now") LocalDateTime now,
+                                           @Param("limit") Integer limit);
+
+    /**
+     * 批量标记订单过期
+     *
+     * @param orderIds       订单ID列表
+     * @param expiredStatus 过期状态
+     * @return 更新数量
+     */
+    int markOrdersExpired(@Param("orderIds") List<String> orderIds,
+                           @Param("expiredStatus") Integer expiredStatus);
+
+    List<String> findOrderIdsByIdsAndStatus(@Param("orderIds") List<String> orderIds,
+                                           @Param("status") Integer status);
 }

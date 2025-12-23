@@ -50,8 +50,8 @@ public class SecurityFilter implements WebFilter {
         }
         // 解析JWT获取信息
         List<String> authorization = exchange.getRequest().getHeaders().get(AUTHENTICATION);
-        if (authorization == null) {
-            return chain.filter(exchange);
+        if (authorization == null || authorization.isEmpty()) {
+            return handleError(exchange, RespCode.UNAUTHORIZED, "认证失败");
         }
         String uuid = authorization.get(0).substring(AUTH_PREFIX.length());
         String token;
@@ -65,6 +65,9 @@ public class SecurityFilter implements WebFilter {
             return handleError(exchange, RespCode.UNAUTHORIZED, "认证失败");
         }
         token = stringRedisTemplate.opsForValue().get(key);
+        if (token == null || token.isEmpty()) {
+            return handleError(exchange, RespCode.UNAUTHORIZED, "认证失败");
+        }
         // 解析token并获取用户信息
         Claims claims;
         String subject;
@@ -75,12 +78,11 @@ public class SecurityFilter implements WebFilter {
             return handleError(exchange, RespCode.UNAUTHORIZED, "认证失败");
         }
         // 续期redisKey
-        Long expire = stringRedisTemplate.getExpire(USER_LOGIN_TOKEN + uuid, TimeUnit.SECONDS);
+        Long expire = stringRedisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
 
-        if (expire > 0 && expire < RedisUserKeyConstant.USER_TOKEN_LEAST_TTL) {
-            // 使用秒为单位，与getExpire保持一致
-            stringRedisTemplate.expire(USER_LOGIN_TOKEN + uuid,
-                    RedisUserKeyConstant.USER_LOGIN_TOKEN_TTL, TimeUnit.SECONDS);
+        if (expire != null && expire > 0 && expire < RedisUserKeyConstant.USER_TOKEN_LEAST_TTL) {
+            stringRedisTemplate.expire(key,
+                    RedisUserKeyConstant.USER_LOGIN_TOKEN_TTL, TimeUnit.MILLISECONDS);
             log.debug("用户token续期成功，uuid: {}", uuid);
         }
         // 根据请求路径将claim转为对应实体类
@@ -100,6 +102,9 @@ public class SecurityFilter implements WebFilter {
     }
 
     private Mono<Void> checkPermission(Admin admin, ServerWebExchange exchange, WebFilterChain chain) {
+        if (Objects.equals(admin.getRole(), 104)) {
+            return chain.filter(exchange);
+        }
         String key = AUTH_ROLE + admin.getRole() + ":apis";
         Set<String> members = stringRedisTemplate.opsForSet().members(key);
         if (members != null) {
@@ -114,9 +119,7 @@ public class SecurityFilter implements WebFilter {
                 }
             }
         }
-        // TODO 后续需要改回权限认证
-//        return handleError(exchange, RespCode.FORBIDDEN, "无访问权限");
-        return chain.filter(exchange);
+        return handleError(exchange, RespCode.FORBIDDEN, "无访问权限");
     }
 
     /**
@@ -127,6 +130,9 @@ public class SecurityFilter implements WebFilter {
      */
     private boolean isExclude(String path) {
         AntPathMatcher antPathMatcher = new AntPathMatcher();
+        if (excludeProperties.getPaths() == null) {
+            return false;
+        }
         for (String excludePath : excludeProperties.getPaths()) {
             if (antPathMatcher.match(excludePath, path) || excludePath.equals(path)) {
                 return true;

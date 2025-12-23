@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -20,6 +21,11 @@ public interface TicketMapper {
      * 查询最热门的10条车票
      */
     List<HotTicketResDTO> queryHotTicket();
+
+    List<Long> queryHotTicketIdsByDate(@Param("departureDate") LocalDate departureDate);
+
+    List<Ticket> queryHotTicketsStartingBetween(@Param("start") LocalDateTime start,
+                                                @Param("end") LocalDateTime end);
 
     /**
      * 搜索车票
@@ -49,10 +55,30 @@ public interface TicketMapper {
     /**
      * 查询车票列表
      */
-    ListTicketResDTO querylist(Long ticketId);
+    List<ListTicketResDTO> querylist(@Param("ticketIds") List<Long> ticketIds);
 
     /**
      * 查询助手订单信息
      */
     AssistantOrderMsgDTO queryOrderMsgDetail(@Param("ticketId") Long ticketId);
+
+    /**
+     * 新增车票
+     */
+    void insert(Ticket ticket);
+
+    /**
+     * 更新车票
+     */
+    void update(Ticket ticket);
+
+    /**
+     * 删除车票
+     */
+    void deleteById(Long id);
+
+    /**
+     * 管理端查询车票
+     */
+    List<SearchTicketResDTO> adminQuery(@Param("trainId") Long trainId, @Param("departureDate") LocalDate departureDate);
 }

@@ -59,11 +59,18 @@ public class MsgListener {
             contents.add(msgContent);
             memory.setContent(JSONUtil.toJsonStr(contents));
             memoryMapper.addMemory(memory);
+            return;
         }
         List<MsgContent> list = JSONUtil.toList(memory.getContent(), MsgContent.class);
         list.add(new MsgContent(msg.getType(), msg.getContent()));
         memory.setContent(JSONUtil.toJsonStr(list));
-        memoryMapper.updateMemory(memory.getId(), JSONUtil.toJsonStr(list));
+        if (memory.getUserId() == null) {
+            memory.setUserId(Long.valueOf(msg.getFrom()));
+        }
+        if (memory.getAgentId() == null) {
+            memory.setAgentId(Long.valueOf(msg.getTo()));
+        }
+        memoryMapper.updateMemory(memory);
     }
 
     @RabbitListener(
@@ -95,8 +102,13 @@ public class MsgListener {
             List<MsgContent> list = JSONUtil.toList(memory.getContent(), MsgContent.class);
             list.add(new MsgContent(msg.getType(), msg.getContent()));
             memory.setContent(JSONUtil.toJsonStr(list));
-            memoryMapper.updateMemory(memory.getId(), JSONUtil.toJsonStr(list));
-        }
+            if (memory.getUserId() == null) {
+                memory.setUserId(Long.valueOf(msg.getFrom()));
+            }
+            if (memory.getAgentId() == null) {
+                memory.setAgentId(Long.valueOf(msg.getTo()));
+            }
+            memoryMapper.updateMemory(memory);        }
     }
 
     @RabbitListener(
@@ -126,7 +138,12 @@ public class MsgListener {
             List<MsgContent> list = JSONUtil.toList(memory.getContent(), MsgContent.class);
             list.add(new MsgContent(msg.getType(), msg.getContent()));
             memory.setContent(JSONUtil.toJsonStr(list));
-            memoryMapper.updateMemory(memory.getId(), JSONUtil.toJsonStr(list));
-        }
+            if (memory.getUserId() == null) {
+                memory.setUserId(Long.valueOf(msg.getFrom()));
+            }
+            if (memory.getAgentId() == null) {
+                memory.setAgentId(Long.valueOf(msg.getTo()));
+            }
+            memoryMapper.updateMemory(memory);        }
     }
 }

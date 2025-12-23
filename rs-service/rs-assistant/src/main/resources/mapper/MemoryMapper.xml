@@ -10,7 +10,20 @@
 
     <update id="updateMemory">
         update memory
-        set content = #{content}, update_time = now()
+        <set>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="agentId != null">
+                agent_id = #{agentId},
+            </if>
+        </set>
         where id = #{id}
     </update>
 

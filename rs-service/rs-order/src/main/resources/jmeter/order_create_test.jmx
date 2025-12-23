@@ -16,12 +16,29 @@
             <stringProp name="Argument.value">18083</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="userId" elementType="Argument">
+            <stringProp name="Argument.name">userId</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="ticketId" elementType="Argument">
+            <stringProp name="Argument.name">ticketId</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="passengerBaseId" elementType="Argument">
+            <stringProp name="Argument.name">passengerBaseId</stringProp>
+            <stringProp name="Argument.value">1000000</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </elementProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
     </TestPlan>
     <hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="订单创建并发测试">
-        <intProp name="ThreadGroup.num_threads">4000</intProp>
+        <intProp name="ThreadGroup.num_threads">3000</intProp>
         <intProp name="ThreadGroup.ramp_time">0</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
@@ -31,26 +48,30 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP请求默认值" enabled="true">
-          <stringProp name="HTTPSampler.domain">${host}</stringProp>
-          <stringProp name="HTTPSampler.port">${port}</stringProp>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP请求默认值">
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">10083</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="用户定义的变量">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="HTTPSampler.implementation"></stringProp>
         </ConfigTestElement>
         <hashTree/>
-        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP信息头管理器" enabled="true">
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP信息头管理器">
           <collectionProp name="HeaderManager.headers">
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">Content-Type</stringProp>
               <stringProp name="Header.value">application/json</stringProp>
             </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">user-info</stringProp>
+              <stringProp name="Header.value">${userId}</stringProp>
+            </elementProp>
           </collectionProp>
         </HeaderManager>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="创建订单接口" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="创建订单接口">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <intProp name="HTTPSampler.connect_timeout">5000</intProp>
           <intProp name="HTTPSampler.response_timeout">10000</intProp>
@@ -58,73 +79,79 @@
           <stringProp name="HTTPSampler.port">${port}</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-          <stringProp name="HTTPSampler.path">/orders/create</stringProp>
+          <stringProp name="HTTPSampler.path">/customer/orders/create</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="用户定义的变量">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="生成请求数据" enabled="true">
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="生成请求数据">
             <stringProp name="cacheKey">true</stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="script">import groovy.json.JsonOutput
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-// 随机生成座位类型 (1 或 2)
-def seatType = new Random().nextInt(2) + 1
+def rnd = new Random()
+
+// ticketId / userId 在 TestPlan 变量中配置
+def ticketId = 10
+
+// 随机生成座位类型 (1=一等座, 2=二等座)
+def seatType = rnd.nextInt(2) + 1
 
 // 根据座位类型确定可用的座位位置
-def availablePositions = []
-if (seatType == 1) {
-    availablePositions = [&quot;A&quot;, &quot;B&quot;, &quot;E&quot;, &quot;F&quot;]
-} else {
-    availablePositions = [&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;E&quot;, &quot;F&quot;]
-}
+def availablePositions = (seatType == 1)
+        ? [&quot;A&quot;, &quot;B&quot;, &quot;E&quot;, &quot;F&quot;]
+        : [&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;E&quot;, &quot;F&quot;]
 
 // 随机生成乘客数量 (1-3人)
-def passengerCount = new Random().nextInt(3) + 1
-passengerCount = Math.min(passengerCount, availablePositions.size())
+def passengerCount = Math.min(rnd.nextInt(3) + 1, availablePositions.size())
 
-// 生成乘客数据
+// 生成乘客数据：用 threadNum + baseId 生成唯一 passengerId，避免时间冲突 bitmap 互相干扰
 def passengers = []
 def usedPositions = [] as Set
+def basePassengerId = Long.valueOf(vars.get(&quot;passengerBaseId&quot;))
+def threadNum = ctx.getThreadNum() // 0-based
 
 for (int i = 0; i &lt; passengerCount; i++) {
     def position
-    // 确保座位位置不重复
     while (true) {
-        position = availablePositions[new Random().nextInt(availablePositions.size())]
+        position = availablePositions[rnd.nextInt(availablePositions.size())]
         if (!usedPositions.contains(position)) {
             usedPositions.add(position)
             break
         }
     }
-    
-    def passenger = [
-        passengerId: 10000 + new Random().nextInt(90000),
+
+    def passengerId = basePassengerId + threadNum * 10 + i
+    passengers.add([
+        passengerId: passengerId,
         seatPosition: position
-    ]
-    passengers.add(passenger)
+    ])
 }
 
-// 构建请求数据
+// 生成本次购票时间段（同一天，避免跨天 bitmap 处理带来的额外变量）
+def formatter = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&quot;)
+def startTime = LocalDateTime.now().plusMinutes(rnd.nextInt(60)).withSecond(0).withNano(0)
+def endTime = startTime.plusMinutes(60 + rnd.nextInt(120))
+
 def requestData = [
-    ticketId: 8,
+    ticketId: ticketId,
     seatType: seatType,
     amount: (seatType == 1) ? 150.5 : 200.0,
-    startTime: &quot;2025-10-18T16:43:21&quot;,
-    endTime: &quot;2025-10-18T17:43:21&quot;,
+    startTime: startTime.format(formatter),
+    endTime: endTime.format(formatter),
     passengers: passengers
 ]
 
-// 生成 JSON
 def requestBody = JsonOutput.toJson(requestData)
 
-// 直接设置到采样器（关键修正）
 sampler.getArguments().removeAllArguments()
 sampler.addNonEncodedArgument(&quot;&quot;, requestBody, &quot;&quot;)
 sampler.setPostBodyRaw(true)
@@ -134,7 +161,7 @@ log.info(&quot;Generated Request Body: &quot; + requestBody)</stringProp>
           </JSR223PreProcessor>
           <hashTree/>
         </hashTree>
-        <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="响应断言" enabled="true">
+        <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="响应断言">
           <collectionProp name="Asserion.test_strings">
             <stringProp name="49586">200</stringProp>
           </collectionProp>

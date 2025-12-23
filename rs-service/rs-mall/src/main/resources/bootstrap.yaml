@@ -17,6 +17,7 @@ spring:
       - nacos:shared-mysql.yaml
       - nacos:shared-knife4j.yaml
       - nacos:shared-redis.yaml
+      - nacos:shared-rabbitmq.yaml
 
 server:
   port: 18086

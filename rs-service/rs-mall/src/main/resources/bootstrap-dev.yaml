@@ -17,7 +17,12 @@ rs:
       max-idle: 8
       min-idle: 0
       max-wait: -1
-
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: dai
+    password: 050815
+    virtual-host: /rs
   knife4j:
     title: 客服服务
     description: 客服服务接口文档

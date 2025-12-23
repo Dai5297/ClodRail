@@ -77,6 +77,14 @@
         where order_id = #{orderId}
     </update>
 
+    <update id="updateStatus">
+        update `order`
+        set status = #{status},
+            update_time = now()
+        where order_id = #{orderId}
+          and status = #{expectStatus}
+    </update>
+
     <select id="queryDetail" resultMap="OrderDetailResultMap">
         select order_id,
                status,
@@ -146,6 +154,82 @@
         select seat_id
         from order_seat
         where order_id = #{orderId}
+    </select>
+
+    <select id="querySeatIdByPassenger" resultType="java.lang.Long">
+        select seat_id
+        from order_seat
+        where order_id = #{orderId}
+          and passenger_id = #{passengerId}
+        limit 1
+    </select>
+
+    <select id="findRecent" resultType="com.rs.model.order.Order">
+        select *
+        from `order`
+        order by create_time desc
+        limit #{limit}
+    </select>
+
+    <select id="findByCreateTimeRange" resultType="com.rs.model.order.Order">
+        select *
+        from `order`
+        where create_time &gt;= #{startTime}
+          and create_time &lt; #{endTime}
+    </select>
+
+    <select id="findAdminPage" resultType="com.rs.model.order.Order">
+        select *
+        from `order`
+        <where>
+            <if test="orderId != null and orderId != ''">
+                and order_id = #{orderId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="startTime != null">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt; #{endTime}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="findExpiredUnpaidOrderIds" resultType="java.lang.String">
+        select order_id
+        from `order`
+        where status = 0
+          and expire_time is not null
+          and expire_time &lt; #{now}
+        order by expire_time asc
+        limit #{limit}
+    </select>
+
+    <update id="markOrdersExpired">
+        update `order`
+        set status = #{expiredStatus},
+            update_time = now()
+        where status = 0
+          and order_id in
+        <foreach collection="orderIds" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="findOrderIdsByIdsAndStatus" resultType="java.lang.String">
+        select order_id
+        from `order`
+        where status = #{status}
+          and order_id in
+        <foreach collection="orderIds" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
     </select>
 
 </mapper>

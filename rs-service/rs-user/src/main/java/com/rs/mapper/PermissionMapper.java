@@ -11,4 +11,6 @@ public interface PermissionMapper {
     List<AdminPermission> queryPermission(Integer role);
 
     List<String> queryRoutes(Integer role);
+
+    List<AdminPermission> queryAllApis();
 }

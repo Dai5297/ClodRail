@@ -30,6 +30,9 @@ public interface SeatClient {
     @GetMapping("/query/seatPosition")
     Seat querySeat(@RequestParam String orderId);
 
+    @GetMapping("/query/byId")
+    Seat querySeatById(@RequestParam("seatId") Long seatId);
+
     @PostMapping("/query/seatPosition")
     List<SeatTypeInfoResDTO> ListSeatQuery(@RequestBody List<String> orderId);
 }

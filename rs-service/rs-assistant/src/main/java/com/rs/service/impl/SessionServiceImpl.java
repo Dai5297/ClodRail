@@ -52,7 +52,7 @@ public class SessionServiceImpl implements SessionService {
                     JSONArray messages = JSONUtil.parseArray(content);
                     if (!messages.isEmpty()) {
                         JSONObject lastMsg = messages.getJSONObject(messages.size() - 1);
-                        String lastMsgContent = lastMsg.getStr("content", "");
+                        String lastMsgContent = lastMsg.getStr("text", "");
                         session.setLastMessage(lastMsgContent.length() > 30
                                 ? lastMsgContent.substring(0, 30) + "..."
                                 : lastMsgContent);
@@ -62,7 +62,7 @@ public class SessionServiceImpl implements SessionService {
                         for (int i = 0; i < messages.size(); i++) {
                             JSONObject msg = messages.getJSONObject(i);
                             if ("USER".equals(msg.getStr("type"))) {
-                                String msgContent = msg.getStr("content", "");
+                                String msgContent = msg.getStr("text", "");
                                 title = msgContent.length() > 20
                                         ? msgContent.substring(0, 20) + "..."
                                         : msgContent;
@@ -124,7 +124,26 @@ public class SessionServiceImpl implements SessionService {
 
                     // 转换消息类型
                     message.setType("USER".equals(type) ? "user" : "ai");
-                    message.setContent(jsonMsg.getStr("content", ""));
+                    if ("USER".equals(type)) {
+                        JSONArray contents = (JSONArray) jsonMsg.get("contents");
+                        if (contents != null && !contents.isEmpty()) {
+                            Object first = contents.get(0);
+                            if (first instanceof JSONObject userMsg) {
+                                Object contentType = userMsg.get("type");
+                                if (contentType != null && "TEXT".equals(String.valueOf(contentType))) {
+                                    message.setContent(userMsg.getStr("text", ""));
+                                } else {
+                                    message.setContent(userMsg.getStr("text", jsonMsg.getStr("text", "")));
+                                }
+                            } else {
+                                message.setContent(jsonMsg.getStr("text", ""));
+                            }
+                        } else {
+                            message.setContent(jsonMsg.getStr("text", ""));
+                        }
+                    } else {
+                        message.setContent(jsonMsg.getStr("text", ""));
+                    }
 
                     // 解析时间戳
                     String timestamp = jsonMsg.getStr("timestamp");

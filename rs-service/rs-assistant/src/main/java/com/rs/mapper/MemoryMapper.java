@@ -12,7 +12,7 @@ public interface MemoryMapper {
 
     void addMemory(Memory memory);
 
-    void updateMemory(Integer id, String content);
+    void updateMemory(Memory memory);
 
     List<Memory> queryByAgentId(Long aLong);
 

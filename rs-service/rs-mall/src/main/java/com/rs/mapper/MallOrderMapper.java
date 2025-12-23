@@ -45,6 +45,10 @@ public interface MallOrderMapper {
      */
     int updateStatus(@Param("orderNumber") String orderNumber, @Param("status") Integer status);
 
+    int updateShip(@Param("orderNumber") String orderNumber,
+                   @Param("expectStatus") Integer expectStatus,
+                   @Param("status") Integer status);
+
     /**
      * 分页查询用户商城订单
      *
@@ -53,4 +57,8 @@ public interface MallOrderMapper {
      * @return 订单列表
      */
     List<MallOrder> queryUserOrders(@Param("userId") Long userId, @Param("status") Integer status);
+
+    List<MallOrder> adminPage(@Param("orderNumber") String orderNumber,
+                              @Param("userId") Long userId,
+                              @Param("status") Integer status);
 }

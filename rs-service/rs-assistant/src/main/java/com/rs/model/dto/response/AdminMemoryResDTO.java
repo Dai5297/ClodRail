@@ -9,6 +9,8 @@ public class AdminMemoryResDTO {
 
     private String id;
 
+    private Long userId;
+
     private String sessionId;
 
     private String userName;

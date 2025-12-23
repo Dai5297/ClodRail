@@ -16,15 +16,15 @@ spring:
         - id: user-service
           uri: lb://user-service
           predicates:
-            - Path=/customer/user/**, /customer/contact/**, /customer/auth/**, /admin/auth/**, /admin/profile/**
+            - Path=/customer/user/**, /customer/contact/**, /customer/auth/**, /admin/auth/**, /admin/profile/**, /admin/user/**, /admin/admins/**
         - id: ticket-service
           uri: lb://ticket-service
           predicates:
-            - Path=/customer/tickets/**, /customer/stations/**, /customer/seats/**, /inner/ticket/**
+            - Path=/customer/tickets/**, /customer/stations/**, /customer/seats/**, /inner/ticket/**, /admin/tickets/**, /admin/stations/**, /admin/lines/**, /admin/trains/**
         - id: order-service
           uri: lb://order-service
           predicates:
-            - Path=/customer/orders/**, /common/orders/**
+            - Path=/customer/orders/**, /customer/pay/**, /common/orders/**, /admin/orders/**
         - id: assistant-service
           uri: lb://assistant-service
           predicates:
@@ -32,7 +32,7 @@ spring:
         - id: mall-service
           uri: lb://mall-service
           predicates:
-            - Path=/customer/points/**, /customer/mall/**
+            - Path=/customer/points/**, /customer/mall/**, /admin/mall/**
     openfeign:
       client:
         config:

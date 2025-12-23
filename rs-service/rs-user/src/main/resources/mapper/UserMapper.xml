@@ -142,4 +142,32 @@
         from user
         where id = #{id}
     </select>
+
+    <select id="queryUsers" resultMap="InfoResultMap">
+        select id,
+               username,
+               gender,
+               birthday,
+               address,
+               introduction,
+               icon,
+               email,
+               phone,
+               real_name,
+               id_card,
+               create_time
+        from user
+        <where>
+            <if test="username != null and username != ''">
+                and username like concat('%', #{username}, '%')
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone like concat('%', #{phone}, '%')
+            </if>
+            <if test="realName != null and realName != ''">
+                and real_name like concat('%', #{realName}, '%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
 </mapper>

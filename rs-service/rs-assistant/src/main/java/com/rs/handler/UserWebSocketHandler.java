@@ -89,8 +89,17 @@ public class UserWebSocketHandler extends SimpleChannelInboundHandler<WebSocketF
         // 转发消息
         String messageText = ((TextWebSocketFrame) msg).text();
         Message message = JSONUtil.toBean(messageText, Message.class);
+
+        String rawType = StrUtil.trimToEmpty(message.getType());
+        if (ORDER_TYPE.equalsIgnoreCase(rawType)) {
+            message.setType(ORDER_TYPE);
+        } else {
+            message.setType(USER_TYPE);
+        }
+
+        message.setFrom(String.valueOf(user.getId()));
+        message.setSessionId(sessionId);
         message.setTo(assistant);
-        message.setFrom(user.getId() + "");
         messageText = JSONUtil.toJsonStr(message);
         if (Objects.equals(message.getType(), USER_TYPE)) {
             rabbitClient.sendMsg("rs.assistant.msg", "assistant.user", messageText);

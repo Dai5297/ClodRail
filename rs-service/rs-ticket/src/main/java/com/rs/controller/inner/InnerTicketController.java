@@ -1,5 +1,6 @@
 package com.rs.controller.inner;
 
+import com.rs.annotation.IgnoreResult;
 import com.rs.dto.request.ticket.AssistantOrderMsgDTO;
 import com.rs.dto.response.ticket.ListTicketResDTO;
 import com.rs.service.TickerService;
@@ -17,16 +18,19 @@ public class InnerTicketController {
 
     private final TickerService tickerService;
 
+    @IgnoreResult
     @GetMapping("/price")
     Double queryTicketPrice(@RequestParam("ticketId") Long ticketId, @RequestParam("seatType") Integer seatType) {
         return tickerService.queryTicketPrice(ticketId, seatType);
     }
 
+    @IgnoreResult
     @PostMapping("/list")
     List<ListTicketResDTO> list(@RequestBody List<Long> ticketIds) {
         return tickerService.list(ticketIds);
     }
 
+    @IgnoreResult
     @GetMapping("/order/msg")
     AssistantOrderMsgDTO queryOrderMsgDetail(@RequestParam Long ticketId) {
         return tickerService.queryOrderMsgDetail(ticketId);

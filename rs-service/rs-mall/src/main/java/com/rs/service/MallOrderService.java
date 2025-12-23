@@ -27,4 +27,8 @@ public interface MallOrderService {
      * @return 订单列表
      */
     PageResult<MallOrderResDTO> getUserOrders(Integer page, Integer size, Integer status);
+
+    PageResult<MallOrderResDTO> adminPage(String orderNumber, Long userId, Integer status, Integer pageNum, Integer pageSize);
+
+    void adminShip(String orderNumber);
 }

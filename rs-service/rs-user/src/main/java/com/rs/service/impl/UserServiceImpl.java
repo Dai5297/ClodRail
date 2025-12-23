@@ -4,11 +4,14 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.rs.enums.RespCode;
 import com.rs.exception.CommonException;
+import com.rs.model.PageResult;
 import com.rs.model.customer.User;
 import com.rs.mapper.UserMapper;
 import com.rs.model.dto.request.user.UserInfoUpdateReqDTO;
+import com.rs.model.dto.request.user.UserPageReqDTO;
 import com.rs.model.dto.response.user.UserInfoResDTO;
 import com.rs.service.UserService;
+import com.rs.util.PageUtil;
 import com.rs.util.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -28,6 +31,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 获取用户信息
+     * 
      * @return 用户信息
      */
     @Override
@@ -44,6 +48,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 修改用户信息
+     * 
      * @param reqDTO 修改参数
      * @return 修改结果
      */
@@ -66,5 +71,12 @@ public class UserServiceImpl implements UserService {
             usernameMap.put(id, username);
         });
         return usernameMap;
+    }
+
+    @Override
+    public PageResult<UserInfoResDTO> page(UserPageReqDTO reqDTO) {
+        PageUtil.startPage(reqDTO.getPageNum(), reqDTO.getPageSize());
+        List<UserInfoResDTO> list = userMapper.queryUsers(reqDTO);
+        return PageUtil.buildPageResult(list);
     }
 }

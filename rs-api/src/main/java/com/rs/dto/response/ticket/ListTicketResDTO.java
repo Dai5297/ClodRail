@@ -9,6 +9,8 @@ public class ListTicketResDTO {
 
     private Long id;
 
+    private String trainNumber;
+
     private String startStation;
 
     private String endStation;

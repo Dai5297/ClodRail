@@ -33,4 +33,11 @@ public interface UserMapper {
      * @return 用户名
      */
     String queryUsername(Long id);
+
+    /**
+     * 分页查询用户
+     * @param reqDTO 查询参数
+     * @return 用户列表
+     */
+    java.util.List<UserInfoResDTO> queryUsers(com.rs.model.dto.request.user.UserPageReqDTO reqDTO);
 }

@@ -164,6 +164,52 @@ public class MallOrderServiceImpl implements MallOrderService {
         return PageUtil.buildPageResultFromSource((Page<?>) orders, records);
     }
 
+    @Override
+    public PageResult<MallOrderResDTO> adminPage(String orderNumber, Long userId, Integer status, Integer pageNum, Integer pageSize) {
+        PageUtil.startPage(pageNum, pageSize);
+        List<MallOrder> orders = mallOrderMapper.adminPage(orderNumber, userId, status);
+        List<MallOrderResDTO> records = orders.stream().map(order -> {
+            MallOrderResDTO dto = new MallOrderResDTO();
+            dto.setOrderNumber(order.getOrderNumber());
+            dto.setItemId(order.getItemId());
+            dto.setItemName(order.getItemName());
+            dto.setItemImage(order.getItemImage());
+            dto.setQuantity(order.getQuantity());
+            dto.setUnitPrice(order.getUnitPrice());
+            dto.setTotalPoints(order.getTotalPoints());
+            dto.setRecipientName(order.getRecipientName());
+            dto.setRecipientPhone(order.getRecipientPhone());
+            dto.setRecipientAddress(order.getRecipientAddress());
+            dto.setStatus(order.getStatus());
+            dto.setStatusText(getStatusText(order.getStatus()));
+            dto.setShipTime(order.getShipTime());
+            dto.setCompleteTime(order.getCompleteTime());
+            dto.setCreateTime(order.getCreateTime());
+            return dto;
+        }).collect(Collectors.toList());
+        return PageUtil.buildPageResultFromSource((Page<?>) orders, records);
+    }
+
+    @Override
+    public void adminShip(String orderNumber) {
+        MallOrder order = mallOrderMapper.findByOrderNumber(orderNumber);
+        if (order == null) {
+            throw new CommonException(RespCode.DATA_NOT_EXIST, "订单不存在");
+        }
+        Integer currentStatus = order.getStatus();
+        if (currentStatus == null) {
+            throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "订单状态异常");
+        }
+        if (currentStatus != 0) {
+            throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "当前状态不允许发货");
+        }
+
+        int updated = mallOrderMapper.updateShip(orderNumber, 0, 1);
+        if (updated <= 0) {
+            throw new CommonException(RespCode.DATA_NOT_CONSISTENT, "发货失败，订单状态已变更");
+        }
+    }
+
     /**
      * 获取订单状态文本
      */

@@ -57,4 +57,50 @@ public class ItemServiceImpl implements ItemService {
         pageQueryDTO.setIsAsc1(isAsc);
         return elasticSearchTemplate.opsForDoc().searchForPage("item", keyword, pageQueryDTO, Item.class);
     }
+
+    @Override
+    public PageResult<Item> adminPage(String name, String category, Integer status, Integer pageNum, Integer pageSize) {
+        PageUtil.startPage(pageNum, pageSize);
+        List<Item> items = itemMapper.adminPage(name, category, status);
+        return PageUtil.buildPageResult(items);
+    }
+
+    @Override
+    public void add(Item item) {
+        if (item.getStatus() == null) {
+            item.setStatus(1);
+        }
+        itemMapper.insert(item);
+        stringRedisTemplate.delete("mall:items:categories");
+        elasticSearchTemplate.opsForDoc().insert("item", item);
+    }
+
+    @Override
+    public void update(Item item) {
+        itemMapper.update(item);
+        stringRedisTemplate.delete("mall:items:categories");
+        Item dbItem = itemMapper.getItemById(item.getId());
+        if (dbItem != null) {
+            elasticSearchTemplate.opsForDoc().updateById("item", dbItem);
+        }
+    }
+
+    @Override
+    public void updateStatus(Long id, Integer status) {
+        itemMapper.updateStatus(id, status);
+        stringRedisTemplate.delete("mall:items:categories");
+        if (status != null && status == 3) {
+            elasticSearchTemplate.opsForDoc().deleteById("item", id);
+        } else {
+            Item dbItem = itemMapper.getItemById(id);
+            if (dbItem != null) {
+                elasticSearchTemplate.opsForDoc().updateById("item", dbItem);
+            }
+        }
+    }
+
+    @Override
+    public void delete(Long id) {
+        updateStatus(id, 3);
+    }
 }

@@ -61,6 +61,11 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
+    public Seat querySeatById(Long seatId) {
+        return seatMapper.querySeatById(seatId);
+    }
+
+    @Override
     public List<SeatTypeInfoResDTO> ListSeatQuery(List<String> orderId) {
         List<SeatTypeInfoResDTO> list = new ArrayList<>();
         for (String s : orderId) {

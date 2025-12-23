@@ -39,6 +39,11 @@ public class InnerSeatController {
         return seatService.querySeat(orderId);
     }
 
+    @GetMapping("/query/byId")
+    Seat querySeatById(@RequestParam("seatId") Long seatId) {
+        return seatService.querySeatById(seatId);
+    }
+
     @PostMapping("/query/seatPosition")
     List<SeatTypeInfoResDTO> ListSeatQuery(@RequestBody List<String> orderIds) {
         return seatService.ListSeatQuery(orderIds);

@@ -1,6 +1,5 @@
 package com.rs.core.operations;
 
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.rs.model.PageResult;
 import com.rs.model.dto.PageQueryDTO;
@@ -27,9 +26,8 @@ import org.elasticsearch.search.sort.SortOrder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-
-import static com.rs.constant.EsConstant.ID;
 
 public class DefaultDocumentOperations implements DocumentOperations {
 
@@ -72,14 +70,21 @@ public class DefaultDocumentOperations implements DocumentOperations {
     @Override
     public <T> Boolean batchUpsert(String index, List<T> documents) {
         BulkRequest bulkRequest = new BulkRequest();
-        documents.forEach(document -> {
-            UpdateRequest request = new UpdateRequest(index, getId(document));
-            request.doc(JSONUtil.toJsonStr(document), XContentType.JSON);
+        for (T doc : documents) {
+            String id = getId(doc);
+            if (id == null) {
+                continue;
+            }
+            IndexRequest request = new IndexRequest(index)
+                    .id(id)
+                    .source(JSONUtil.toJsonStr(doc), XContentType.JSON);
             bulkRequest.add(request);
-        });
+        }
+
         try {
             BulkResponse response = restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
-            return response.status().getStatus() == 200;
+            // 注意：bulk 成功 ≠ 每个 item 成功！
+            return !response.hasFailures();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -264,11 +269,29 @@ public class DefaultDocumentOperations implements DocumentOperations {
      * @param <T>
      * @return
      */
+    private static final String ID_FIELD = "id";
+
     private <T> String getId(T document) {
-        Object objectId = ReflectUtils.getFieldValue(document, ID);
-        if (objectId == null) {
-            objectId = IdUtil.objectId();
+        if (document == null) {
+            throw new IllegalArgumentException("Document cannot be null");
         }
-        return objectId.toString();
+
+        // 情况1: document 是 Map
+        if (document instanceof Map) {
+            Object idValue = ((Map<?, ?>) document).get(ID_FIELD);
+            if (idValue != null) {
+                return idValue.toString();
+            }
+        }
+        // 情况2: document 是 Java Bean（POJO）
+        else {
+            Object idValue = ReflectUtils.getFieldValue(document, ID_FIELD);
+            if (idValue != null) {
+                return idValue.toString();
+            }
+        }
+
+        // 如果都拿不到 id，不能 fallback 到随机 ID！
+        throw new IllegalArgumentException("Document missing required field 'id': " + document);
     }
 }

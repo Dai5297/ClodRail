@@ -4,8 +4,11 @@ import com.rs.properties.RabbitMqProperties;
 import com.rs.util.SnowflakeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.MessagePostProcessor;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -73,5 +76,20 @@ public class RabbitMqConfig {
                 return bean;
             }
         };
+    }
+
+    /**
+     * 创建Canal监听容器工厂
+     *
+     * @param connectionFactory 连接工厂
+     * @return 监听容器工厂
+     */
+    @Bean("canalListenerContainerFactory")
+    public SimpleRabbitListenerContainerFactory canalListenerContainerFactory(
+            ConnectionFactory connectionFactory) {
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setMessageConverter(new SimpleMessageConverter()); // 只处理 String/byte[]
+        return factory;
     }
 }

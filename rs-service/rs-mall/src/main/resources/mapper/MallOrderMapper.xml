@@ -91,6 +91,15 @@
         WHERE order_number = #{orderNumber}
     </update>
 
+    <update id="updateShip">
+        UPDATE mall_order
+        SET status = #{status},
+            ship_time = NOW(),
+            update_time = NOW()
+        WHERE order_number = #{orderNumber}
+          AND status = #{expectStatus}
+    </update>
+
     <!-- 分页查询用户商城订单 -->
     <select id="queryUserOrders" resultMap="MallOrderResultMap">
         SELECT * FROM mall_order
@@ -98,6 +107,22 @@
         <if test="status != null">
             AND status = #{status}
         </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="adminPage" resultMap="MallOrderResultMap">
+        SELECT * FROM mall_order
+        <where>
+            <if test="orderNumber != null and orderNumber != ''">
+                AND order_number = #{orderNumber}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
         ORDER BY create_time DESC
     </select>
 

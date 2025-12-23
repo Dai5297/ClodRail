@@ -1,6 +1,8 @@
 package com.rs.service;
 
+import com.rs.model.PageResult;
 import com.rs.model.dto.request.user.UserInfoUpdateReqDTO;
+import com.rs.model.dto.request.user.UserPageReqDTO;
 import com.rs.model.dto.response.user.UserInfoResDTO;
 
 import java.util.List;
@@ -27,4 +29,11 @@ public interface UserService {
      * @return 用户名称列表
      */
     Map<Long, String> usernameList(List<Long> userIds);
+
+    /**
+     * 分页查询用户
+     * @param reqDTO 查询参数
+     * @return 分页结果
+     */
+    PageResult<UserInfoResDTO> page(UserPageReqDTO reqDTO);
 }

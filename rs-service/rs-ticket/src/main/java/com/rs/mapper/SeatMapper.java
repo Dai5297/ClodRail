@@ -7,6 +7,7 @@ import com.rs.model.domain.SeatInfo;
 import com.rs.model.dto.response.AvailableSeatResDTO;
 import com.rs.model.ticket.Seat;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -46,6 +47,8 @@ public interface SeatMapper {
      * 获取座位位置
      */
     Seat querySeatPosition(String orderId);
+
+    Seat querySeatById(@Param("seatId") Long seatId);
 
     List<SeatInfoResDTO> querySeatTypeInfo(String orderId);
 }
