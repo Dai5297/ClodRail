@@ -30,3 +30,15 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Secrets / local dev configs (do not commit) ###
+.env
+.env.*
+**/bootstrap-dev.yaml
+**/bootstrap-dev.yml
+**/bootstrap-local.yaml
+**/bootstrap-local.yml
+**/application-dev.yaml
+**/application-dev.yml
+**/application-local.yaml
+**/application-local.yml
