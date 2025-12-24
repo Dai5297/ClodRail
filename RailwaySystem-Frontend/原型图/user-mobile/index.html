@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>铁路购票 - 首页</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部轮播图 -->
+        <div class="banner-swiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="banner-placeholder banner-1">高铁站台</div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="banner-placeholder banner-2">铁路风光</div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="banner-placeholder banner-3">舒适车厢</div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+
+        <!-- 车票查询卡片 -->
+        <div class="search-card card">
+            <div class="search-header">
+                <h2 class="search-title">车票查询</h2>
+                <div class="trip-type">
+                    <div class="trip-option active" data-type="single">
+                        <span>单程</span>
+                    </div>
+                    <div class="trip-option" data-type="round">
+                        <span>往返</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-form">
+                <!-- 出发地和目的地 -->
+                <div class="station-row">
+                    <div class="station-item" data-type="from">
+                        <div class="station-label">出发地</div>
+                        <div class="station-name">北京</div>
+                        <div class="station-code">BJP</div>
+                    </div>
+                    
+                    <div class="exchange-btn">
+                        <div class="exchange-icon">⇄</div>
+                    </div>
+                    
+                    <div class="station-item" data-type="to">
+                        <div class="station-label">目的地</div>
+                        <div class="station-name">上海</div>
+                        <div class="station-code">SHH</div>
+                    </div>
+                </div>
+
+                <!-- 出发日期 -->
+                <div class="date-row">
+                    <div class="date-item" data-type="depart">
+                        <div class="date-label">出发日期</div>
+                        <div class="date-value">今天</div>
+                        <div class="date-week">周一</div>
+                    </div>
+                    
+                    <div class="date-item disabled" data-type="return">
+                        <div class="date-label">返程日期</div>
+                        <div class="date-value">请选择</div>
+                        <div class="date-week"></div>
+                    </div>
+                </div>
+
+                <!-- 搜索按钮 -->
+                <button class="search-btn btn btn-primary btn-block">
+                    <span class="search-icon">🔍</span>
+                    查询车次
+                </button>
+            </div>
+        </div>
+
+        <!-- 快捷功能 -->
+        <div class="quick-actions card">
+            <div class="action-item" data-url="order.html">
+                <div class="action-icon">📋</div>
+                <span class="action-text">我的订单</span>
+            </div>
+            <div class="action-item" data-url="profile.html">
+                <div class="action-icon">👤</div>
+                <span class="action-text">常用乘客</span>
+            </div>
+            <div class="action-item">
+                <div class="action-icon">💰</div>
+                <span class="action-text">退改签</span>
+            </div>
+            <div class="action-item">
+                <div class="action-icon">⏰</div>
+                <span class="action-text">晚点查询</span>
+            </div>
+        </div>
+
+        <!-- 热门线路 -->
+        <div class="hot-routes card">
+            <div class="card-header">
+                <span>热门线路</span>
+                <span class="more-text">更多 ></span>
+            </div>
+            <div class="routes-list">
+                <div class="route-item">
+                    <div class="route-info">
+                        <div class="route-stations">
+                            <span class="from-station">北京</span>
+                            <span class="route-arrow">→</span>
+                            <span class="to-station">上海</span>
+                        </div>
+                        <div class="route-price">¥553起</div>
+                    </div>
+                    <div class="route-desc">4小时28分 | 42个车次</div>
+                </div>
+                <div class="route-item">
+                    <div class="route-info">
+                        <div class="route-stations">
+                            <span class="from-station">广州</span>
+                            <span class="route-arrow">→</span>
+                            <span class="to-station">深圳</span>
+                        </div>
+                        <div class="route-price">¥75起</div>
+                    </div>
+                    <div class="route-desc">1小时20分 | 28个车次</div>
+                </div>
+                <div class="route-item">
+                    <div class="route-info">
+                        <div class="route-stations">
+                            <span class="from-station">杭州</span>
+                            <span class="route-arrow">→</span>
+                            <span class="to-station">南京</span>
+                        </div>
+                        <div class="route-price">¥134起</div>
+                    </div>
+                    <div class="route-desc">2小时15分 | 18个车次</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 服务特色 -->
+        <div class="features card">
+            <div class="card-header">
+                <span>服务特色</span>
+            </div>
+            <div class="features-list">
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-content">
+                        <div class="feature-title">快速预订</div>
+                        <div class="feature-desc">30秒完成购票，支持多种支付方式</div>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-content">
+                        <div class="feature-title">安全支付</div>
+                        <div class="feature-desc">银行级安全保障，资金安全有保证</div>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💬</div>
+                    <div class="feature-content">
+                        <div class="feature-title">贴心服务</div>
+                        <div class="feature-desc">7×24小时客服，随时为您解答疑问</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 城市选择弹窗 -->
+    <div class="city-modal" id="cityModal">
+        <div class="city-content">
+            <div class="city-header">
+                <span class="city-title">选择城市</span>
+                <span class="close-btn">×</span>
+            </div>
+            
+            <div class="city-search">
+                <input class="city-search-input" placeholder="搜索城市" type="text">
+            </div>
+            
+            <div class="city-list">
+                <div class="city-section">
+                    <div class="section-title">热门城市</div>
+                    <div class="hot-cities">
+                        <div class="hot-city-item" data-code="BJP">北京</div>
+                        <div class="hot-city-item" data-code="SHH">上海</div>
+                        <div class="hot-city-item" data-code="GZQ">广州</div>
+                        <div class="hot-city-item" data-code="SZN">深圳</div>
+                        <div class="hot-city-item" data-code="HZH">杭州</div>
+                        <div class="hot-city-item" data-code="NJH">南京</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item active" data-page="index">
+            <div class="nav-icon active">🏠</div>
+            <span class="nav-text">首页</span>
+        </div>
+        <div class="nav-item" data-page="search">
+            <div class="nav-icon">🔍</div>
+            <span class="nav-text">查询</span>
+        </div>
+        <div class="nav-item" data-page="order">
+            <div class="nav-icon">📋</div>
+            <span class="nav-text">订单</span>
+        </div>
+        <div class="nav-item" data-page="profile">
+            <div class="nav-icon">👤</div>
+            <span class="nav-text">我的</span>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/index.js"></script>
+</body>
+</html>

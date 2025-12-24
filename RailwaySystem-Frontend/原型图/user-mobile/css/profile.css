@@ -1,0 +1,739 @@
+/* 个人中心页面样式 */
+
+/* 用户信息头部 */
+.user-header {
+    background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+    color: #fff;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+.user-info {
+    padding: 24px 20px;
+}
+
+/* 已登录状态 */
+.logged-in {
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 16px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.user-name {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.user-phone {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.user-level {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.level-badge {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.points {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+}
+
+.settings-icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.settings-icon:hover {
+    opacity: 1;
+}
+
+/* 未登录状态 */
+.not-logged-in {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.not-logged-in:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin: -8px;
+    padding: 8px;
+}
+
+.login-prompt {
+    display: flex;
+    align-items: center;
+}
+
+.login-icon {
+    width: 48px;
+    height: 48px;
+    margin-right: 16px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 12px;
+}
+
+.login-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.login-subtitle {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.login-arrow {
+    width: 20px;
+    height: 20px;
+    opacity: 0.8;
+}
+
+/* 订单统计 */
+.order-stats {
+    margin-bottom: 12px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 0 20px 20px;
+}
+
+.stat-item {
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.stat-item:hover {
+    background-color: #f9f9f9;
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.stat-icon img {
+    width: 32px;
+    height: 32px;
+}
+
+.stat-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background-color: #f44336;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 16px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* 最近订单 */
+.recent-orders {
+    margin-bottom: 12px;
+}
+
+.order-list {
+    padding: 16px 20px;
+}
+
+.order-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    background-color: #fff;
+    transition: all 0.3s ease;
+}
+
+.order-item:last-child {
+    margin-bottom: 0;
+}
+
+.order-item:hover {
+    border-color: #1976D2;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.1);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.order-number {
+    font-size: 12px;
+    color: #666;
+}
+
+.order-status {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.order-status.paid {
+    background-color: #E8F5E8;
+    color: #4CAF50;
+}
+
+.order-status.pending {
+    background-color: #FFF3E0;
+    color: #FF9800;
+}
+
+.order-status.traveled {
+    background-color: #E3F2FD;
+    color: #1976D2;
+}
+
+.order-status.refunded {
+    background-color: #FFEBEE;
+    color: #f44336;
+}
+
+.order-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.train-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.train-number {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-right: 12px;
+}
+
+.route {
+    font-size: 14px;
+    color: #666;
+}
+
+.order-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.travel-date,
+.seat-info {
+    font-size: 12px;
+    color: #666;
+}
+
+.price {
+    font-size: 16px;
+    font-weight: 600;
+    color: #f44336;
+}
+
+.empty-orders {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.empty-orders .empty-image {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+}
+
+.empty-orders .empty-text {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.book-now-btn {
+    padding: 10px 20px;
+    background-color: #1976D2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.book-now-btn:hover {
+    background-color: #1565C0;
+}
+
+/* 功能菜单 */
+.function-menu {
+    margin-bottom: 20px;
+}
+
+.menu-section {
+    margin-bottom: 24px;
+}
+
+.menu-section:last-child {
+    margin-bottom: 0;
+}
+
+.menu-section .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    padding: 0 20px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 0;
+}
+
+.menu-items {
+    padding: 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.menu-item:last-child {
+    border-bottom: none;
+}
+
+.menu-item:hover {
+    background-color: #f9f9f9;
+}
+
+.menu-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+}
+
+.menu-text {
+    flex: 1;
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+}
+
+.menu-badge {
+    background-color: #f44336;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 16px;
+    text-align: center;
+    margin-right: 8px;
+}
+
+.menu-value {
+    font-size: 14px;
+    color: #666;
+    margin-right: 8px;
+}
+
+.menu-arrow {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+}
+
+/* 退出登录 */
+.logout-section {
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #fff;
+    color: #f44336;
+    border: 1px solid #f44336;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: #f44336;
+    color: #fff;
+}
+
+/* 登录弹窗 */
+.login-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.login-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.login-content {
+    background-color: #fff;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    overflow: hidden;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.login-modal.show .login-content {
+    transform: translateY(0);
+}
+
+.login-form {
+    padding: 20px;
+}
+
+.code-input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.code-input-group .form-input {
+    flex: 1;
+}
+
+.send-code-btn {
+    padding: 12px 16px;
+    background-color: #1976D2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+}
+
+.send-code-btn:hover {
+    background-color: #1565C0;
+}
+
+.send-code-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.form-actions {
+    margin-top: 20px;
+}
+
+.login-submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #1976D2;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-submit-btn:hover {
+    background-color: #1565C0;
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.register-link {
+    font-size: 14px;
+    color: #666;
+}
+
+.register-link a {
+    color: #1976D2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .user-info {
+        padding: 20px 16px;
+    }
+    
+    .user-avatar {
+        width: 50px;
+        height: 50px;
+        margin-right: 12px;
+    }
+    
+    .user-name {
+        font-size: 18px;
+    }
+    
+    .user-phone {
+        font-size: 13px;
+    }
+    
+    .stats-grid {
+        padding: 16px;
+        margin: 0 16px 16px;
+    }
+    
+    .stat-item {
+        padding: 12px 6px;
+    }
+    
+    .stat-icon img {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .stat-label {
+        font-size: 11px;
+    }
+    
+    .order-list {
+        padding: 12px 16px;
+    }
+    
+    .order-item {
+        padding: 12px;
+    }
+    
+    .train-number {
+        font-size: 15px;
+    }
+    
+    .route {
+        font-size: 13px;
+    }
+    
+    .price {
+        font-size: 15px;
+    }
+    
+    .menu-item {
+        padding: 14px 16px;
+    }
+    
+    .menu-text {
+        font-size: 15px;
+    }
+    
+    .logout-section {
+        padding: 16px;
+    }
+    
+    .logout-btn {
+        padding: 12px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 360px) {
+    .user-info {
+        padding: 16px 12px;
+    }
+    
+    .user-avatar {
+        width: 45px;
+        height: 45px;
+        margin-right: 10px;
+    }
+    
+    .user-name {
+        font-size: 16px;
+    }
+    
+    .user-phone {
+        font-size: 12px;
+    }
+    
+    .level-badge {
+        font-size: 11px;
+        padding: 1px 6px;
+    }
+    
+    .points {
+        font-size: 11px;
+    }
+    
+    .stats-grid {
+        padding: 12px;
+        margin: 0 12px 12px;
+    }
+    
+    .stat-item {
+        padding: 10px 4px;
+    }
+    
+    .stat-icon img {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .stat-label {
+        font-size: 10px;
+    }
+    
+    .order-list {
+        padding: 10px 12px;
+    }
+    
+    .order-item {
+        padding: 10px;
+    }
+    
+    .train-number {
+        font-size: 14px;
+        margin-right: 8px;
+    }
+    
+    .route {
+        font-size: 12px;
+    }
+    
+    .price {
+        font-size: 14px;
+    }
+    
+    .menu-item {
+        padding: 12px;
+    }
+    
+    .menu-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+    }
+    
+    .menu-text {
+        font-size: 14px;
+    }
+    
+    .logout-section {
+        padding: 12px;
+    }
+    
+    .logout-btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .login-content {
+        width: 95%;
+    }
+}

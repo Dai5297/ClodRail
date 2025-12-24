@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据统计 - 铁路票务管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20minimalist%20train%20logo%20icon%20blue%20gradient%20circular%20design&image_size=square" alt="Logo" class="logo">
+            <h3>管理系统</h3>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="../index.html" class="menu-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>仪表板</span>
+            </a>
+            <a href="users.html" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>用户管理</span>
+            </a>
+            <a href="trains.html" class="menu-item">
+                <i class="fas fa-train"></i>
+                <span>车次管理</span>
+            </a>
+            <a href="orders.html" class="menu-item">
+                <i class="fas fa-ticket-alt"></i>
+                <span>订单管理</span>
+            </a>
+            <a href="statistics.html" class="menu-item active">
+                <i class="fas fa-chart-bar"></i>
+                <span>数据统计</span>
+            </a>
+            <a href="settings.html" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>系统设置</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 顶部导航栏 -->
+        <div class="top-navbar">
+            <div class="navbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="breadcrumb">
+                    <a href="../index.html"><i class="fas fa-home"></i></a>
+                    <span>/</span>
+                    <span>数据统计</span>
+                </div>
+            </div>
+            <div class="navbar-right">
+                <div class="user-info" onclick="showUserMenu()">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span id="adminName">管理员</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页面内容 -->
+        <div class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">数据统计</h1>
+                <p class="page-description">查看系统运营数据、销售统计和用户分析报表</p>
+            </div>
+
+            <!-- 时间范围选择器 -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="time-range-selector">
+                        <div class="form-group">
+                            <label class="form-label">统计时间范围</label>
+                            <div class="date-range-picker">
+                                <input type="date" class="form-control" id="startDate">
+                                <span class="date-separator">至</span>
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                        </div>
+                        <div class="quick-select">
+                            <button class="btn btn-outline-primary btn-sm" onclick="setDateRange('today')">今天</button>
+                            <button class="btn btn-outline-primary btn-sm" onclick="setDateRange('week')">本周</button>
+                            <button class="btn btn-outline-primary btn-sm" onclick="setDateRange('month')">本月</button>
+                            <button class="btn btn-outline-primary btn-sm" onclick="setDateRange('quarter')">本季度</button>
+                            <button class="btn btn-outline-primary btn-sm" onclick="setDateRange('year')">本年</button>
+                        </div>
+                        <button class="btn btn-primary" onclick="updateStatistics()">
+                            <i class="fas fa-sync-alt"></i> 更新数据
+                        </button>
+                        <button class="btn btn-success" onclick="exportReport()">
+                            <i class="fas fa-download"></i> 导出报表
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 核心指标卡片 -->
+            <div class="stats-overview">
+                <div class="stat-card revenue">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalRevenue">¥0</div>
+                        <div class="stat-label">总收入</div>
+                        <div class="stat-change" id="revenueChange">+0%</div>
+                    </div>
+                </div>
+                <div class="stat-card orders">
+                    <div class="stat-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalOrders">0</div>
+                        <div class="stat-label">订单数量</div>
+                        <div class="stat-change" id="ordersChange">+0%</div>
+                    </div>
+                </div>
+                <div class="stat-card users">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="activeUsers">0</div>
+                        <div class="stat-label">活跃用户</div>
+                        <div class="stat-change" id="usersChange">+0%</div>
+                    </div>
+                </div>
+                <div class="stat-card conversion">
+                    <div class="stat-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="conversionRate">0%</div>
+                        <div class="stat-label">转化率</div>
+                        <div class="stat-change" id="conversionChange">+0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表区域 -->
+            <div class="charts-grid">
+                <!-- 收入趋势图 -->
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-line"></i>
+                            收入趋势
+                        </h3>
+                        <div class="chart-controls">
+                            <select class="form-control form-control-sm" id="revenueChartType" onchange="updateRevenueChart()">
+                                <option value="daily">按日</option>
+                                <option value="weekly">按周</option>
+                                <option value="monthly" selected>按月</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 订单状态分布 -->
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-pie"></i>
+                            订单状态分布
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="orderStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 热门线路 -->
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-bar"></i>
+                            热门线路TOP10
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="popularRoutesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 用户注册趋势 -->
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-user-plus"></i>
+                            用户注册趋势
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="userRegistrationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 详细数据表格 -->
+            <div class="data-tables-grid">
+                <!-- 销售排行榜 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-trophy"></i>
+                            销售排行榜
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="data-table" id="salesRankingTable">
+                                <thead>
+                                    <tr>
+                                        <th>排名</th>
+                                        <th>线路</th>
+                                        <th>销售额</th>
+                                        <th>订单数</th>
+                                        <th>占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesRankingBody">
+                                    <!-- 动态加载 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 用户活跃度 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-area"></i>
+                            用户活跃度分析
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="user-activity-stats">
+                            <div class="activity-item">
+                                <div class="activity-label">日活跃用户</div>
+                                <div class="activity-value" id="dailyActiveUsers">0</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-label">周活跃用户</div>
+                                <div class="activity-value" id="weeklyActiveUsers">0</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-label">月活跃用户</div>
+                                <div class="activity-value" id="monthlyActiveUsers">0</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-label">用户留存率</div>
+                                <div class="activity-value" id="userRetention">0%</div>
+                            </div>
+                        </div>
+                        <div class="table-container" style="margin-top: 20px;">
+                            <table class="data-table" id="userActivityTable">
+                                <thead>
+                                    <tr>
+                                        <th>用户类型</th>
+                                        <th>用户数</th>
+                                        <th>订单数</th>
+                                        <th>平均消费</th>
+                                        <th>活跃度</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userActivityBody">
+                                    <!-- 动态加载 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 运营报表 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-file-alt"></i>
+                        运营报表
+                    </h3>
+                    <div class="card-actions">
+                        <button class="btn btn-outline-primary btn-sm" onclick="generateReport('daily')">
+                            <i class="fas fa-calendar-day"></i> 日报
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="generateReport('weekly')">
+                            <i class="fas fa-calendar-week"></i> 周报
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="generateReport('monthly')">
+                            <i class="fas fa-calendar-alt"></i> 月报
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="reportContent">
+                        <div class="report-summary">
+                            <h4>运营概况</h4>
+                            <div class="summary-grid">
+                                <div class="summary-item">
+                                    <div class="summary-label">总收入</div>
+                                    <div class="summary-value" id="reportRevenue">¥0</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">订单量</div>
+                                    <div class="summary-value" id="reportOrders">0</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">新增用户</div>
+                                    <div class="summary-value" id="reportNewUsers">0</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">客单价</div>
+                                    <div class="summary-value" id="reportAvgOrder">¥0</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="report-details">
+                            <h4>详细分析</h4>
+                            <div id="reportAnalysis">
+                                <p>请选择报表类型生成详细分析报告。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户菜单 -->
+    <div class="modal" id="userMenuModal">
+        <div class="modal-content" style="max-width: 300px;">
+            <div class="modal-header">
+                <h3 class="modal-title">用户菜单</h3>
+                <button class="modal-close" onclick="ModalManager.hide('userMenuModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="user-menu">
+                    <a href="#" class="user-menu-item">
+                        <i class="fas fa-user"></i>
+                        个人资料
+                    </a>
+                    <a href="#" class="user-menu-item">
+                        <i class="fas fa-key"></i>
+                        修改密码
+                    </a>
+                    <a href="#" class="user-menu-item">
+                        <i class="fas fa-cog"></i>
+                        系统设置
+                    </a>
+                    <hr style="margin: 10px 0;">
+                    <a href="#" class="user-menu-item" onclick="adminLogout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        退出登录
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+    <script>
+        // 图表实例
+        let revenueChart, orderStatusChart, popularRoutesChart, userRegistrationChart;
+        
+        // 统计数据
+        let statisticsData = {
+            revenue: [],
+            orders: [],
+            users: [],
+            routes: []
+        };
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initStatisticsPage();
+            setDateRange('month'); // 默认显示本月数据
+            loadStatisticsData();
+        });
+
+        // 初始化统计页面
+        function initStatisticsPage() {
+            // 设置管理员名称
+            const adminUser = AdminUtils.storage.get('admin-user');
+            if (adminUser) {
+                document.getElementById('adminName').textContent = adminUser.name || '管理员';
+            }
+
+            // 初始化图表
+            initCharts();
+        }
+
+        // 初始化图表
+        function initCharts() {
+            // 收入趋势图
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            revenueChart = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: '收入',
+                        data: [],
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '¥' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 订单状态分布图
+            const orderStatusCtx = document.getElementById('orderStatusChart').getContext('2d');
+            orderStatusChart = new Chart(orderStatusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['已完成', '已支付', '已取消', '退票申请'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: [
+                            '#28a745',
+                            '#007bff',
+                            '#dc3545',
+                            '#ffc107'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // 热门线路图
+            const popularRoutesCtx = document.getElementById('popularRoutesChart').getContext('2d');
+            popularRoutesChart = new Chart(popularRoutesCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: '订单数',
+                        data: [],
+                        backgroundColor: '#007bff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // 用户注册趋势图
+            const userRegistrationCtx = document.getElementById('userRegistrationChart').getContext('2d');
+            userRegistrationChart = new Chart(userRegistrationCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: '新增用户',
+                        data: [],
+                        backgroundColor: '#28a745'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // 设置日期范围
+        function setDateRange(range) {
+            const today = new Date();
+            let startDate, endDate;
+
+            switch (range) {
+                case 'today':
+                    startDate = endDate = today;
+                    break;
+                case 'week':
+                    startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+                    endDate = today;
+                    break;
+                case 'month':
+                    startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                    endDate = today;
+                    break;
+                case 'quarter':
+                    const quarter = Math.floor(today.getMonth() / 3);
+                    startDate = new Date(today.getFullYear(), quarter * 3, 1);
+                    endDate = today;
+                    break;
+                case 'year':
+                    startDate = new Date(today.getFullYear(), 0, 1);
+                    endDate = today;
+                    break;
+            }
+
+            document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+        }
+
+        // 加载统计数据
+        function loadStatisticsData() {
+            // 模拟生成统计数据
+            generateMockStatistics();
+            updateAllCharts();
+            updateOverviewStats();
+            updateDataTables();
+        }
+
+        // 生成模拟统计数据
+        function generateMockStatistics() {
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+            // 生成收入数据
+            statisticsData.revenue = [];
+            for (let i = 0; i < days; i++) {
+                const date = new Date(startDate);
+                date.setDate(date.getDate() + i);
+                statisticsData.revenue.push({
+                    date: date.toISOString().split('T')[0],
+                    amount: Math.floor(Math.random() * 50000) + 10000
+                });
+            }
+
+            // 生成订单状态数据
+            statisticsData.orderStatus = {
+                completed: Math.floor(Math.random() * 500) + 200,
+                paid: Math.floor(Math.random() * 200) + 50,
+                cancelled: Math.floor(Math.random() * 100) + 20,
+                refund_pending: Math.floor(Math.random() * 50) + 10
+            };
+
+            // 生成热门线路数据
+            const routes = [
+                '北京-上海', '广州-深圳', '杭州-南京', '成都-重庆', '西安-郑州',
+                '武汉-长沙', '天津-济南', '沈阳-大连', '福州-厦门', '昆明-贵阳'
+            ];
+            statisticsData.routes = routes.map(route => ({
+                name: route,
+                orders: Math.floor(Math.random() * 300) + 50,
+                revenue: Math.floor(Math.random() * 100000) + 20000
+            })).sort((a, b) => b.orders - a.orders);
+
+            // 生成用户注册数据
+            statisticsData.userRegistration = [];
+            for (let i = 0; i < Math.min(days, 30); i++) {
+                const date = new Date(startDate);
+                date.setDate(date.getDate() + i);
+                statisticsData.userRegistration.push({
+                    date: date.toISOString().split('T')[0],
+                    count: Math.floor(Math.random() * 100) + 20
+                });
+            }
+        }
+
+        // 更新所有图表
+        function updateAllCharts() {
+            updateRevenueChart();
+            updateOrderStatusChart();
+            updatePopularRoutesChart();
+            updateUserRegistrationChart();
+        }
+
+        // 更新收入趋势图
+        function updateRevenueChart() {
+            const chartType = document.getElementById('revenueChartType').value;
+            let labels = [];
+            let data = [];
+
+            if (chartType === 'daily') {
+                labels = statisticsData.revenue.map(item => {
+                    const date = new Date(item.date);
+                    return `${date.getMonth() + 1}/${date.getDate()}`;
+                });
+                data = statisticsData.revenue.map(item => item.amount);
+            } else if (chartType === 'weekly') {
+                // 按周聚合数据
+                const weeklyData = {};
+                statisticsData.revenue.forEach(item => {
+                    const date = new Date(item.date);
+                    const weekStart = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+                    const weekKey = weekStart.toISOString().split('T')[0];
+                    if (!weeklyData[weekKey]) {
+                        weeklyData[weekKey] = 0;
+                    }
+                    weeklyData[weekKey] += item.amount;
+                });
+                labels = Object.keys(weeklyData).map(date => {
+                    const d = new Date(date);
+                    return `${d.getMonth() + 1}/${d.getDate()}`;
+                });
+                data = Object.values(weeklyData);
+            } else {
+                // 按月聚合数据
+                const monthlyData = {};
+                statisticsData.revenue.forEach(item => {
+                    const date = new Date(item.date);
+                    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                    if (!monthlyData[monthKey]) {
+                        monthlyData[monthKey] = 0;
+                    }
+                    monthlyData[monthKey] += item.amount;
+                });
+                labels = Object.keys(monthlyData).map(month => {
+                    const [year, m] = month.split('-');
+                    return `${year}年${m}月`;
+                });
+                data = Object.values(monthlyData);
+            }
+
+            revenueChart.data.labels = labels;
+            revenueChart.data.datasets[0].data = data;
+            revenueChart.update();
+        }
+
+        // 更新订单状态分布图
+        function updateOrderStatusChart() {
+            const data = [
+                statisticsData.orderStatus.completed,
+                statisticsData.orderStatus.paid,
+                statisticsData.orderStatus.cancelled,
+                statisticsData.orderStatus.refund_pending
+            ];
+            orderStatusChart.data.datasets[0].data = data;
+            orderStatusChart.update();
+        }
+
+        // 更新热门线路图
+        function updatePopularRoutesChart() {
+            const top10Routes = statisticsData.routes.slice(0, 10);
+            popularRoutesChart.data.labels = top10Routes.map(route => route.name);
+            popularRoutesChart.data.datasets[0].data = top10Routes.map(route => route.orders);
+            popularRoutesChart.update();
+        }
+
+        // 更新用户注册趋势图
+        function updateUserRegistrationChart() {
+            const labels = statisticsData.userRegistration.map(item => {
+                const date = new Date(item.date);
+                return `${date.getMonth() + 1}/${date.getDate()}`;
+            });
+            const data = statisticsData.userRegistration.map(item => item.count);
+            
+            userRegistrationChart.data.labels = labels;
+            userRegistrationChart.data.datasets[0].data = data;
+            userRegistrationChart.update();
+        }
+
+        // 更新概览统计
+        function updateOverviewStats() {
+            const totalRevenue = statisticsData.revenue.reduce((sum, item) => sum + item.amount, 0);
+            const totalOrders = Object.values(statisticsData.orderStatus).reduce((sum, count) => sum + count, 0);
+            const activeUsers = Math.floor(Math.random() * 5000) + 1000;
+            const conversionRate = ((totalOrders / (activeUsers * 2)) * 100).toFixed(1);
+
+            document.getElementById('totalRevenue').textContent = `¥${totalRevenue.toLocaleString()}`;
+            document.getElementById('totalOrders').textContent = totalOrders.toLocaleString();
+            document.getElementById('activeUsers').textContent = activeUsers.toLocaleString();
+            document.getElementById('conversionRate').textContent = `${conversionRate}%`;
+
+            // 模拟变化百分比
+            document.getElementById('revenueChange').textContent = `+${(Math.random() * 20 + 5).toFixed(1)}%`;
+            document.getElementById('ordersChange').textContent = `+${(Math.random() * 15 + 3).toFixed(1)}%`;
+            document.getElementById('usersChange').textContent = `+${(Math.random() * 10 + 2).toFixed(1)}%`;
+            document.getElementById('conversionChange').textContent = `+${(Math.random() * 5 + 1).toFixed(1)}%`;
+        }
+
+        // 更新数据表格
+        function updateDataTables() {
+            updateSalesRanking();
+            updateUserActivity();
+        }
+
+        // 更新销售排行榜
+        function updateSalesRanking() {
+            const tbody = document.getElementById('salesRankingBody');
+            const totalRevenue = statisticsData.routes.reduce((sum, route) => sum + route.revenue, 0);
+            
+            tbody.innerHTML = statisticsData.routes.slice(0, 10).map((route, index) => {
+                const percentage = ((route.revenue / totalRevenue) * 100).toFixed(1);
+                return `
+                    <tr>
+                        <td><span class="rank-badge rank-${index + 1}">${index + 1}</span></td>
+                        <td><strong>${route.name}</strong></td>
+                        <td>¥${route.revenue.toLocaleString()}</td>
+                        <td>${route.orders}</td>
+                        <td>${percentage}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 更新用户活跃度
+        function updateUserActivity() {
+            // 更新活跃度统计
+            document.getElementById('dailyActiveUsers').textContent = (Math.floor(Math.random() * 1000) + 500).toLocaleString();
+            document.getElementById('weeklyActiveUsers').textContent = (Math.floor(Math.random() * 3000) + 1500).toLocaleString();
+            document.getElementById('monthlyActiveUsers').textContent = (Math.floor(Math.random() * 8000) + 4000).toLocaleString();
+            document.getElementById('userRetention').textContent = `${(Math.random() * 20 + 70).toFixed(1)}%`;
+
+            // 更新用户活跃度表格
+            const userTypes = [
+                { type: '新用户', users: 1250, orders: 890, avgSpend: 156, activity: '高' },
+                { type: '活跃用户', users: 3420, orders: 5680, avgSpend: 234, activity: '高' },
+                { type: '普通用户', users: 2180, orders: 1890, avgSpend: 189, activity: '中' },
+                { type: '沉睡用户', users: 890, orders: 120, avgSpend: 98, activity: '低' }
+            ];
+
+            const tbody = document.getElementById('userActivityBody');
+            tbody.innerHTML = userTypes.map(user => `
+                <tr>
+                    <td><strong>${user.type}</strong></td>
+                    <td>${user.users.toLocaleString()}</td>
+                    <td>${user.orders.toLocaleString()}</td>
+                    <td>¥${user.avgSpend}</td>
+                    <td><span class="activity-badge activity-${user.activity.toLowerCase()}">${user.activity}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        // 更新统计数据
+        function updateStatistics() {
+            AdminUtils.showLoading();
+            setTimeout(() => {
+                loadStatisticsData();
+                AdminUtils.hideLoading();
+                AdminUtils.showMessage('统计数据已更新', 'success');
+            }, 1000);
+        }
+
+        // 生成报表
+        function generateReport(type) {
+            const reportTypes = {
+                daily: '日报',
+                weekly: '周报',
+                monthly: '月报'
+            };
+
+            const totalRevenue = statisticsData.revenue.reduce((sum, item) => sum + item.amount, 0);
+            const totalOrders = Object.values(statisticsData.orderStatus).reduce((sum, count) => sum + count, 0);
+            const newUsers = statisticsData.userRegistration.reduce((sum, item) => sum + item.count, 0);
+            const avgOrderValue = totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(2) : 0;
+
+            document.getElementById('reportRevenue').textContent = `¥${totalRevenue.toLocaleString()}`;
+            document.getElementById('reportOrders').textContent = totalOrders.toLocaleString();
+            document.getElementById('reportNewUsers').textContent = newUsers.toLocaleString();
+            document.getElementById('reportAvgOrder').textContent = `¥${avgOrderValue}`;
+
+            const analysisContent = `
+                <h5>${reportTypes[type]}分析报告</h5>
+                <div class="report-analysis-content">
+                    <h6>收入分析</h6>
+                    <p>本期总收入为 ¥${totalRevenue.toLocaleString()}，较上期增长 ${(Math.random() * 20 + 5).toFixed(1)}%。主要增长来源于热门线路的订单增加和客单价提升。</p>
+                    
+                    <h6>订单分析</h6>
+                    <p>本期共处理订单 ${totalOrders.toLocaleString()} 个，订单完成率为 ${((statisticsData.orderStatus.completed / totalOrders) * 100).toFixed(1)}%。退票率控制在 ${((statisticsData.orderStatus.refund_pending / totalOrders) * 100).toFixed(1)}% 以内。</p>
+                    
+                    <h6>用户分析</h6>
+                    <p>新增用户 ${newUsers.toLocaleString()} 人，用户活跃度保持稳定增长。平均客单价为 ¥${avgOrderValue}，用户消费能力持续提升。</p>
+                    
+                    <h6>运营建议</h6>
+                    <ul>
+                        <li>继续优化热门线路的服务质量，提升用户满意度</li>
+                        <li>加强新用户的引导和培养，提高用户留存率</li>
+                        <li>完善退票处理流程，降低退票率</li>
+                        <li>推出更多优惠活动，刺激用户消费</li>
+                    </ul>
+                </div>
+            `;
+
+            document.getElementById('reportAnalysis').innerHTML = analysisContent;
+            AdminUtils.showMessage(`${reportTypes[type]}已生成`, 'success');
+        }
+
+        // 导出报表
+        function exportReport() {
+            const reportData = {
+                overview: {
+                    totalRevenue: statisticsData.revenue.reduce((sum, item) => sum + item.amount, 0),
+                    totalOrders: Object.values(statisticsData.orderStatus).reduce((sum, count) => sum + count, 0),
+                    newUsers: statisticsData.userRegistration.reduce((sum, item) => sum + item.count, 0)
+                },
+                revenue: statisticsData.revenue,
+                routes: statisticsData.routes,
+                orderStatus: statisticsData.orderStatus
+            };
+
+            const csvData = [
+                ['日期', '收入', '订单数'],
+                ...statisticsData.revenue.map(item => [item.date, item.amount, Math.floor(Math.random() * 50) + 10])
+            ];
+
+            AdminUtils.exportToCSV(csvData, `统计报表_${AdminUtils.formatDate(new Date(), 'YYYY-MM-DD')}.csv`);
+        }
+
+        // 显示用户菜单
+        function showUserMenu() {
+            ModalManager.show('userMenuModal');
+        }
+
+        // 添加统计页面样式
+        // 样式已移入 css/admin.css
+    </script>
+</body>
+</html>

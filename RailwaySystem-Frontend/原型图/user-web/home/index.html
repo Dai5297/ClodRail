@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>铁路订票系统 - 首页原型图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        /* 头部导航 */
+        .header {
+            background-color: #1890ff;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-item {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-item:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            padding: 0;
+        }
+        
+        /* 轮播图区域 */
+        .banner-section {
+            height: 400px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+        }
+        
+        .banner-content {
+            text-align: center;
+        }
+        
+        .banner-title {
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .banner-subtitle {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
+        /* 车票搜索区域 */
+        .search-section {
+            background-color: white;
+            padding: 40px 20px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+            margin-top: -50px;
+            margin-left: 20px;
+            margin-right: 20px;
+            border-radius: 8px;
+        }
+        
+        .search-title {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #1890ff;
+        }
+        
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            gap: 20px;
+            align-items: end;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .form-input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #1890ff;
+        }
+        
+        .search-btn {
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .search-btn:hover {
+            background-color: #0056b3;
+        }
+        
+        /* 功能区域 */
+        .features-section {
+            padding: 60px 20px;
+            background-color: #fafafa;
+        }
+        
+        .features-title {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 50px;
+            color: #333;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #1890ff;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .feature-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .feature-desc {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* 热门路线区域 */
+        .routes-section {
+            padding: 60px 20px;
+            background-color: white;
+        }
+        
+        .routes-title {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 50px;
+            color: #333;
+        }
+        
+        .routes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .route-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .route-card:hover {
+            border-color: #1890ff;
+            box-shadow: 0 4px 12px rgba(24,144,255,0.1);
+        }
+        
+        .route-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .route-cities {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .route-price {
+            color: #ff4d4f;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .route-details {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* 底部 */
+        .footer {
+            background-color: #333;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-link {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-link:hover {
+            color: white;
+        }
+        
+        .copyright {
+            color: #999;
+            font-size: 14px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .banner-title {
+                font-size: 32px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部导航区域 -->
+        <header class="header">
+            <div class="logo">🚄 铁路订票系统</div>
+            <nav class="nav-menu">
+                <div class="nav-item">首页</div>
+                <div class="nav-item">车票</div>
+                <div class="nav-item">订单</div>
+                <div class="nav-item">积分商城</div>
+                <div class="nav-item">个人中心</div>
+                <div class="nav-item">AI助手</div>
+            </nav>
+            <div class="user-info">
+                <span>👤 用户名</span>
+                <span>▼</span>
+            </div>
+        </header>
+
+        <!-- 主要内容区域 -->
+        <main class="main-content">
+            <!-- 轮播图/横幅区域 -->
+            <section class="banner-section">
+                <div class="banner-content">
+                    <h1 class="banner-title">智能出行，从这里开始</h1>
+                    <p class="banner-subtitle">便捷购票 · 智能推荐 · 贴心服务</p>
+                </div>
+            </section>
+
+            <!-- 车票搜索区域 -->
+            <section class="search-section">
+                <h2 class="search-title">🎫 车票预订</h2>
+                <form class="search-form">
+                    <div class="form-group">
+                        <label class="form-label">出发地</label>
+                        <input type="text" class="form-input" placeholder="请输入出发城市" value="北京">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">目的地</label>
+                        <input type="text" class="form-input" placeholder="请输入到达城市" value="上海">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">出发日期</label>
+                        <input type="date" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">返程日期</label>
+                        <input type="date" class="form-input" placeholder="可选">
+                    </div>
+                    <button type="button" class="search-btn">🔍 搜索车次</button>
+                </form>
+            </section>
+
+            <!-- 功能特色区域 -->
+            <section class="features-section">
+                <h2 class="features-title">🌟 平台特色</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3 class="feature-title">极速购票</h3>
+                        <p class="feature-desc">智能抢票算法，毫秒级响应，让您快人一步抢到心仪车票</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3 class="feature-title">AI智能推荐</h3>
+                        <p class="feature-desc">基于大数据分析，为您推荐最优出行方案和性价比路线</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💎</div>
+                        <h3 class="feature-title">积分商城</h3>
+                        <p class="feature-desc">购票获积分，积分换好礼，让每次出行都有额外收获</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🛡️</div>
+                        <h3 class="feature-title">安全保障</h3>
+                        <p class="feature-desc">银行级安全加密，多重身份验证，保障您的资金和信息安全</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 热门路线区域 -->
+            <section class="routes-section">
+                <h2 class="routes-title">🔥 热门路线</h2>
+                <div class="routes-grid">
+                    <div class="route-card">
+                        <div class="route-info">
+                            <span class="route-cities">北京 → 上海</span>
+                            <span class="route-price">¥553起</span>
+                        </div>
+                        <div class="route-details">高铁 4小时28分 | 每日100+班次</div>
+                    </div>
+                    <div class="route-card">
+                        <div class="route-info">
+                            <span class="route-cities">广州 → 深圳</span>
+                            <span class="route-price">¥79起</span>
+                        </div>
+                        <div class="route-details">高铁 1小时20分 | 每日200+班次</div>
+                    </div>
+                    <div class="route-card">
+                        <div class="route-info">
+                            <span class="route-cities">成都 → 重庆</span>
+                            <span class="route-price">¥154起</span>
+                        </div>
+                        <div class="route-details">高铁 1小时13分 | 每日80+班次</div>
+                    </div>
+                    <div class="route-card">
+                        <div class="route-info">
+                            <span class="route-cities">杭州 → 南京</span>
+                            <span class="route-price">¥119起</span>
+                        </div>
+                        <div class="route-details">高铁 1小时17分 | 每日60+班次</div>
+                    </div>
+                    <div class="route-card">
+                        <div class="route-info">
+                            <span class="route-cities">西安 → 郑州</span>
+                            <span class="route-price">¥174起</span>
+                        </div>
+                        <div class="route-details">高铁 1小时30分 | 每日40+班次</div>
+                    </div>
+                    <div class="route-card">
+                        <div class="route-info">
+                            <span class="route-cities">武汉 → 长沙</span>
+                            <span class="route-price">¥152起</span>
+                        </div>
+                        <div class="route-details">高铁 1小时20分 | 每日50+班次</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 底部区域 -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#" class="footer-link">关于我们</a>
+                    <a href="#" class="footer-link">联系客服</a>
+                    <a href="#" class="footer-link">帮助中心</a>
+                    <a href="#" class="footer-link">用户协议</a>
+                    <a href="#" class="footer-link">隐私政策</a>
+                </div>
+                <div class="copyright">
+                    © 2024 铁路订票系统. 保留所有权利. | 客服热线: 400-000-0000
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

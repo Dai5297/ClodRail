@@ -1,0 +1,806 @@
+/* 订单页面样式 */
+
+/* 订单状态筛选 */
+.order-tabs {
+    background-color: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.tabs-container {
+    display: flex;
+    padding: 0 20px;
+}
+
+.tab-item {
+    flex: 1;
+    text-align: center;
+    padding: 16px 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-item.active {
+    color: #1976D2;
+    border-bottom-color: #1976D2;
+}
+
+.tab-item:hover {
+    color: #1976D2;
+    background-color: rgba(25, 118, 210, 0.05);
+}
+
+.tab-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: #f44336;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 16px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* 搜索栏 */
+.search-bar {
+    padding: 16px 20px;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.search-input-container {
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    border: 1px solid #ddd;
+    border-radius: 24px;
+    font-size: 14px;
+    background-color: #fff;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #1976D2;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+}
+
+/* 订单列表 */
+.order-list {
+    padding: 16px 20px;
+    min-height: calc(100vh - 200px);
+}
+
+.order-item {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.order-item:last-child {
+    margin-bottom: 0;
+}
+
+.order-item:hover {
+    border-color: #1976D2;
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.1);
+    transform: translateY(-2px);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.order-number {
+    font-size: 13px;
+    color: #666;
+    font-weight: 500;
+}
+
+.order-status {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.order-status.pending {
+    background-color: #FFF3E0;
+    color: #FF9800;
+    border: 1px solid #FFE0B2;
+}
+
+.order-status.paid {
+    background-color: #E8F5E8;
+    color: #4CAF50;
+    border: 1px solid #C8E6C9;
+}
+
+.order-status.traveled {
+    background-color: #E3F2FD;
+    color: #1976D2;
+    border: 1px solid #BBDEFB;
+}
+
+.order-status.refunded {
+    background-color: #FFEBEE;
+    color: #f44336;
+    border: 1px solid #FFCDD2;
+}
+
+.order-content {
+    padding: 16px 20px;
+}
+
+.train-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.train-number {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin-right: 12px;
+    padding: 4px 8px;
+    background-color: #f0f0f0;
+    border-radius: 6px;
+}
+
+.train-type {
+    font-size: 12px;
+    color: #666;
+    background-color: #e3f2fd;
+    color: #1976D2;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.route-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.station {
+    flex: 1;
+    text-align: center;
+}
+
+.station-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.station-time {
+    font-size: 13px;
+    color: #666;
+}
+
+.route-arrow {
+    margin: 0 16px;
+    display: flex;
+    align-items: center;
+    color: #1976D2;
+}
+
+.route-arrow img {
+    width: 24px;
+    height: 24px;
+}
+
+.duration {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    margin-top: 4px;
+}
+
+.passenger-info {
+    background-color: #f9f9f9;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.passenger-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.passenger-item {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 6px 10px;
+    border-radius: 16px;
+    font-size: 13px;
+    border: 1px solid #e0e0e0;
+}
+
+.passenger-name {
+    font-weight: 500;
+    color: #333;
+    margin-right: 6px;
+}
+
+.seat-info {
+    font-size: 12px;
+    color: #666;
+}
+
+.travel-date {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background-color: #fafafa;
+    border-top: 1px solid #f0f0f0;
+}
+
+.price-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.total-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f44336;
+    margin-bottom: 2px;
+}
+
+.price-detail {
+    font-size: 12px;
+    color: #666;
+}
+
+.order-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    color: #666;
+}
+
+.action-btn:hover {
+    border-color: #1976D2;
+    color: #1976D2;
+}
+
+.action-btn.primary {
+    background-color: #1976D2;
+    color: #fff;
+    border-color: #1976D2;
+}
+
+.action-btn.primary:hover {
+    background-color: #1565C0;
+    border-color: #1565C0;
+}
+
+.action-btn.danger {
+    border-color: #f44336;
+    color: #f44336;
+}
+
+.action-btn.danger:hover {
+    background-color: #f44336;
+    color: #fff;
+}
+
+/* 空状态 */
+.empty-orders {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    min-height: 300px;
+}
+
+.empty-image {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 20px;
+    opacity: 0.6;
+}
+
+.empty-text {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.empty-subtext {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.book-now-btn {
+    padding: 12px 24px;
+    background-color: #1976D2;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.book-now-btn:hover {
+    background-color: #1565C0;
+}
+
+/* 加载状态 */
+.loading-orders {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f0f0f0;
+    border-top: 3px solid #1976D2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-size: 14px;
+    color: #666;
+}
+
+/* 订单详情弹窗 */
+.order-detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.order-detail-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.detail-content {
+    background-color: #fff;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.order-detail-modal.show .detail-content {
+    transform: translateY(0);
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.close-btn {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.close-btn:hover {
+    opacity: 1;
+}
+
+.detail-body {
+    padding: 20px;
+}
+
+.detail-section {
+    margin-bottom: 24px;
+}
+
+.detail-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 14px;
+}
+
+.detail-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.detail-value {
+    color: #333;
+    font-weight: 500;
+    text-align: right;
+}
+
+.detail-value.price {
+    color: #f44336;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .tabs-container {
+        padding: 0 16px;
+    }
+    
+    .tab-item {
+        padding: 14px 6px;
+        font-size: 14px;
+    }
+    
+    .search-bar {
+        padding: 12px 16px;
+    }
+    
+    .search-input {
+        padding: 10px 14px 10px 40px;
+        font-size: 13px;
+    }
+    
+    .search-icon {
+        left: 14px;
+        width: 14px;
+        height: 14px;
+    }
+    
+    .order-list {
+        padding: 12px 16px;
+    }
+    
+    .order-item {
+        margin-bottom: 12px;
+    }
+    
+    .order-header {
+        padding: 12px 16px 10px;
+    }
+    
+    .order-number {
+        font-size: 12px;
+    }
+    
+    .order-status {
+        font-size: 12px;
+        padding: 3px 10px;
+    }
+    
+    .order-content {
+        padding: 12px 16px;
+    }
+    
+    .train-number {
+        font-size: 16px;
+        margin-right: 10px;
+    }
+    
+    .station-name {
+        font-size: 15px;
+    }
+    
+    .station-time {
+        font-size: 12px;
+    }
+    
+    .route-arrow {
+        margin: 0 12px;
+    }
+    
+    .route-arrow img {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .passenger-info {
+        padding: 10px 12px;
+    }
+    
+    .passenger-item {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+    
+    .order-footer {
+        padding: 12px 16px;
+    }
+    
+    .total-price {
+        font-size: 16px;
+    }
+    
+    .action-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .empty-orders {
+        padding: 40px 16px;
+    }
+    
+    .empty-image {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .empty-text {
+        font-size: 15px;
+    }
+    
+    .empty-subtext {
+        font-size: 13px;
+    }
+    
+    .book-now-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+    
+    .detail-content {
+        width: 95%;
+    }
+    
+    .detail-header {
+        padding: 16px;
+    }
+    
+    .detail-title {
+        font-size: 16px;
+    }
+    
+    .detail-body {
+        padding: 16px;
+    }
+    
+    .detail-section {
+        margin-bottom: 20px;
+    }
+    
+    .section-title {
+        font-size: 15px;
+    }
+    
+    .detail-item {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 360px) {
+    .tabs-container {
+        padding: 0 12px;
+    }
+    
+    .tab-item {
+        padding: 12px 4px;
+        font-size: 13px;
+    }
+    
+    .search-bar {
+        padding: 10px 12px;
+    }
+    
+    .search-input {
+        padding: 8px 12px 8px 36px;
+        font-size: 12px;
+    }
+    
+    .search-icon {
+        left: 12px;
+        width: 12px;
+        height: 12px;
+    }
+    
+    .order-list {
+        padding: 10px 12px;
+    }
+    
+    .order-item {
+        margin-bottom: 10px;
+    }
+    
+    .order-header {
+        padding: 10px 12px 8px;
+    }
+    
+    .order-number {
+        font-size: 11px;
+    }
+    
+    .order-status {
+        font-size: 11px;
+        padding: 2px 8px;
+    }
+    
+    .order-content {
+        padding: 10px 12px;
+    }
+    
+    .train-number {
+        font-size: 15px;
+        margin-right: 8px;
+    }
+    
+    .train-type {
+        font-size: 11px;
+    }
+    
+    .station-name {
+        font-size: 14px;
+    }
+    
+    .station-time {
+        font-size: 11px;
+    }
+    
+    .route-arrow {
+        margin: 0 10px;
+    }
+    
+    .route-arrow img {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .passenger-info {
+        padding: 8px 10px;
+    }
+    
+    .passenger-item {
+        padding: 3px 6px;
+        font-size: 11px;
+    }
+    
+    .order-footer {
+        padding: 10px 12px;
+    }
+    
+    .total-price {
+        font-size: 15px;
+    }
+    
+    .price-detail {
+        font-size: 11px;
+    }
+    
+    .action-btn {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+    
+    .empty-orders {
+        padding: 30px 12px;
+    }
+    
+    .empty-image {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .empty-text {
+        font-size: 14px;
+    }
+    
+    .empty-subtext {
+        font-size: 12px;
+    }
+    
+    .book-now-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+}

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单管理 - 铁路票务管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20minimalist%20train%20logo%20icon%20blue%20gradient%20circular%20design&image_size=square" alt="Logo" class="logo">
+            <h3>管理系统</h3>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="../index.html" class="menu-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>仪表板</span>
+            </a>
+            <a href="users.html" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>用户管理</span>
+            </a>
+            <a href="trains.html" class="menu-item">
+                <i class="fas fa-train"></i>
+                <span>车次管理</span>
+            </a>
+            <a href="orders.html" class="menu-item active">
+                <i class="fas fa-ticket-alt"></i>
+                <span>订单管理</span>
+            </a>
+            <a href="statistics.html" class="menu-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>数据统计</span>
+            </a>
+            <a href="settings.html" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>系统设置</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 顶部导航栏 -->
+        <div class="top-navbar">
+            <div class="navbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="breadcrumb">
+                    <a href="../index.html"><i class="fas fa-home"></i></a>
+                    <span>/</span>
+                    <span>订单管理</span>
+                </div>
+            </div>
+            <div class="navbar-right">
+                <div class="user-info" onclick="showUserMenu()">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span id="adminName">管理员</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页面内容 -->
+        <div class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">订单管理</h1>
+                <p class="page-description">管理用户订单信息、退改签处理和订单状态</p>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalOrders">0</div>
+                        <div class="stat-label">总订单数</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="completedOrders">0</div>
+                        <div class="stat-label">已完成</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="pendingOrders">0</div>
+                        <div class="stat-label">待处理</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-undo"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="refundOrders">0</div>
+                        <div class="stat-label">退票申请</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作栏 -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="search-bar">
+                        <div class="form-group search-input">
+                            <input type="text" class="form-control" id="orderSearch" placeholder="搜索订单号、用户名、车次号...">
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="statusFilter">
+                                <option value="">全部状态</option>
+                                <option value="paid">已支付</option>
+                                <option value="completed">已完成</option>
+                                <option value="cancelled">已取消</option>
+                                <option value="refund_pending">退票申请</option>
+                                <option value="refunded">已退票</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="date" class="form-control" id="dateFilter" title="按日期筛选">
+                        </div>
+                        <button class="btn btn-primary" onclick="searchOrders()">
+                            <i class="fas fa-search"></i> 搜索
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportOrders()">
+                            <i class="fas fa-download"></i> 导出
+                        </button>
+                        <button class="btn btn-info" onclick="refreshOrders()">
+                            <i class="fas fa-sync-alt"></i> 刷新
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 订单列表 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-list"></i>
+                        订单列表
+                    </h3>
+                    <div class="card-actions">
+                        <span id="orderCount">共 0 个订单</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="data-table" id="ordersTable">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                    </th>
+                                    <th data-sort="orderNumber">订单号</th>
+                                    <th data-sort="username">用户</th>
+                                    <th data-sort="trainNumber">车次</th>
+                                    <th data-sort="route">行程</th>
+                                    <th data-sort="seatType">座位类型</th>
+                                    <th data-sort="passengers">乘客数</th>
+                                    <th data-sort="totalAmount">金额</th>
+                                    <th data-sort="status">状态</th>
+                                    <th data-sort="createTime">下单时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <!-- 动态加载 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 批量操作 -->
+                    <div class="batch-actions" id="batchActions" style="display: none; margin-top: 15px;">
+                        <button class="btn btn-success btn-sm" data-roles="SUPER_ADMIN,OPS" onclick="batchProcessRefund('approve')">
+                            <i class="fas fa-check"></i> 批量同意退票
+                        </button>
+                        <button class="btn btn-danger btn-sm" data-roles="SUPER_ADMIN,OPS" onclick="batchProcessRefund('reject')">
+                            <i class="fas fa-times"></i> 批量拒绝退票
+                        </button>
+                        <button class="btn btn-warning btn-sm" data-roles="SUPER_ADMIN,OPS" onclick="batchCancelOrders()">
+                            <i class="fas fa-ban"></i> 批量取消订单
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订单详情模态框 -->
+    <div class="modal" id="orderDetailModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3 class="modal-title">订单详情</h3>
+                <button class="modal-close" onclick="ModalManager.hide('orderDetailModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="orderDetailContent">
+                    <!-- 动态加载订单详情 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="ModalManager.hide('orderDetailModal')">关闭</button>
+                <button type="button" class="btn btn-primary" id="processOrderBtn" onclick="processOrder()" style="display: none;">处理订单</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 退票处理模态框 -->
+    <div class="modal" id="refundModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 class="modal-title">退票处理</h3>
+                <button class="modal-close" onclick="ModalManager.hide('refundModal')">&times;</button>
+            </div>
+            <form id="refundForm">
+                <div class="modal-body">
+                    <input type="hidden" id="refundOrderId" name="orderId">
+                    
+                    <div class="form-group">
+                        <label class="form-label">订单信息</label>
+                        <div id="refundOrderInfo" class="order-info-box">
+                            <!-- 动态填充 -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="refundAction">处理结果 *</label>
+                        <select class="form-control" id="refundAction" name="action" required>
+                            <option value="">请选择</option>
+                            <option value="approve">同意退票</option>
+                            <option value="reject">拒绝退票</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="refundAmountGroup" style="display: none;">
+                        <label class="form-label" for="refundAmount">退款金额</label>
+                        <div class="input-group">
+                            <span class="input-group-text">¥</span>
+                            <input type="number" class="form-control" id="refundAmount" name="refundAmount" step="0.01" min="0">
+                        </div>
+                        <small class="form-text">可调整退款金额（扣除手续费等）</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="refundReason">处理说明</label>
+                        <textarea class="form-control" id="refundReason" name="reason" rows="4" placeholder="请输入处理说明或拒绝原因..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="ModalManager.hide('refundModal')">取消</button>
+                    <button type="submit" class="btn btn-primary">确认处理</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 用户菜单 -->
+    <div class="modal" id="userMenuModal">
+        <div class="modal-content" style="max-width: 300px;">
+            <div class="modal-header">
+                <h3 class="modal-title">用户菜单</h3>
+                <button class="modal-close" onclick="ModalManager.hide('userMenuModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="user-menu">
+                    <a href="#" class="user-menu-item">
+                        <i class="fas fa-user"></i>
+                        个人资料
+                    </a>
+                    <a href="#" class="user-menu-item">
+                        <i class="fas fa-key"></i>
+                        修改密码
+                    </a>
+                    <a href="#" class="user-menu-item">
+                        <i class="fas fa-cog"></i>
+                        系统设置
+                    </a>
+                    <hr style="margin: 10px 0;">
+                    <a href="#" class="user-menu-item" onclick="adminLogout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        退出登录
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+    <script>
+        // 订单数据表格管理器
+        class OrdersTableManager extends DataTableManager {
+            createTableRow(order) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <input type="checkbox" class="order-checkbox" value="${order.id}" onchange="updateBatchActions()">
+                    </td>
+                    <td><strong>${order.orderNumber}</strong></td>
+                    <td>${order.username}</td>
+                    <td><span class="train-badge">${order.trainNumber}</span></td>
+                    <td>
+                        <div class="route-info">
+                            <span>${order.startStation}</span>
+                            <i class="fas fa-arrow-right"></i>
+                            <span>${order.endStation}</span>
+                        </div>
+                    </td>
+                    <td><span class="seat-type-badge">${order.seatType}</span></td>
+                    <td>${order.passengerCount}人</td>
+                    <td><strong>¥${order.totalAmount}</strong></td>
+                    <td>
+                        <span class="status-badge status-${getStatusClass(order.status)}">
+                            ${getStatusText(order.status)}
+                        </span>
+                    </td>
+                    <td>${AdminUtils.formatDate(order.createTime, 'MM-DD HH:mm')}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="viewOrder(${order.id})" title="查看详情">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${order.status === 'refund_pending' ? 
+                            `<button class="btn btn-sm btn-warning" data-roles="SUPER_ADMIN,OPS" onclick="processRefund(${order.id})" title="处理退票">
+                                <i class="fas fa-undo"></i>
+                            </button>` : ''}
+                        ${order.status === 'paid' ? 
+                            `<button class="btn btn-sm btn-danger" data-roles="SUPER_ADMIN,OPS" onclick="cancelOrder(${order.id})" title="取消订单">
+                                <i class="fas fa-ban"></i>
+                            </button>` : ''}
+                    </td>
+                `;
+                return row;
+            }
+        }
+
+        // 全局变量
+        let ordersTableManager;
+        let allOrders = [];
+        let currentOrder = null;
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initOrdersPage();
+            loadOrders();
+        });
+
+        // 初始化订单页面
+        function initOrdersPage() {
+            // 设置管理员名称
+            const adminUser = AdminUtils.storage.get('admin-user');
+            if (adminUser) {
+                document.getElementById('adminName').textContent = adminUser.name || '管理员';
+            }
+
+            // 初始化数据表格
+            ordersTableManager = new OrdersTableManager('ordersTable', {
+                pageSize: 15,
+                searchable: false
+            });
+            window.ordersTableManager = ordersTableManager;
+
+            // 绑定表单提交事件
+            document.getElementById('refundForm').addEventListener('submit', handleRefundSubmit);
+
+            // 绑定搜索事件
+            document.getElementById('orderSearch').addEventListener('input', 
+                AdminUtils.debounce(searchOrders, 300)
+            );
+            document.getElementById('statusFilter').addEventListener('change', searchOrders);
+            document.getElementById('dateFilter').addEventListener('change', searchOrders);
+            
+            // 绑定退票处理选择事件
+            document.getElementById('refundAction').addEventListener('change', function() {
+                const refundAmountGroup = document.getElementById('refundAmountGroup');
+                if (this.value === 'approve') {
+                    refundAmountGroup.style.display = 'block';
+                } else {
+                    refundAmountGroup.style.display = 'none';
+                }
+            });
+        }
+
+        // 加载订单数据
+        function loadOrders() {
+            // 模拟从API加载订单数据
+            allOrders = MockDataGenerator.generateOrders(100);
+            updateOrdersDisplay();
+            updateOrderStats();
+        }
+
+        // 更新订单显示
+        function updateOrdersDisplay() {
+            ordersTableManager.setData(allOrders);
+            document.getElementById('orderCount').textContent = `共 ${allOrders.length} 个订单`;
+        }
+
+        // 更新订单统计
+        function updateOrderStats() {
+            const stats = {
+                total: allOrders.length,
+                completed: allOrders.filter(o => o.status === 'completed').length,
+                pending: allOrders.filter(o => o.status === 'paid').length,
+                refund: allOrders.filter(o => o.status === 'refund_pending').length
+            };
+            
+            document.getElementById('totalOrders').textContent = stats.total;
+            document.getElementById('completedOrders').textContent = stats.completed;
+            document.getElementById('pendingOrders').textContent = stats.pending;
+            document.getElementById('refundOrders').textContent = stats.refund;
+        }
+
+        // 搜索订单
+        function searchOrders() {
+            const searchTerm = document.getElementById('orderSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            
+            let filteredOrders = MockDataGenerator.generateOrders(100);
+            
+            // 文本搜索
+            if (searchTerm) {
+                filteredOrders = filteredOrders.filter(order => 
+                    order.orderNumber.toLowerCase().includes(searchTerm) ||
+                    order.username.toLowerCase().includes(searchTerm) ||
+                    order.trainNumber.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // 状态筛选
+            if (statusFilter) {
+                filteredOrders = filteredOrders.filter(order => order.status === statusFilter);
+            }
+            
+            // 日期筛选
+            if (dateFilter) {
+                const filterDate = new Date(dateFilter);
+                filteredOrders = filteredOrders.filter(order => {
+                    const orderDate = new Date(order.createTime);
+                    return orderDate.toDateString() === filterDate.toDateString();
+                });
+            }
+            
+            allOrders = filteredOrders;
+            updateOrdersDisplay();
+            updateOrderStats();
+        }
+
+        // 获取状态样式类
+        function getStatusClass(status) {
+            const statusMap = {
+                'paid': 'pending',
+                'completed': 'active',
+                'cancelled': 'inactive',
+                'refund_pending': 'pending',
+                'refunded': 'inactive'
+            };
+            return statusMap[status] || 'inactive';
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            const statusMap = {
+                'paid': '已支付',
+                'completed': '已完成',
+                'cancelled': '已取消',
+                'refund_pending': '退票申请',
+                'refunded': '已退票'
+            };
+            return statusMap[status] || status;
+        }
+
+        // 查看订单详情
+        function viewOrder(orderId) {
+            const order = allOrders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            currentOrder = order;
+            
+            const detailContent = document.getElementById('orderDetailContent');
+            detailContent.innerHTML = `
+                <div class="order-detail">
+                    <div class="detail-section">
+                        <h4>订单信息</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>订单号:</label>
+                                <span><strong>${order.orderNumber}</strong></span>
+                            </div>
+                            <div class="detail-item">
+                                <label>订单状态:</label>
+                                <span class="status-badge status-${getStatusClass(order.status)}">
+                                    ${getStatusText(order.status)}
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <label>下单时间:</label>
+                                <span>${AdminUtils.formatDate(order.createTime)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>支付时间:</label>
+                                <span>${order.payTime ? AdminUtils.formatDate(order.payTime) : '未支付'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4>用户信息</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>用户名:</label>
+                                <span>${order.username}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>联系电话:</label>
+                                <span>${order.contactPhone}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>邮箱:</label>
+                                <span>${order.contactEmail}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4>行程信息</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>车次:</label>
+                                <span class="train-badge">${order.trainNumber}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>出发站:</label>
+                                <span>${order.startStation}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>到达站:</label>
+                                <span>${order.endStation}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>出发时间:</label>
+                                <span>${AdminUtils.formatDate(order.departureTime)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>座位类型:</label>
+                                <span class="seat-type-badge">${order.seatType}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>座位号:</label>
+                                <span>${order.seatNumbers}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4>乘客信息</h4>
+                        <div class="passengers-list">
+                            ${order.passengers.map(passenger => `
+                                <div class="passenger-item">
+                                    <div class="passenger-info">
+                                        <strong>${passenger.name}</strong>
+                                        <span class="passenger-id">${passenger.idNumber}</span>
+                                        <span class="passenger-type">${passenger.type}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4>费用明细</h4>
+                        <div class="cost-breakdown">
+                            <div class="cost-item">
+                                <span>票价:</span>
+                                <span>¥${order.ticketPrice}</span>
+                            </div>
+                            <div class="cost-item">
+                                <span>服务费:</span>
+                                <span>¥${order.serviceFee}</span>
+                            </div>
+                            <div class="cost-item total">
+                                <span>总计:</span>
+                                <span><strong>¥${order.totalAmount}</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 显示处理按钮
+            const processBtn = document.getElementById('processOrderBtn');
+            if (order.status === 'refund_pending') {
+                processBtn.style.display = 'inline-block';
+                processBtn.textContent = '处理退票';
+                processBtn.onclick = () => processRefund(order.id);
+            } else if (order.status === 'paid') {
+                processBtn.style.display = 'inline-block';
+                processBtn.textContent = '取消订单';
+                processBtn.onclick = () => cancelOrder(order.id);
+            } else {
+                processBtn.style.display = 'none';
+            }
+            
+            ModalManager.show('orderDetailModal');
+        }
+
+        // 处理退票
+        function processRefund(orderId) {
+            const order = allOrders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            currentOrder = order;
+            
+            // 填充订单信息
+            document.getElementById('refundOrderId').value = order.id;
+            document.getElementById('refundOrderInfo').innerHTML = `
+                <div class="order-summary">
+                    <div><strong>订单号:</strong> ${order.orderNumber}</div>
+                    <div><strong>车次:</strong> ${order.trainNumber}</div>
+                    <div><strong>行程:</strong> ${order.startStation} → ${order.endStation}</div>
+                    <div><strong>金额:</strong> ¥${order.totalAmount}</div>
+                </div>
+            `;
+            
+            // 设置默认退款金额
+            document.getElementById('refundAmount').value = order.totalAmount;
+            
+            // 重置表单
+            document.getElementById('refundForm').reset();
+            document.getElementById('refundOrderId').value = order.id;
+            document.getElementById('refundAmount').value = order.totalAmount;
+            
+            ModalManager.hide('orderDetailModal');
+            ModalManager.show('refundModal');
+        }
+
+        // 取消订单
+        function cancelOrder(orderId) {
+            AdminUtils.confirm('确定要取消这个订单吗？', () => {
+                const order = allOrders.find(o => o.id === orderId);
+                if (order) {
+                    order.status = 'cancelled';
+                    updateOrdersDisplay();
+                    updateOrderStats();
+                    AdminUtils.showMessage('订单已取消', 'success');
+                }
+            });
+        }
+
+        // 处理退票表单提交
+        function handleRefundSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const refundData = Object.fromEntries(formData.entries());
+            
+            const order = allOrders.find(o => o.id == refundData.orderId);
+            if (!order) return;
+            
+            if (refundData.action === 'approve') {
+                order.status = 'refunded';
+                order.refundAmount = parseFloat(refundData.refundAmount);
+                order.refundReason = refundData.reason;
+                AdminUtils.showMessage('退票申请已同意', 'success');
+            } else {
+                order.status = 'paid'; // 恢复为已支付状态
+                order.refundReason = refundData.reason;
+                AdminUtils.showMessage('退票申请已拒绝', 'info');
+            }
+            
+            updateOrdersDisplay();
+            updateOrderStats();
+            ModalManager.hide('refundModal');
+        }
+
+        // 处理订单（从详情页面）
+        function processOrder() {
+            if (currentOrder && currentOrder.status === 'refund_pending') {
+                processRefund(currentOrder.id);
+            } else if (currentOrder && currentOrder.status === 'paid') {
+                cancelOrder(currentOrder.id);
+            }
+        }
+
+        // 切换全选
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.order-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            updateBatchActions();
+        }
+
+        // 更新批量操作显示
+        function updateBatchActions() {
+            const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
+            const batchActions = document.getElementById('batchActions');
+            
+            if (checkedBoxes.length > 0) {
+                batchActions.style.display = 'block';
+            } else {
+                batchActions.style.display = 'none';
+            }
+        }
+
+        // 批量处理退票
+        function batchProcessRefund(action) {
+            const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
+            const orderIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+            
+            if (orderIds.length === 0) {
+                AdminUtils.showMessage('请选择要处理的订单', 'warning');
+                return;
+            }
+            
+            const actionText = action === 'approve' ? '同意' : '拒绝';
+            AdminUtils.confirm(`确定要${actionText}选中的 ${orderIds.length} 个退票申请吗？`, () => {
+                orderIds.forEach(orderId => {
+                    const order = allOrders.find(o => o.id === orderId);
+                    if (order && order.status === 'refund_pending') {
+                        if (action === 'approve') {
+                            order.status = 'refunded';
+                            order.refundAmount = order.totalAmount;
+                        } else {
+                            order.status = 'paid';
+                        }
+                    }
+                });
+                
+                updateOrdersDisplay();
+                updateOrderStats();
+                document.getElementById('selectAll').checked = false;
+                updateBatchActions();
+                AdminUtils.showMessage(`批量${actionText}退票成功`, 'success');
+            });
+        }
+
+        // 批量取消订单
+        function batchCancelOrders() {
+            const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
+            const orderIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+            
+            if (orderIds.length === 0) {
+                AdminUtils.showMessage('请选择要取消的订单', 'warning');
+                return;
+            }
+            
+            AdminUtils.confirm(`确定要取消选中的 ${orderIds.length} 个订单吗？`, () => {
+                orderIds.forEach(orderId => {
+                    const order = allOrders.find(o => o.id === orderId);
+                    if (order && order.status === 'paid') {
+                        order.status = 'cancelled';
+                    }
+                });
+                
+                updateOrdersDisplay();
+                updateOrderStats();
+                document.getElementById('selectAll').checked = false;
+                updateBatchActions();
+                AdminUtils.showMessage('批量取消订单成功', 'success');
+            });
+        }
+
+        // 导出订单数据
+        function exportOrders() {
+            const exportData = allOrders.map(order => ({
+                '订单号': order.orderNumber,
+                '用户名': order.username,
+                '车次': order.trainNumber,
+                '起点站': order.startStation,
+                '终点站': order.endStation,
+                '座位类型': order.seatType,
+                '乘客数': order.passengerCount,
+                '总金额': `¥${order.totalAmount}`,
+                '状态': getStatusText(order.status),
+                '下单时间': AdminUtils.formatDate(order.createTime)
+            }));
+            
+            AdminUtils.exportToCSV(exportData, `订单数据_${AdminUtils.formatDate(new Date(), 'YYYY-MM-DD')}.csv`);
+        }
+
+        // 刷新订单
+        function refreshOrders() {
+            loadOrders();
+            AdminUtils.showMessage('订单数据已刷新', 'success');
+        }
+
+        // 显示用户菜单
+        function showUserMenu() {
+            ModalManager.show('userMenuModal');
+        }
+
+        // 添加订单相关样式
+        // 样式已移入 css/admin.css
+    </script>
+</body>
+</html>

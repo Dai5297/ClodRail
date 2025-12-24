@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支付订单 - 仿12306铁路系统</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/payment.css">
+    <link rel="stylesheet" href="css/floating-ai.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="images/logo.png" alt="Logo" class="nav-logo">
+                <span class="nav-title">铁路订票系统</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">首页</a>
+                <a href="train-search.html" class="nav-link">车票</a>
+                <a href="points-mall.html" class="nav-link">积分商城</a>
+                <a href="ai-assistant.html" class="nav-link">AI助手</a>
+                <a href="profile.html" class="nav-link">个人中心</a>
+            </div>
+            <div class="nav-user">
+                <div class="user-info">
+                    <span class="user-name" id="userName">张三</span>
+                    <span class="user-points">积分: <span id="userPoints">1200</span></span>
+                </div>
+                <button class="btn btn-outline" id="logoutBtn">退出</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 进度指示器 -->
+            <div class="progress-indicator">
+                <div class="progress-step completed">
+                    <div class="step-number">1</div>
+                    <div class="step-label">选择车次</div>
+                </div>
+                <div class="progress-line completed"></div>
+                <div class="progress-step completed">
+                    <div class="step-number">2</div>
+                    <div class="step-label">选择座位</div>
+                </div>
+                <div class="progress-line completed"></div>
+                <div class="progress-step completed">
+                    <div class="step-number">3</div>
+                    <div class="step-label">确认订单</div>
+                </div>
+                <div class="progress-line completed"></div>
+                <div class="progress-step active">
+                    <div class="step-number">4</div>
+                    <div class="step-label">支付</div>
+                </div>
+            </div>
+
+            <!-- 支付内容布局 -->
+            <div class="payment-layout">
+                <!-- 左侧：订单信息 -->
+                <div class="order-info-section">
+                    <!-- 车次信息 -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <h3>车次信息</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="train-info">
+                                <div class="train-number" id="trainNumber">G1234</div>
+                                <div class="train-route">
+                                    <div class="route-item">
+                                        <div class="station" id="departureStation">北京南</div>
+                                        <div class="time" id="departureTime">08:00</div>
+                                        <div class="date" id="departureDate">1月15日</div>
+                                    </div>
+                                    <div class="route-arrow">→</div>
+                                    <div class="route-item">
+                                        <div class="station" id="arrivalStation">上海虹桥</div>
+                                        <div class="time" id="arrivalTime">13:28</div>
+                                        <div class="date" id="arrivalDate">1月15日</div>
+                                    </div>
+                                </div>
+                                <div class="train-duration" id="trainDuration">5小时28分钟</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 乘客信息 -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <h3>乘客信息</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="passenger-list" id="passengerList">
+                                <!-- 动态生成乘客信息 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 座位信息 -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <h3>座位信息</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="seat-list" id="seatList">
+                                <!-- 动态生成座位信息 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：支付信息 -->
+                <div class="payment-section">
+                    <!-- 费用明细 -->
+                    <div class="payment-card">
+                        <div class="card-header">
+                            <h3>费用明细</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="price-breakdown">
+                                <div class="price-item">
+                                    <span class="label">车票费用：</span>
+                                    <span class="value" id="ticketFee">¥0</span>
+                                </div>
+                                <div class="price-item">
+                                    <span class="label">保险费用：</span>
+                                    <span class="value" id="insuranceFee">¥0</span>
+                                </div>
+                                <div class="price-item">
+                                    <span class="label">服务费：</span>
+                                    <span class="value" id="serviceFee">¥5</span>
+                                </div>
+                                <div class="price-item total">
+                                    <span class="label">应付总额：</span>
+                                    <span class="value" id="totalAmount">¥0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 支付方式 -->
+                    <div class="payment-card">
+                        <div class="card-header">
+                            <h3>选择支付方式</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="payment-methods">
+                                <div class="payment-method" data-method="alipay">
+                                    <div class="method-icon">
+                                        <img src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=Alipay%20logo%20blue%20payment%20icon%20simple%20design&image_size=square" alt="支付宝" class="payment-logo">
+                                    </div>
+                                    <div class="method-info">
+                                        <div class="method-name">支付宝</div>
+                                        <div class="method-desc">推荐使用支付宝快捷支付</div>
+                                    </div>
+                                    <div class="method-radio">
+                                        <input type="radio" name="paymentMethod" value="alipay" id="alipay" checked>
+                                        <label for="alipay"></label>
+                                    </div>
+                                </div>
+
+                                <div class="payment-method" data-method="wechat">
+                                    <div class="method-icon">
+                                        <img src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=WeChat%20Pay%20logo%20green%20payment%20icon%20simple%20design&image_size=square" alt="微信支付" class="payment-logo">
+                                    </div>
+                                    <div class="method-info">
+                                        <div class="method-name">微信支付</div>
+                                        <div class="method-desc">使用微信扫码支付</div>
+                                    </div>
+                                    <div class="method-radio">
+                                        <input type="radio" name="paymentMethod" value="wechat" id="wechat">
+                                        <label for="wechat"></label>
+                                    </div>
+                                </div>
+
+                                <div class="payment-method" data-method="unionpay">
+                                    <div class="method-icon">
+                                        <img src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=UnionPay%20logo%20red%20bank%20card%20payment%20icon%20simple%20design&image_size=square" alt="银联支付" class="payment-logo">
+                                    </div>
+                                    <div class="method-info">
+                                        <div class="method-name">银联支付</div>
+                                        <div class="method-desc">支持各大银行卡支付</div>
+                                    </div>
+                                    <div class="method-radio">
+                                        <input type="radio" name="paymentMethod" value="unionpay" id="unionpay">
+                                        <label for="unionpay"></label>
+                                    </div>
+                                </div>
+
+                                <div class="payment-method" data-method="points">
+                                    <div class="method-icon">
+                                        <img src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=Points%20reward%20star%20golden%20coin%20icon%20simple%20design&image_size=square" alt="积分支付" class="payment-logo">
+                                    </div>
+                                    <div class="method-info">
+                                        <div class="method-name">积分支付</div>
+                                        <div class="method-desc">可用积分：<span id="availablePoints">0</span>分</div>
+                                    </div>
+                                    <div class="method-radio">
+                                        <input type="radio" name="paymentMethod" value="points" id="points">
+                                        <label for="points"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 优惠券 -->
+                    <div class="payment-card">
+                        <div class="card-header">
+                            <h3>优惠券</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="coupon-section">
+                                <div class="coupon-input">
+                                    <input type="text" class="form-control" placeholder="请输入优惠券码" id="couponCode">
+                                    <button class="btn btn-outline" id="applyCouponBtn">使用</button>
+                                </div>
+                                <div class="available-coupons" id="availableCoupons">
+                                    <!-- 动态生成可用优惠券 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 支付按钮 -->
+                    <div class="payment-actions">
+                        <div class="payment-summary">
+                            <div class="summary-text">应付金额</div>
+                            <div class="summary-amount" id="finalAmount">¥0</div>
+                        </div>
+                        <button class="btn btn-primary btn-pay" id="payBtn">立即支付</button>
+                    </div>
+
+                    <!-- 支付倒计时 -->
+                    <div class="payment-timer">
+                        <div class="timer-text">订单将在 <span id="countdown">15:00</span> 后自动取消</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 支付确认模态框 -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content payment-modal">
+            <div class="modal-header">
+                <h4>确认支付</h4>
+                <button class="modal-close" id="closePaymentModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="payment-confirm">
+                    <div class="confirm-icon">
+                        <img src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=Payment%20security%20shield%20lock%20icon%20blue%20simple%20design&image_size=square" alt="安全支付" class="security-icon">
+                    </div>
+                    <div class="confirm-text">
+                        <div class="confirm-title">安全支付</div>
+                        <div class="confirm-desc">您即将支付 <span id="confirmAmount">¥0</span></div>
+                        <div class="confirm-method">支付方式：<span id="confirmMethod">支付宝</span></div>
+                    </div>
+                </div>
+                
+                <div class="payment-qr" id="paymentQR" style="display: none;">
+                    <div class="qr-code">
+                        <img src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=QR%20code%20payment%20scan%20black%20white%20square%20pattern&image_size=square" alt="支付二维码" class="qr-image">
+                    </div>
+                    <div class="qr-text">请使用手机扫描二维码完成支付</div>
+                </div>
+                
+                <div class="payment-processing" id="paymentProcessing" style="display: none;">
+                    <div class="processing-spinner"></div>
+                    <div class="processing-text">正在处理支付...</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancelPaymentBtn">取消支付</button>
+                <button type="button" class="btn btn-primary" id="confirmPaymentBtn">确认支付</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 支付成功模态框 -->
+    <div class="modal" id="successModal">
+        <div class="modal-content success-modal">
+            <div class="modal-body">
+                <div class="success-content">
+                    <div class="success-icon">✓</div>
+                    <div class="success-title">支付成功</div>
+                    <div class="success-desc">您的订单已支付成功，请妥善保管车票信息</div>
+                    <div class="order-number">订单号：<span id="successOrderNumber"></span></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="window.location.href='index.html'">返回首页</button>
+                <button type="button" class="btn btn-primary" onclick="window.location.href='personal-center.html'">查看订单</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>关于我们</h4>
+                    <p>仿12306铁路系统致力于为用户提供便捷的火车票预订服务。</p>
+                </div>
+                <div class="footer-section">
+                    <h4>客户服务</h4>
+                    <ul>
+                        <li><a href="#">常见问题</a></li>
+                        <li><a href="#">退改签规则</a></li>
+                        <li><a href="#">联系我们</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>友情链接</h4>
+                    <ul>
+                        <li><a href="#">中国铁路</a></li>
+                        <li><a href="#">铁路客服</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 仿12306铁路系统. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/utils.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/payment.js"></script>
+    <script src="js/floating-ai.js"></script>
+</body>
+</html>
