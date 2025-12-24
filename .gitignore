@@ -1,0 +1,18 @@
+# System
+.DS_Store
+
+# IDE / Tools
+.vscode/
+.codeflicker/
+.qoder/
+.trae/
+
+# Local runtime / DB
+natapp/
+RailwaySystem-DB/
+
+# Logs, caches, etc.
+*.log
+__pycache__/
+node_modules/
+.env
