@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.TrainMapper">
+
+    <select id="getTrainInfo" resultType="com.rs.model.domain.TrainInfo">
+        select id, code, type, name
+        from train
+        where id = #{ticketId}
+    </select>
+
+    <select id="listAll" resultType="com.rs.model.domain.TrainInfo">
+        select id, code, type, name
+        from train
+        order by id asc
+    </select>
+
+    <select id="adminPage" resultType="com.rs.model.ticket.Train">
+        select *
+        from train
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        order by created_time desc
+    </select>
+
+    <insert id="insert" parameterType="com.rs.model.ticket.Train" useGeneratedKeys="true" keyProperty="id">
+        insert into train (name, code, type, status, first_class_carriages_num, first_class_carriages_list_num,
+                           second_class_carriages_num, second_class_carriages_list_num,
+                           created_time, created_by, updated_time, updated_by)
+        values (#{name}, #{code}, #{type}, #{status}, #{firstClassCarriagesNum}, #{firstClassCarriagesListNum},
+                #{secondClassCarriagesNum}, #{secondClassCarriagesListNum},
+                now(), #{createBy}, now(), #{updateBy})
+    </insert>
+
+    <update id="update" parameterType="com.rs.model.ticket.Train">
+        update train
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="code != null">code = #{code},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="firstClassCarriagesNum != null">first_class_carriages_num = #{firstClassCarriagesNum},</if>
+            <if test="firstClassCarriagesListNum != null">first_class_carriages_list_num = #{firstClassCarriagesListNum},</if>
+            <if test="secondClassCarriagesNum != null">second_class_carriages_num = #{secondClassCarriagesNum},</if>
+            <if test="secondClassCarriagesListNum != null">second_class_carriages_list_num = #{secondClassCarriagesListNum},</if>
+            updated_time = now(),
+            updated_by = #{updateBy}
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from train where id = #{id}
+    </delete>
+
+    <select id="countTicketUsage" resultType="java.lang.Integer">
+        select count(1) from ticket where train_id = #{trainId}
+    </select>
+</mapper>

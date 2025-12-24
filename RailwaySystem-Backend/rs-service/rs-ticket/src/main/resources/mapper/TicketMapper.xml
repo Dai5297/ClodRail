@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.TicketMapper">
+
+    <resultMap id="HotTicketResultMap" type="com.rs.model.dto.response.HotTicketResDTO">
+        <id property="id" column="id"/>
+        <result property="routeName" column="route_name"/>
+        <result property="minPrice" column="min_price"/>
+        <result property="avgDuration" column="avg_duration"
+                typeHandler="com.rs.util.DurationTypeUtil"/>
+        <association property="originStation" javaType="com.rs.model.domain.StationInfo">
+            <id property="id" column="origin_id"/>
+            <result property="name" column="origin_name"/>
+            <result property="code" column="origin_code"/>
+        </association>
+        <association property="destinationStation" javaType="com.rs.model.domain.StationInfo">
+            <id property="id" column="destination_id"/>
+            <result property="name" column="destination_name"/>
+            <result property="code" column="destination_code"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="searchResultMap" type="com.rs.model.dto.response.SearchTicketResDTO">
+        <id property="id" column="id"/>
+        <result property="trainId" column="train_id"/>
+        <result property="trainName" column="train_name"/>
+        <result property="trainNumber" column="train_number"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="duration" column="duration"
+                typeHandler="com.rs.util.DurationTypeUtil"/>
+        <association property="originStation" javaType="com.rs.model.domain.StationInfo">
+            <result property="id" column="origin_station_id"/>
+            <result property="name" column="origin_station_name"/>
+            <result property="code" column="origin_station_code"/>
+        </association>
+        <association property="destinationStation" javaType="com.rs.model.domain.StationInfo">
+            <result property="id" column="destination_station_id"/>
+            <result property="name" column="destination_station_name"/>
+            <result property="code" column="destination_station_code"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="TicketDetailResultMap" type="com.rs.model.dto.response.TicketDetailResDTO">
+        <id property="id" column="id"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="duration" column="duration"
+                typeHandler="com.rs.util.DurationTypeUtil"/>
+        <association property="trainInfo" javaType="com.rs.model.domain.TrainInfo">
+            <id property="id" column="train_id"/>
+            <result property="name" column="train_name"/>
+            <result property="code" column="train_code"/>
+            <result property="type" column="train_type"/>
+        </association>
+        <association property="originStation" javaType="com.rs.model.domain.StationInfo">
+            <result property="id" column="origin_station_id"/>
+            <result property="name" column="origin_station_name"/>
+            <result property="code" column="origin_station_code"/>
+        </association>
+        <association property="destinationStation" javaType="com.rs.model.domain.StationInfo">
+            <result property="id" column="destination_station_id"/>
+            <result property="name" column="destination_station_name"/>
+            <result property="code" column="destination_station_code"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="StopoverStationResultMap" type="com.rs.model.domain.StopStationInfo">
+        <id property="id" column="stationId"/>
+        <result property="name" column="stationName"/>
+        <result property="code" column="stationCode"/>
+        <result property="arriveTime" column="arrive_time"/>
+        <result property="departTime" column="depart_time"/>
+        <result property="stopDuration" column="stop_duration"
+                typeHandler="com.rs.util.DurationTypeUtil"/>
+    </resultMap>
+
+    <resultMap id="ListTicketResultMap" type="com.rs.dto.response.ticket.ListTicketResDTO">
+        <id property="id" column="id"/>
+        <result property="trainNumber" column="train_number"/>
+        <result property="startStation" column="start_station"/>
+        <result property="endStation" column="end_station"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+    </resultMap>
+
+
+    <resultMap id="AssistantOrderMsgResultMap" type="com.rs.dto.request.ticket.AssistantOrderMsgDTO">
+        <result property="startStation" column="start_station"/>
+        <result property="endStation" column="end_station"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="trainNumber" column="train_number"/>
+    </resultMap>
+
+    <select id="queryHotTicket" resultMap="HotTicketResultMap">
+        SELECT t.id                                            AS id,
+               -- 出发站字段加 origin_ 前缀
+               ss.id                                           AS origin_id,
+               ss.name                                         AS origin_name,
+               ss.code                                         AS origin_code,
+               -- 到达站字段加 destination_ 前缀
+               se.id                                           AS destination_id,
+               se.name                                         AS destination_name,
+               se.code                                         AS destination_code,
+               -- 其他字段
+               l.name                                          AS route_name,
+               t.second_class_price                            AS min_price,
+               TIMESTAMPDIFF(SECOND, t.start_time, t.end_time) AS avg_duration -- 返回秒数
+        FROM ticket t
+                 LEFT JOIN line l ON t.line_id = l.id
+                 LEFT JOIN station ss ON l.start_station = ss.id
+                 LEFT JOIN station se ON l.end_station = se.id
+        WHERE t.is_hot = 1;
+    </select>
+
+    <select id="queryHotTicketIdsByDate" resultType="java.lang.Long">
+        select t.id
+        from ticket t
+        where t.is_hot = 1
+          and date(t.start_time) = #{departureDate}
+    </select>
+
+    <select id="queryHotTicketsStartingBetween" resultType="com.rs.model.ticket.Ticket">
+        select *
+        from ticket t
+        where t.is_hot = 1
+          and t.start_time &gt;= #{start}
+          and t.start_time &lt; #{end}
+    </select>
+
+    <select id="searchTicket" resultMap="searchResultMap">
+        select t.id                                        as id,
+               tr.id                                       as train_id,
+               tr.name                                     as train_name,
+               tr.code                                     as train_number,
+               ss.id                                       as origin_station_id,
+               ss.name                                     as origin_station_name,
+               ss.code                                     as origin_station_code,
+               se.id                                       as destination_station_id,
+               se.name                                     as destination_station_name,
+               se.code                                     as destination_station_code,
+               t.start_time                                as start_time,
+               t.end_time                                  as end_time,
+               timestampdiff(SECOND, end_time, start_time) as duration
+        from ticket t
+                 left join train tr on t.train_id = tr.id
+                 left join line l on t.line_id = l.id
+                 left join station ss on ss.id = l.start_station
+                 left join station se on se.id = l.end_station
+        where ss.id = #{originStationId}
+          and se.id = #{destinationStationId}
+          and date(start_time) = #{departureDate}
+    </select>
+
+    <select id="queryTicketDetail" resultMap="TicketDetailResultMap">
+        select tr.id                                           as train_id,
+               tr.code                                         as train_code,
+               tr.type                                         as train_type,
+               tr.name                                         as train_name,
+               ss.id                                           as origin_station_id,
+               ss.name                                         as origin_station_name,
+               ss.code                                         as origin_station_code,
+               se.id                                           as destination_station_id,
+               se.name                                         as destination_station_name,
+               se.code                                         as destination_station_code,
+               t.start_time                                    as start_time,
+               t.end_time                                      as end_time,
+               timestampdiff(SECOND, t.end_time, t.start_time) as duration
+        from ticket t
+                 left join train tr on t.train_id = tr.id
+                 left join line l on t.line_id = l.id
+                 left join station ss on l.start_station = ss.id
+                 left join station se on l.end_station = se.id
+        where t.id = #{id};
+    </select>
+
+    <select id="queryStopoverStations" resultMap="StopoverStationResultMap">
+        select s.id             as stationId,
+               s.name           as stationName,
+               s.code           as stationCode,
+               st.arrived_time  as arrivedTime,
+               st.departTime    as departTime,
+               st.stop_duration as stopDuration
+        from ticket t
+                 left join stop_stations st on t.id = st.ticket_id
+                 left join station s on st.station_id = s.id
+        where t.id = #{id}
+    </select>
+
+    <select id="queryTicketPrice" resultType="java.lang.Double">
+        SELECT
+            CASE
+                WHEN #{seatType} = 1 THEN first_class_price
+                WHEN #{seatType} = 2 THEN second_class_price
+                ELSE 0 -- 或者其它适当的默认值
+                END AS selected_price
+        FROM ticket
+        WHERE id = #{ticketId}
+    </select>
+
+    <select id="queryById" resultType="com.rs.model.ticket.Ticket">
+        select *
+        from ticket
+        where id = #{id}
+    </select>
+    
+    <select id="querylist" resultMap="ListTicketResultMap">
+        select t.id,
+               tr.name as train_number,
+               s1.name as start_station,
+               s2.name as end_station,
+               t.start_time,
+               t.end_time
+        from ticket t
+                 left join line l on t.line_id = l.id
+                 left join station s1 on l.start_station = s1.id
+                 left join station s2 on l.end_station = s2.id
+                 left join train tr on t.train_id = tr.id
+        where t.id in
+        <foreach collection="ticketIds" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="queryOrderMsgDetail" resultMap="AssistantOrderMsgResultMap">
+        select s1.name as start_station, s2.name as end_station, t.start_time, t.end_time, tr.name as train_number
+        from ticket t
+                 left join line l on t.line_id = l.id
+                 left join station s1 on l.start_station = s1.id
+                 left join station s2 on l.end_station = s2.id
+                 left join train tr on t.train_id = tr.id
+        where t.id = #{ticketId}
+    </select>
+
+    <insert id="insert" parameterType="com.rs.model.ticket.Ticket" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO ticket (line_id, train_id, start_time, end_time, status, is_hot, first_class_price, second_class_price, created_by, updated_by)
+        VALUES (#{lineId}, #{trainId}, #{startTime}, #{endTime}, #{status}, #{isHot}, #{firstClassPrice}, #{secondClassPrice}, #{createBy}, #{updateBy})
+    </insert>
+
+    <update id="update" parameterType="com.rs.model.ticket.Ticket">
+        UPDATE ticket
+        SET line_id = #{lineId},
+            train_id = #{trainId},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            status = #{status},
+            is_hot = #{isHot},
+            first_class_price = #{firstClassPrice},
+            second_class_price = #{secondClassPrice},
+            updated_by = #{updateBy}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM ticket WHERE id = #{id}
+    </delete>
+
+    <select id="adminQuery" resultMap="searchResultMap">
+        select t.id                                        as id,
+               tr.id                                       as train_id,
+               tr.name                                     as train_name,
+               tr.code                                     as train_number,
+               ss.id                                       as origin_station_id,
+               ss.name                                     as origin_station_name,
+               ss.code                                     as origin_station_code,
+               se.id                                       as destination_station_id,
+               se.name                                     as destination_station_name,
+               se.code                                     as destination_station_code,
+               t.start_time                                as start_time,
+               t.end_time                                  as end_time,
+               timestampdiff(SECOND, end_time, start_time) as duration
+        from ticket t
+                 left join train tr on t.train_id = tr.id
+                 left join line l on t.line_id = l.id
+                 left join station ss on ss.id = l.start_station
+                 left join station se on se.id = l.end_station
+        <where>
+            <if test="trainId != null">
+                and tr.id = #{trainId}
+            </if>
+            <if test="departureDate != null">
+                and date(t.start_time) = #{departureDate}
+            </if>
+        </where>
+        order by t.start_time desc
+    </select>
+
+</mapper>

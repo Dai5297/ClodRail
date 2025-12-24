@@ -1,0 +1,175 @@
+{
+  "groups": [
+    {
+      "name": "rs.rabbitmq",
+      "type": "com.rs.properties.RabbitMQProperties",
+      "sourceType": "com.rs.properties.RabbitMQProperties",
+      "description": "RabbitMQ 共享配置属性"
+    }
+  ],
+  "properties": [
+    {
+      "name": "rs.rabbitmq.host",
+      "type": "java.lang.String",
+      "description": "RabbitMQ 服务器主机地址",
+      "sourceType": "com.rs.properties.RabbitMQProperties",
+      "defaultValue": "localhost"
+    },
+    {
+      "name": "rs.rabbitmq.port",
+      "type": "java.lang.Integer",
+      "description": "RabbitMQ 服务器端口号",
+      "sourceType": "com.rs.properties.RabbitMQProperties",
+      "defaultValue": 5672
+    },
+    {
+      "name": "rs.rabbitmq.username",
+      "type": "java.lang.String",
+      "description": "连接 RabbitMQ 的用户名",
+      "sourceType": "com.rs.properties.RabbitMQProperties"
+    },
+    {
+      "name": "rs.rabbitmq.password",
+      "type": "java.lang.String",
+      "description": "连接 RabbitMQ 的密码",
+      "sourceType": "com.rs.properties.RabbitMQProperties"
+    },
+    {
+      "name": "rs.rabbitmq.virtual-host",
+      "type": "java.lang.String",
+      "description": "RabbitMQ 虚拟主机路径",
+      "sourceType": "com.rs.properties.RabbitMQProperties",
+      "defaultValue": "/test"
+    },
+    {
+      "name": "rs.rabbitmq.connection-timeout",
+      "type": "java.lang.Integer",
+      "description": "RabbitMQ 连接超时时间（毫秒）",
+      "sourceType": "com.rs.properties.RabbitMQProperties",
+      "defaultValue": 1000
+    },
+    {
+      "name": "rs.rabbitmq.template-mandatory",
+      "type": "java.lang.Boolean",
+      "description": "是否启用生产者消息强制路由",
+      "sourceType": "com.rs.properties.RabbitMQProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "rs.rabbitmq.template-retry-enable",
+      "type": "java.lang.Boolean",
+      "description": "是否启用生产者消息发送重试机制",
+      "sourceType": "com.rs.properties.RabbitMQProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "rs.rabbitmq.publisher-confirm-type",
+      "type": "java.lang.String",
+      "description": "生产者消息确认机制类型",
+      "sourceType": "com.rs.properties.RabbitMQProperties",
+      "defaultValue": "correlated"
+    },
+    {
+      "name": "rs.rabbitmq.publisher-returns",
+      "type": "java.lang.Boolean",
+      "description": "是否启用生产者消息路由失败回执机制",
+      "sourceType": "com.rs.properties.RabbitMQProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "rs.rabbitmq.acknowledge-mode",
+      "type": "java.lang.String",
+      "description": "消费者消息确认模式",
+      "sourceType": "com.rs.properties.RabbitMQProperties",
+      "defaultValue": "none"
+    },
+    {
+      "name": "rs.rabbitmq.enable-listener-retry",
+      "type": "java.lang.Boolean",
+      "description": "是否启用消费者消息处理失败重试机制",
+      "sourceType": "com.rs.properties.RabbitMQProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "rs.rabbitmq.prefetch",
+      "type": "java.lang.Integer",
+      "description": "消费者每次从队列中预取的消息数量",
+      "sourceType": "com.rs.properties.RabbitMQProperties",
+      "defaultValue": 1
+    }
+  ],
+  "hints": [
+    {
+      "name": "rs.rabbitmq.publisher-confirm-type",
+      "values": [
+        {
+          "value": "none",
+          "description": "不启用生产者确认机制"
+        },
+        {
+          "value": "simple",
+          "description": "使用简单生产者确认机制"
+        },
+        {
+          "value": "correlated",
+          "description": "使用关联生产者确认机制（推荐生产环境使用）"
+        }
+      ]
+    },
+    {
+      "name": "rs.rabbitmq.acknowledge-mode",
+      "values": [
+        {
+          "value": "none",
+          "description": "不进行消息确认，自动确认（存在消息丢失风险）"
+        },
+        {
+          "value": "manual",
+          "description": "手动确认消息（需要业务代码中显式确认）"
+        },
+        {
+          "value": "auto",
+          "description": "自动确认消息（根据方法执行结果自动确认或拒绝）"
+        }
+      ]
+    },
+    {
+      "name": "rs.rabbitmq.prefetch",
+      "values": [
+        {
+          "value": "1",
+          "description": "每次预取1条消息（公平分发，确保消息均匀分配）"
+        },
+        {
+          "value": "10",
+          "description": "每次预取10条消息（平衡性能和公平性）"
+        },
+        {
+          "value": "50",
+          "description": "每次预取50条消息（提高吞吐量，适合处理速度快的消费者）"
+        },
+        {
+          "value": "100",
+          "description": "每次预取100条消息（高吞吐量模式，可能影响消息公平性）"
+        }
+      ]
+    },
+    {
+      "name": "rs.rabbitmq.virtual-host",
+      "values": [
+        {
+          "value": "/",
+          "description": "默认虚拟主机"
+        },
+        {
+          "value": "/test",
+          "description": "测试环境虚拟主机"
+        },
+        {
+          "value": "/prod",
+          "description": "生产环境虚拟主机"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.AdminMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into admin(username, password, real_name, id_card, icon, role, status, create_by, update_by)
+        values (#{username}, #{password}, #{realName}, #{idCard}, #{icon}, #{role}, #{status}, #{createBy}, #{updateBy})
+    </insert>
+
+    <update id="updateIcon">
+        update admin
+        set icon = #{icon}
+        where id = #{id}
+    </update>
+    <update id="updateInfo">
+        update admin
+        <set>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="icon != null">
+                icon = #{icon},
+            </if>
+            <if test="role != null">
+                role = #{role},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="queryAdminById" resultType="com.rs.model.customer.Admin">
+        select *
+        from admin
+        where id = #{id}
+    </select>
+
+    <select id="queryAdminByUsername" resultType="com.rs.model.customer.Admin">
+        select *
+        from admin
+        where username = #{username}
+    </select>
+
+    <select id="adminPage" resultType="com.rs.model.dto.response.admin.AdminProfileResDTO">
+        select id,
+               username,
+               real_name as realName,
+               id_card as idCard,
+               icon,
+               role,
+               role_name as roleName,
+               status,
+               create_time as createTime
+        from admin
+        <where>
+            <if test="username != null and username != ''">
+                and username like concat('%', #{username}, '%')
+            </if>
+            <if test="realName != null and realName != ''">
+                and real_name like concat('%', #{realName}, '%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <update id="updateStatus">
+        update admin
+        set status = #{status}
+        where id = #{id}
+    </update>
+
+    <update id="updateRole">
+        update admin
+        set role = #{role}
+        where id = #{id}
+    </update>
+
+    <update id="updatePassword">
+        update admin
+        set password = #{password}
+        where id = #{id}
+    </update>
+</mapper>

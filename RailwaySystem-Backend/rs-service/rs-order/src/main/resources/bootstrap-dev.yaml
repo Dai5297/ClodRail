@@ -1,0 +1,63 @@
+rs:
+  mysql:
+    db-name: rs-order
+    host: localhost
+    port: 3306
+    username: root
+    password: 20050918
+
+  redis:
+    host: localhost
+    port: 6379
+    password: 050815
+    timeout: 2000
+    database: 1
+    pool:
+      max-active: 8
+      max-idle: 8
+      min-idle: 0
+      max-wait: -1
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: dai
+    password: 050815
+    virtual-host: /test
+    connection-timeout: 1000
+    template-mandatory: true
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    acknowledge-mode: none
+    enable-listener-retry: false
+
+  alipay:
+    app-id: 9021000157618331
+    merchant-private-key: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCP9Cieffmyn+i1uytooH4x7GBvt3yf/F2ERWRUKe8j0sqKDZeCZad85zmBQq6SHwpw09O7aqbJ2qhz5D/v5PNxsiRT2DmF8G6ckEWbBTNycIJBFuvMovEJKimPbPypiX9PM0QbyuSb7bX+MUSdrrCwLRSF9xEQ0OTjhRnbYj+Zt/R27FrPMw82Qy8c1YhtRqZ6IAUJvXrBrIb5nO55rkSRko817RJGRvfkBfWNeR1aGF8R4X9328Oo26zjLygcU3Qoj6ZzGj4NRAxSNY/KGvYRuOQZJsWSSap8eJn0Wsu28j73lRrR4d/wB0ELTrV5IfhamYOo/0sZals04QHFd2S7AgMBAAECggEABwdk9FgyWQZ11mnNNM6hWs6v5sSO0UEBT/QTcgiaJKWmPhdrznIoO3EO3cDjxT6+w8OUExKiEjkbAI2kkZIcUPDh1TY5mNCklgB1ZZxbZrsXoRX9bYCHRGtKnDY2IBEWpkdajADcKMDyofbF4u0ks3WACwqFSszoYDOfj5a8hETkKu7G16TOOT+yx9T8UkpnZWuTogdBfpzegZVcgg0ZakRCxTMHx/gTvm7sLF6DpMt/MCXxNSgL265AiJRQsYtGMgYTfYKHpCU4qXJWVLRiCD+JGU0IVI0TpEBxqUxQNWqLz9MImER1ksG89pMBWloNyS8gFKg/ACjfNTAb78MQAQKBgQDiM1Z1ocscXz1I8lsxn9z1XT5Ruy/fwK498wL0mIIkJY0Y8lsYO1UDrnMiKOpMIWjypPTkzcQ60xBEC7y7ZUj4R/5M7VTz6PCE/L4uGUhR7k1mcJRXqjBHhtlbrV0nfsXj8FzlsifYngGHznft1UVV5pfZp3P5PHVSe9UBSGZ/UQKBgQCi6wesV/6E6mOoH53Yx8E8pZqTf5ofp4YyHA1UKqTPMVPHbVieSGV/NVw3nAXbMlqf+VBV78Bp0SVP+Z57mzQa0DneWwyOulZYFJYekT7m98ZDWgBg+t3Z5Ke68BzhhWSTzG6S8JoziwmWAz3TXxv7y0sptBP8te1nmRn98FiYSwKBgQC3IuFpM6kCO4meubljoA6BCREfkvHbsmBf/5Pw/FjBczWdcPqXz9GwvVix23Z2VMZnTW6IoJ+zEJcmwGn5PrOpcIBPQAd7wqiYwxgmsol+6/T2b0drAns8Lc1lECNPirAlL8HGpkrkcmjCz0MB553PQnbG3XBj5bMHKQL3muqBQQKBgAduKrpshPow6nynfH5/lcubTfJ+NlxNOqycZOs6yqt8d3K4BPurF532pA8ROZ8mq8VyDHzu41qwJECChPzkNjsm1gzTID5+NyPrRHF+dFz6XfuCZlQF/QpMCG5ZNyf9+nlXMI/ZE19YbwZ9fVtfkhooynPLd8Hl1j8MV4giZxgDAoGAQoTkVyj4RoJGTMKdXfXjrFmUbWDppcxXMPdpLMmoUX8Ac4o1AiZ2EYLrXo6Ga2aZy2fHBCVNQeye/yttxS+IZQCGK1aXfK0ZM1QgjNGB/enqcNMZKcz4n+JAXSffsTR6Q6VsUjbeCf4ZbyAeg9gNGEwCM2YibQyjbW1x2JaOzP0=
+    alipay-public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzBQ5nf5j7ZR88ZBS4J2TwqRAFon3B2WPOkrwM/UMbRpuwbL4y/TM6llcoJ3WFaX3zeBPs8hrOs9d3VLucEoMTFHF0Y+VYaVYw/nBQwMyWBJ5TTc7lmjyuC/IhL/XRYbuWM5kI8/ZUcN7PCPgELzqLlW6gSI4CMdRtKHPpDYIw7igLU7lPaX1uU3NutE6I0Rc0pDep8IL6NmW+odd+lF2rpEQEU+LmrC+QWmnMvF9WE80tjK4ckl2YXcyR34KvyxyQVmM0z3+oWFBpoK90w107X/apPOamZnkWaSZhiynaqCO7cfKc2OCaCS7TlgvS077mrmt2ZS8WFVJycPqjAG+vQIDAQAB
+    notify-url: http://dd584948.natappfree.cc/customer/pay/ticket/alipay/notify
+    return-url: http://localhost:5174/payment/success
+    sign-type: RSA2
+    charset: UTF-8
+    gatewayUrl: https://openapi-sandbox.dl.alipaydev.com/gateway.do
+
+  knife4j:
+    title: 订单服务
+    description: 订单服务接口文档
+    version: 1.0.0
+    contact:
+      name: dai
+      url: https://github.com/Dai5297
+      email: 15160255297@163.com
+
+  openapi:
+    groups:
+      - groupName: 用户端-订单服务
+        matchPath:
+          - com.rs.controller.user
+
+  seata:
+    nacos:
+      serve-addr: localhost:8848
+      namespace: 83a90920-a536-4767-b536-3e99c506b1a0
+      application: seata-server

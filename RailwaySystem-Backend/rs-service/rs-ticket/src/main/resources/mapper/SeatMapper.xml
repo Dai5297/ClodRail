@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.SeatMapper">
+    
+    <resultMap id="fetchSeatResultMap" type="com.rs.dto.response.ticket.FetchSeatResDTO">
+        <id property="id" column="id"/>
+        <result property="seatNo" column="seat_no"/>
+        <result property="fullSeatCode" column="full_seat_code"/>
+    </resultMap>
+    
+    <select id="querySeatTypes" resultType="com.rs.model.domain.SeatInfo">
+        select s.seat_type       as type,
+               case seat_type
+                   when 1 then '一等座'
+                   when 2 then '二等座'
+                   end
+                                 as name,
+               s.price           as price,
+               sum(s.status = 0) as remaining_seats
+        from seat s
+        where s.ticket_id = #{id}
+        group by s.seat_type, s.price
+    </select>
+
+    <select id="queryAvailableSeats" resultType="com.rs.model.dto.response.AvailableSeatResDTO">
+        select s.seat_no as site, sum(s.status = 0) as count
+        from seat s
+        where s.ticket_id = #{ticketId} and s.seat_type = #{seatType}
+        group by s.seat_no
+    </select>
+
+    <select id="fetchSeat" resultMap="fetchSeatResultMap">
+        SELECT id, seat_no, full_seat_code
+        FROM seat
+        WHERE ticket_id = #{ticketId}
+          AND seat_type = #{seatType}
+          AND order_id IS NULL
+          AND status = 0
+        ORDER BY IF(seat_no = #{seatPosition}, 0, 1)
+                ,
+                 id
+        LIMIT 1
+    </select>
+
+    <select id="queryStock" resultType="java.lang.Integer">
+        select count(id)
+        from seat
+        where ticket_id = #{ticketId}
+          and seat_type = #{seatType}
+          and status = 0
+          and order_id is null
+    </select>
+    <select id="querySeatPosition" resultType="com.rs.model.ticket.Seat">
+        select *
+        from seat
+        where order_id = #{orderId}
+        limit 1
+    </select>
+    <select id="querySeatById" resultType="com.rs.model.ticket.Seat">
+        select *
+        from seat
+        where id = #{seatId}
+        limit 1
+    </select>
+    <select id="querySeatTypeInfo" resultType="com.rs.dto.response.ticket.SeatInfoResDTO">
+        select seat_type,
+               full_seat_code
+        from seat
+        where order_id = #{orderId}
+    </select>
+
+
+    <update id="preOccupationSeat">
+        update seat
+        set status   = 1,
+            order_id = #{orderId}
+        where id = #{seatId}
+          and status = 0
+          and order_id is null
+    </update>
+
+    <update id="rollbackOccupySeat">
+        update seat
+        set status   = 0,
+            order_id = null
+        where order_id = #{orderId}
+    </update>
+</mapper>

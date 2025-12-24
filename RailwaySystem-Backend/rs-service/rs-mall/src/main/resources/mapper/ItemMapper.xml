@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.ItemMapper">
+
+    <select id="getItemById" resultType="com.rs.model.mall.Item">
+        select *
+        from item
+        where id = #{id}
+    </select>
+    <select id="pageQuery" resultType="com.rs.model.mall.Item">
+        select *
+        from item
+        <if test="category != null and category != ''">
+            where category = #{category}
+        </if>
+        <if test="sortBy != null and sortBy != ''">
+            order by ${sortBy}
+        </if>
+    </select>
+    <select id="getCategories" resultType="java.lang.String">
+        select distinct category
+        from item
+    </select>
+    <select id="selectAll" resultType="com.rs.model.mall.Item">
+        select *
+        from item
+    </select>
+
+    <update id="deductStock">
+        UPDATE item
+        SET stock = stock - #{quantity},
+            update_time = NOW()
+        WHERE id = #{itemId}
+          AND stock >= #{quantity}
+          AND status = 1
+    </update>
+
+    <update id="increaseSold">
+        UPDATE item
+        SET sold = sold + #{quantity},
+            update_time = NOW()
+        WHERE id = #{itemId}
+    </update>
+
+    <select id="adminPage" resultType="com.rs.model.mall.Item">
+        select *
+        from item
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="category != null and category != ''">
+                and category = #{category}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insert" parameterType="com.rs.model.mall.Item" useGeneratedKeys="true" keyProperty="id">
+        insert into item (name, price, stock, image, category, brand, spec, status)
+        values (#{name}, #{price}, #{stock}, #{image}, #{category}, #{brand}, #{spec}, #{status})
+    </insert>
+
+    <update id="update" parameterType="com.rs.model.mall.Item">
+        update item
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="stock != null">
+                stock = #{stock},
+            </if>
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="category != null">
+                category = #{category},
+            </if>
+            <if test="brand != null">
+                brand = #{brand},
+            </if>
+            <if test="spec != null">
+                spec = #{spec},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        update item
+        set status = #{status},
+            update_time = NOW()
+        where id = #{id}
+    </update>
+</mapper>

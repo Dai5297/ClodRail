@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.FailedTicketOrderMsgMapper">
+    <insert id="saveFailedMsg">
+        insert into `ticket_order_failed_message` (message_id, order_id, passenger_id, seat_id, body, retry_count, fail_reason, status)
+        value (#{messageId}, #{orderId}, #{passengerId}, #{seatId}, #{body}, #{retryCount}, #{failReason}, #{status})
+    </insert>
+</mapper>

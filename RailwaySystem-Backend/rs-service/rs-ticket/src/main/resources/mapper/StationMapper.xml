@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.StationMapper">
+
+    <resultMap id="StationResultMap" type="com.rs.model.dto.response.StationResDTO">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="city" column="city"/>
+        <result property="province" column="province"/>
+        <result property="isHot" column="is_hot"/>
+    </resultMap>
+
+    <select id="getAllStations" resultMap="StationResultMap">
+        select id, name, code, city, province, is_hot
+        from station;
+    </select>
+
+    <select id="getStationInfo" resultType="com.rs.model.domain.StationInfo">
+        select id, name, code
+        from station
+        where id = #{originStationId};
+    </select>
+
+    <select id="getHotStation" resultMap="StationResultMap">
+        select id, name, code, city, province, is_hot
+        from station
+        where is_hot = 1;
+    </select>
+
+    <select id="adminPage" resultType="com.rs.model.ticket.Station">
+        select * from station
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+        </where>
+        order by created_time desc
+    </select>
+
+    <insert id="insert" parameterType="com.rs.model.ticket.Station" useGeneratedKeys="true" keyProperty="id">
+        insert into station (name, code, address, city, province, longitude, latitude, status, is_hot, description, phone, created_time, created_by, updated_time, updated_by)
+        values (#{name}, #{code}, #{address}, #{city}, #{province}, #{longitude}, #{latitude}, #{status}, #{isHot}, #{description}, #{phone}, now(), #{createBy}, now(), #{updateBy})
+    </insert>
+
+    <update id="update" parameterType="com.rs.model.ticket.Station">
+        update station
+        set name = #{name},
+            code = #{code},
+            address = #{address},
+            city = #{city},
+            province = #{province},
+            longitude = #{longitude},
+            latitude = #{latitude},
+            status = #{status},
+            is_hot = #{isHot},
+            description = #{description},
+            phone = #{phone},
+            updated_time = now(),
+            updated_by = #{updateBy}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from station where id = #{id}
+    </delete>
+
+    <select id="countTicketUsage" resultType="java.lang.Integer">
+        select count(1) from (
+        select t.id from ticket t
+        left join line l on t.line_id = l.id
+        where l.start_station = #{stationId} or l.end_station = #{stationId}
+        union all
+        select ticket_id from stop_stations where station_id = #{stationId}
+        ) as usage_count
+    </select>
+</mapper>

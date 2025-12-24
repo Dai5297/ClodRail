@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.LineStationMapper">
+
+    <select id="queryStationsByLine" resultType="com.rs.model.dto.response.StationResDTO">
+        select s.id,
+               s.name,
+               s.code,
+               s.city,
+               s.province,
+               s.is_hot
+        from line_stations ls
+                 join station s on s.id = ls.station_id
+        where ls.line_id = #{lineId}
+        order by ls.sequence asc
+    </select>
+
+    <delete id="deleteByLineId">
+        delete
+        from line_stations
+        where line_id = #{lineId}
+    </delete>
+
+    <insert id="batchInsert">
+        insert into line_stations (line_id, station_id, sequence)
+        values
+        <foreach collection="stationIds" item="stationId" index="idx" separator=",">
+            (#{lineId}, #{stationId}, ${idx}+1)
+        </foreach>
+    </insert>
+</mapper>

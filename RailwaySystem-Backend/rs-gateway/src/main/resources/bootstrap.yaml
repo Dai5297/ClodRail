@@ -1,0 +1,48 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: rs-gateway
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      discovery:
+        namespace: 83a90920-a536-4767-b536-3e99c506b1a0
+      config:
+        namespace: 83a90920-a536-4767-b536-3e99c506b1a0
+        file-extension: yaml
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/customer/user/**, /customer/contact/**, /customer/auth/**, /admin/auth/**, /admin/profile/**, /admin/user/**, /admin/admins/**
+        - id: ticket-service
+          uri: lb://ticket-service
+          predicates:
+            - Path=/customer/tickets/**, /customer/stations/**, /customer/seats/**, /inner/ticket/**, /admin/tickets/**, /admin/stations/**, /admin/lines/**, /admin/trains/**
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/customer/orders/**, /customer/pay/**, /common/orders/**, /admin/orders/**
+        - id: assistant-service
+          uri: lb://assistant-service
+          predicates:
+            - Path=/customer/assistant/**, /admin/memory/**
+        - id: mall-service
+          uri: lb://mall-service
+          predicates:
+            - Path=/customer/points/**, /customer/mall/**, /admin/mall/**
+    openfeign:
+      client:
+        config:
+          user-service:
+            connect-timeout: 5000
+            readTimeout: 15000
+  config:
+    import:
+      - nacos:shared-redis.yaml
+  main:
+    web-application-type: reactive
+server:
+  port: 18080

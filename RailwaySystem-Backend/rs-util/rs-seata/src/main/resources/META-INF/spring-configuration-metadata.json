@@ -1,0 +1,36 @@
+{
+  "groups": [
+    {
+      "name": "rs.seata.nacos",
+      "type": "properties.SeataProperties",
+      "sourceType": "properties.SeataProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "rs.seata.nacos.serve-addr",
+      "type": "java.lang.String",
+      "description": "Nacos 服务器地址，格式为 host:port",
+      "defaultValue": "localhost:8848"
+    },
+    {
+      "name": "rs.seata.nacos.namespace",
+      "type": "java.lang.String",
+      "description": "Nacos 命名空间 ID（UUID 格式）",
+      "defaultValue": ""
+    },
+    {
+      "name": "rs.seata.nacos.application",
+      "type": "java.lang.String",
+      "description": "Seata Server 在 Nacos 中注册的服务名",
+      "defaultValue": "seata-server"
+    },
+    {
+      "name": "rs.seata.nacos.group",
+      "type": "java.lang.String",
+      "description": "Nacos 分组名称",
+      "defaultValue": "DEFAULT_GROUP"
+    }
+  ],
+  "hints": []
+}

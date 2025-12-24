@@ -1,0 +1,42 @@
+rs:
+  mysql:
+    db-name: rs-ticket
+    host: localhost
+    port: 3306
+    username: root
+    password: 20050918
+
+  redis:
+    host: localhost
+    port: 6379
+    password: 050815
+    timeout: 2000
+    database: 1
+    pool:
+      max-active: 8
+      max-idle: 8
+      min-idle: 0
+      max-wait: -1
+  xxl-job:
+    app-name: rs-executor
+    admin-addresses: http://localhost:8080/xxl-job-admin
+    access-token: nEwghQF8a4nDv4ZY
+    ip: host.docker.internal
+    port: 9999
+
+  knife4j:
+    title: 票务服务
+    description: 票务服务接口文档
+    version: 1.0.0
+    contact:
+      name: dai
+      url: https://github.com/Dai5297
+      email: 15160255297@163.com
+  openapi:
+    groups:
+      - groupName: 用户票务服务
+        matchPath:
+          - com.rs.controller.user
+      - groupName: 内部票务服务
+        matchPath:
+          - com.rs.controller.inner

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.MemoryMapper">
+    <insert id="addMemory">
+        insert into memory (session_id, content, type, user_id, agent_id, create_time)
+        values (#{sessionId}, #{content}, #{type}, #{userId}, #{agentId}, now())
+    </insert>
+
+    <update id="updateMemory">
+        update memory
+        <set>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="agentId != null">
+                agent_id = #{agentId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="getMemory" resultType="com.rs.model.assistant.Memory">
+        select *
+        from memory
+        where session_id = #{sessionId}
+    </select>
+
+    <select id="queryByAgentId" resultType="com.rs.model.assistant.Memory">
+        select *
+        from memory
+        where agent_id = #{agentId}
+    </select>
+
+    <select id="getMemoryByAgentAndUserId" resultType="com.rs.model.assistant.Memory">
+        select *
+        from memory
+        where agent_id = #{agentId}
+        and user_id = #{userId}
+    </select>
+</mapper>

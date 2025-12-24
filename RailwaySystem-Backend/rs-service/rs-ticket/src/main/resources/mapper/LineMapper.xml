@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rs.mapper.LineMapper">
+
+    <select id="selectById" resultType="com.rs.model.ticket.Line">
+        select * from line where id = #{id}
+    </select>
+
+    <select id="listAll" resultType="com.rs.model.ticket.Line">
+        select id, name, start_station, end_station
+        from line
+        order by id asc
+    </select>
+
+    <select id="adminPage" resultType="com.rs.model.ticket.Line">
+        select * from line
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+        </where>
+        order by created_time desc
+    </select>
+
+    <insert id="insert" parameterType="com.rs.model.ticket.Line" useGeneratedKeys="true" keyProperty="id">
+        insert into line (name, code, total_length, designed_speed, status, start_station, end_station, created_time, created_by, updated_time, updated_by)
+        values (#{name}, #{code}, #{totalLength}, #{designedSpeed}, #{status}, #{startStation}, #{endStation}, now(), #{createBy}, now(), #{updateBy})
+    </insert>
+
+    <update id="update" parameterType="com.rs.model.ticket.Line">
+        update line
+        set name = #{name},
+            code = #{code},
+            total_length = #{totalLength},
+            designed_speed = #{designedSpeed},
+            status = #{status},
+            start_station = #{startStation},
+            end_station = #{endStation},
+            updated_time = now(),
+            updated_by = #{updateBy}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from line where id = #{id}
+    </delete>
+
+    <select id="countTicketUsage" resultType="java.lang.Integer">
+        select count(1) from ticket where line_id = #{lineId}
+    </select>
+</mapper>

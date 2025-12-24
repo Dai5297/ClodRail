@@ -1,0 +1,36 @@
+{
+  "groups": [
+    {
+      "name": "rs.ai",
+      "type": "com.rs.config.RsAiProperties",
+      "sourceType": "com.rs.config.RsAiProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "rs.ai.ali-api-key",
+      "type": "java.lang.String",
+      "description": "DashScope (Alibaba Cloud) API key for authentication.",
+      "sourceType": "com.rs.config.RsAiProperties"
+    },
+    {
+      "name": "rs.ai.chat-model-name",
+      "type": "java.lang.String",
+      "description": "Model name for DashScope chat completion (e.g., qwen-max).",
+      "sourceType": "com.rs.config.RsAiProperties"
+    },
+    {
+      "name": "rs.ai.stream-model-name",
+      "type": "java.lang.String",
+      "description": "Model name for streaming chat with DashScope.",
+      "sourceType": "com.rs.config.RsAiProperties"
+    },
+    {
+      "name": "rs.ai.embedding-model-name",
+      "type": "java.lang.String",
+      "description": "Model name for DashScope text embedding (e.g., text-embedding-v2).",
+      "sourceType": "com.rs.config.RsAiProperties"
+    }
+  ],
+  "hints": []
+}
