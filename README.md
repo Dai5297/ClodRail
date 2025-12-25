@@ -75,7 +75,43 @@
 
 > 说明：本项目通过 Nacos 引入 `shared-*.yaml` 共享配置；请先在 Nacos 中准备这些配置项。
 
-### 4.2 启动后端
+### 4.2 配置方式（示例配置已提供）
+
+为了避免敏感信息（密码/Key）被提交到仓库：
+
+- 仓库中提供的是 **示例配置**（可提交）：`bootstrap-dev.example.yaml`、`Docs/nacos-config-example/shared-*.yaml`
+- 你本地实际生效的配置应为：`bootstrap-dev.yaml`（已被 `.gitignore` 忽略，不会被提交）
+
+#### 方式 A：按服务复制本地配置（推荐新手）
+
+在每个后端服务目录下执行：
+
+- 将 `src/main/resources/bootstrap-dev.example.yaml` 复制为 `src/main/resources/bootstrap-dev.yaml`
+- 将占位符替换为你的真实值，例如：
+  - `<MYSQL_PASSWORD>`、`<REDIS_PASSWORD>`
+  - `<RABBITMQ_USERNAME>`、`<RABBITMQ_PASSWORD>`
+  - `<ALIPAY_*>`、`<AI_API_KEY>`
+  - `<NACOS_NAMESPACE_ID>`
+
+示例文件位置：
+
+- `RailwaySystem-Backend/rs-gateway/src/main/resources/bootstrap-dev.example.yaml`
+- `RailwaySystem-Backend/rs-service/rs-user/src/main/resources/bootstrap-dev.example.yaml`
+- `RailwaySystem-Backend/rs-service/rs-ticket/src/main/resources/bootstrap-dev.example.yaml`
+- `RailwaySystem-Backend/rs-service/rs-order/src/main/resources/bootstrap-dev.example.yaml`
+- `RailwaySystem-Backend/rs-service/rs-mall/src/main/resources/bootstrap-dev.example.yaml`
+- `RailwaySystem-Backend/rs-service/rs-assistant/src/main/resources/bootstrap-dev.example.yaml`
+
+#### 方式 B：导入 Nacos 共享配置（适合多环境/团队协作）
+
+1. 启动 Nacos：`http://localhost:8848/nacos`（默认 nacos/nacos）
+2. 创建命名空间并记录 namespaceId
+3. 将 `Docs/nacos-config-example/` 下的 `shared-*.yaml` 导入 Nacos
+4. 各服务的 `bootstrap.yaml` 会通过 `spring.config.import` 引用这些共享配置
+
+> 提示：如果你采用方式 B，建议把数据库/Redis/MQ 等连接信息放在 Nacos shared 配置中，本地 `bootstrap-dev.yaml` 只保留必要的“非敏感”差异化配置。
+
+### 4.3 启动后端
 
 在 `RailwaySystem-Backend/` 下编译并按顺序启动：
 
@@ -86,7 +122,7 @@
 - `rs-service/rs-mall`
 - `rs-service/rs-assistant`
 
-### 4.3 启动前端
+### 4.4 启动前端
 
 - 用户端：`RailwaySystem-Frontend/rs-user-web`
 

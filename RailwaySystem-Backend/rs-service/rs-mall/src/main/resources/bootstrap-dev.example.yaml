@@ -1,0 +1,52 @@
+# 本文件为示例配置：复制为 bootstrap-dev.yaml 后替换占位符
+# 注意：bootstrap-dev.yaml 已被 .gitignore 忽略，不应提交到仓库
+
+rs:
+  mysql:
+    db-name: rs-mall
+    host: localhost
+    port: 3306
+    username: root
+    password: <MYSQL_PASSWORD>
+
+  redis:
+    host: localhost
+    port: 6379
+    password: <REDIS_PASSWORD>
+    timeout: 2000
+    database: 1
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: <RABBITMQ_USERNAME>
+    password: <RABBITMQ_PASSWORD>
+    virtual-host: /rs
+
+  es:
+    nodes:
+      - localhost:9200
+
+  knife4j:
+    title: 商城服务
+    description: 商城服务接口文档
+    version: 1.0.0
+    contact:
+      name: <CONTACT_NAME>
+      url: <CONTACT_URL>
+      email: <CONTACT_EMAIL>
+
+  openapi:
+    groups:
+      - groupName: 用户端-商城服务
+        matchPath:
+          - com.rs.controller.user
+      - groupName: 管理端-商城服务
+        matchPath:
+          - com.rs.controller.admin
+      - groupName: 内部-商城服务
+        matchPath:
+          - com.rs.controller.inner
+
+mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml

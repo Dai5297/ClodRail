@@ -1,0 +1,29 @@
+rs:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: <RABBITMQ_USERNAME>
+    password: <RABBITMQ_PASSWORD>
+    virtual-host: /rs
+    connection-timeout: 1000
+    template-mandatory: true
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    acknowledge-mode: none
+    enable-listener-retry: false
+
+spring:
+  rabbitmq:
+    host: ${rs.rabbitmq.host}
+    port: ${rs.rabbitmq.port}
+    username: ${rs.rabbitmq.username}
+    password: ${rs.rabbitmq.password}
+    virtual-host: ${rs.rabbitmq.virtual-host}
+    connection-timeout: ${rs.rabbitmq.connection-timeout}
+    template:
+      mandatory: ${rs.rabbitmq.template-mandatory}
+    publisher-confirm-type: ${rs.rabbitmq.publisher-confirm-type}
+    publisher-returns: ${rs.rabbitmq.publisher-returns}
+    listener:
+      simple:
+        acknowledge-mode: ${rs.rabbitmq.acknowledge-mode}

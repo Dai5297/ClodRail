@@ -1,0 +1,45 @@
+# 本文件为示例配置：复制为 bootstrap-dev.yaml 后替换占位符
+# 注意：bootstrap-dev.yaml 已被 .gitignore 忽略，不应提交到仓库
+
+rs:
+  mysql:
+    db-name: rs-ticket
+    host: localhost
+    port: 3306
+    username: root
+    password: <MYSQL_PASSWORD>
+
+  redis:
+    host: localhost
+    port: 6379
+    password: <REDIS_PASSWORD>
+    timeout: 2000
+    database: 1
+
+  xxl-job:
+    app-name: rs-executor
+    admin-addresses: http://localhost:8080/xxl-job-admin
+    access-token: <XXL_JOB_ACCESS_TOKEN>
+    ip: 127.0.0.1
+    port: 9999
+
+  knife4j:
+    title: 票务服务
+    description: 票务服务接口文档
+    version: 1.0.0
+    contact:
+      name: <CONTACT_NAME>
+      url: <CONTACT_URL>
+      email: <CONTACT_EMAIL>
+
+  openapi:
+    groups:
+      - groupName: 用户端-票务服务
+        matchPath:
+          - com.rs.controller.user
+      - groupName: 内部-票务服务
+        matchPath:
+          - com.rs.controller.inner
+      - groupName: 管理端-票务服务
+        matchPath:
+          - com.rs.controller.admin

@@ -1,0 +1,6 @@
+rs:
+  ai:
+    ali-api-key: <AI_API_KEY>
+    chat-model-name: <AI_CHAT_MODEL_NAME>
+    stream-model-name: <AI_STREAM_MODEL_NAME>
+    embedding-model-name: <AI_EMBEDDING_MODEL_NAME>

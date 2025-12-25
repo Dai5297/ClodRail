@@ -1,0 +1,18 @@
+rs:
+  knife4j:
+    title: API服务
+    description: API服务接口文档
+    version: 1.0.0
+    contact:
+      name: <CONTACT_NAME>
+      url: <CONTACT_URL>
+      email: <CONTACT_EMAIL>
+
+rs:
+  openapi:
+    title: API Documentation
+    description: API 描述
+    version: 1.0.0
+    name: <CONTACT_NAME>
+    email: <CONTACT_EMAIL>
+    url: <CONTACT_URL>

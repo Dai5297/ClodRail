@@ -1,0 +1,61 @@
+# 本文件为示例配置：复制为 bootstrap-dev.yaml 后替换占位符
+# 注意：bootstrap-dev.yaml 已被 .gitignore 忽略，不应提交到仓库
+
+rs:
+  mysql:
+    db-name: rs-order
+    host: localhost
+    port: 3306
+    username: root
+    password: <MYSQL_PASSWORD>
+
+  redis:
+    host: localhost
+    port: 6379
+    password: <REDIS_PASSWORD>
+    timeout: 2000
+    database: 1
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: <RABBITMQ_USERNAME>
+    password: <RABBITMQ_PASSWORD>
+    virtual-host: /rs
+    connection-timeout: 1000
+    template-mandatory: true
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    acknowledge-mode: none
+    enable-listener-retry: false
+
+  alipay:
+    app-id: <ALIPAY_APP_ID>
+    merchant-private-key: <ALIPAY_MERCHANT_PRIVATE_KEY>
+    alipay-public-key: <ALIPAY_ALIPAY_PUBLIC_KEY>
+    notify-url: <ALIPAY_NOTIFY_URL>
+    return-url: <ALIPAY_RETURN_URL>
+    sign-type: RSA2
+    charset: UTF-8
+    gatewayUrl: https://openapi-sandbox.dl.alipaydev.com/gateway.do
+
+  knife4j:
+    title: 订单服务
+    description: 订单服务接口文档
+    version: 1.0.0
+    contact:
+      name: <CONTACT_NAME>
+      url: <CONTACT_URL>
+      email: <CONTACT_EMAIL>
+
+  openapi:
+    groups:
+      - groupName: 用户端-订单服务
+        matchPath:
+          - com.rs.controller.user
+
+  seata:
+    nacos:
+      serve-addr: localhost:8848
+      namespace: <NACOS_NAMESPACE_ID>
+      application: seata-server

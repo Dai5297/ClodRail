@@ -1,0 +1,27 @@
+rs:
+  redis:
+    host: localhost
+    port: 6379
+    password: <REDIS_PASSWORD>
+    timeout: 2000
+    database: 1
+    pool:
+      max-active: 8
+      max-idle: 8
+      min-idle: 0
+      max-wait: -1
+
+spring:
+  data:
+    redis:
+      host: ${rs.redis.host}
+      port: ${rs.redis.port}
+      password: ${rs.redis.password}
+      database: ${rs.redis.database}
+      timeout: ${rs.redis.timeout}ms
+      lettuce:
+        pool:
+          max-active: ${rs.redis.pool.max-active}
+          max-idle: ${rs.redis.pool.max-idle}
+          min-idle: ${rs.redis.pool.min-idle}
+          max-wait: ${rs.redis.pool.max-wait}ms
