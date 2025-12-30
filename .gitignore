@@ -1,24 +1,67 @@
-# System
+# ==================== System ====================
 .DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
 
-# IDE / Tools
+# ==================== IDE / Tools ====================
+.idea/
 .vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
 .codeflicker/
 .qoder/
 .trae/
+.kiro/
 
-# Local runtime / DB
+# ==================== Build ====================
+target/
+build/
+dist/
+out/
+*.class
+*.jar
+*.war
+*.ear
+
+# ==================== Node.js ====================
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn
+package-lock.json
+
+# ==================== Logs ====================
+*.log
+logs/
+
+# ==================== Local runtime / DB ====================
 natapp/
 RailwaySystem-DB/
 
-# Logs, caches, etc.
-*.log
+# ==================== Python ====================
 __pycache__/
-node_modules/
-.env
+*.py[cod]
+.Python
+venv/
+.venv/
 
-# Secrets / local dev configs (do not commit)
+# ==================== Environment & Secrets ====================
+# IMPORTANT: Never commit sensitive configuration files
+.env
 .env.*
+.env.local
+.env.*.local
+
+# Spring Boot local configs (contain passwords/keys)
 **/bootstrap-dev.yaml
 **/bootstrap-dev.yml
 **/bootstrap-local.yaml
@@ -27,3 +70,15 @@ node_modules/
 **/application-dev.yml
 **/application-local.yaml
 **/application-local.yml
+**/application-prod.yaml
+**/application-prod.yml
+
+# ==================== Test ====================
+coverage/
+.nyc_output/
+test-results/
+
+# ==================== Misc ====================
+*.bak
+*.tmp
+*.temp
