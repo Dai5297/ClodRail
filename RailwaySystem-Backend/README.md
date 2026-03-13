@@ -187,8 +187,9 @@ RailwaySystem-Backend/
 cd nacos/bin
 ./startup.sh -m standalone
 
-# 启动 MySQL 并导入数据库脚本
-mysql -u root -p < docs/db/railway_system.sql
+# 创建 Nacos 数据库并导入共享配置
+mysql -u root -p -e "CREATE DATABASE nacos DEFAULT CHARACTER SET utf8mb4;"
+mysql -u root -p nacos < ../docs/99-部署运维/nacos.sql
 
 # 启动 Redis
 redis-server
@@ -203,8 +204,9 @@ rabbitmq-server
 
 导入配置文件：
 
-- 在 Nacos 中创建命名空间 `railway-system`
-- 导入各服务的配置文件（位于 `docs/nacos-config/`）
+- 在 Nacos 中创建或确认命名空间
+- 导入仓库根目录下的 `docs/99-部署运维/nacos.sql`
+- 按本地环境修改数据库、Redis、RabbitMQ、支付和 AI 相关配置
 
 #### 3️⃣ 编译项目
 

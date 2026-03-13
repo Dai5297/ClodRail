@@ -1,43 +1,49 @@
-# 部署运维
+# 部署运维文档
 
-本目录包含项目部署和运维相关文档。
+这个目录主要解决两个问题：
 
-## 文档列表
+1. 本地开发环境需要准备什么
+2. 第一次启动项目时应该按什么顺序做
 
-| 文档 | 说明 |
+## 推荐阅读顺序
+
+1. [环境要求](环境要求.md)
+2. [快速启动](快速启动.md)
+3. [Nacos 初始化脚本](nacos.sql)
+
+## 目录说明
+
+| 文件 | 作用 |
 |------|------|
-| [环境要求.md](环境要求.md) | 运行环境要求 |
-| [快速启动.md](快速启动.md) | 本地启动指南 |
-| [nacos.sql](nacos.sql) | Nacos 数据库初始化脚本 |
+| [环境要求.md](环境要求.md) | 列出本地开发所需软件与版本 |
+| [快速启动.md](快速启动.md) | 给出从数据库初始化到服务启动的完整步骤 |
+| [nacos.sql](nacos.sql) | 导入到 Nacos 数据库的共享配置脚本 |
 
-## Nacos 共享配置说明
+## 基础设施速查
 
-`nacos.sql` 包含完整的 Nacos 配置，导入后自动生成以下共享配置：
-
-| 配置文件 | 说明 |
-|----------|------|
-| shared-mysql.yaml | MySQL 数据源、HikariCP 连接池、MyBatis |
-| shared-redis.yaml | Redis 连接、Lettuce 连接池 |
-| shared-rabbitmq.yaml | RabbitMQ 连接、生产者/消费者配置 |
-| shared-seata.yaml | Seata 分布式事务注册中心配置 |
-| shared-knife4j.yaml | Knife4j API 文档配置 |
-| shared-alipay.yaml | 支付宝沙箱支付配置 |
-| shared-langchain4j.yaml | 阿里通义大模型配置 |
-| seata-server.properties | Seata Server 配置 |
+| 组件 | 默认端口 | 是否必需 |
+|------|----------|----------|
+| Nacos | 8848 | 是 |
+| MySQL | 3306 | 是 |
+| Redis | 6379 | 是 |
+| RabbitMQ | 5672 / 15672 | 是 |
+| Seata Server | 8091 | 否 |
+| Elasticsearch | 9200 | 否 |
 
 ## 服务端口速查
 
 | 服务 | 端口 |
 |------|------|
-| Nacos | 8848 |
-| MySQL | 3306 |
-| Redis | 6379 |
-| RabbitMQ | 5672 / 15672 |
-| Seata | 8091 |
 | rs-gateway | 18080 |
 | rs-user | 18081 |
 | rs-ticket | 18082 |
 | rs-order | 18083 |
 | rs-assistant | 18084 |
-| Netty WS | 18085 |
+| Netty WebSocket | 18085 |
 | rs-mall | 18086 |
+
+## 启动前注意
+
+- 当前文档以本地开发环境为主，不是生产环境部署方案。
+- `docs/99-部署运维/nacos.sql` 是当前仓库应使用的 Nacos 初始化脚本。
+- 支付、AI、大模型、Seata、Elasticsearch 等能力需要你补齐对应的本地配置或服务。
