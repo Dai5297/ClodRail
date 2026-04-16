@@ -49,6 +49,7 @@ import { useRouter } from 'vue-router'
 import AuthTabs from '@/view/login/components/AuthTabs.vue'
 import LoginForm from '@/view/login/components/LoginForm.vue'
 import RegisterForm from '@/view/login/components/RegisterForm.vue'
+import { ensureAccessToken } from '@/utils/auth.js'
 
 const router = useRouter()
 
@@ -117,12 +118,12 @@ const handleRegisterSuccess = (userData) => {
 }
 
 // 页面初始化
-onMounted(() => {
-  // 检查是否已经登录
-  const token = localStorage.getItem('token')
-  if (token) {
-    // 如果已经登录，直接跳转到首页
+onMounted(async () => {
+  try {
+    await ensureAccessToken()
     router.push('/')
+  } catch (error) {
+    // ignore
   }
 })
 </script>

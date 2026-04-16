@@ -2,6 +2,7 @@ package com.rs.service;
 
 import com.rs.model.dto.request.user.*;
 import com.rs.model.dto.response.user.UserLoginResDTO;
+import com.rs.model.dto.response.user.UserRefreshTokenResDTO;
 import com.rs.model.dto.response.user.UserRegisterResDTO;
 
 public interface UserAuthService {
@@ -20,11 +21,19 @@ public interface UserAuthService {
     void userLogout(String authorization);
 
     /**
+     * 刷新 access token
+     *
+     * @param refreshToken refresh token
+     * @return 新的 access token
+     */
+    UserRefreshTokenResDTO refreshAccessToken(String refreshToken);
+
+    /**
      * 获取账号密码登录验证码
      *
      * @return 验证码
      */
-    String captcha();
+    void captcha();
 
     /**
      * 重置密码

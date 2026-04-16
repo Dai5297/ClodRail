@@ -21,6 +21,7 @@ import {message} from 'ant-design-vue'
 import Header from '@/view/layout/components/Header.vue'
 import {getUserInfo} from "@/api/user.js";
 import {logout} from "@/api/auth.js";
+import { clearAuth, ensureAccessToken } from '@/utils/auth.js'
 
 const router = useRouter()
 
@@ -38,14 +39,12 @@ const handleLogout = async () => {
   try {
     // 直接清除本地存储并跳转，不依赖API响应
     await logout()
-    localStorage.removeItem('token')
-    localStorage.removeItem('userInfo')
+    clearAuth()
     message.success('退出登录成功')
     router.push('/login')
   } catch (error) {
     // 即使API调用失败，也要清除本地存储并跳转
-    localStorage.removeItem('token')
-    localStorage.removeItem('userInfo')
+    clearAuth()
     router.push('/login')
   }
 }
@@ -63,14 +62,13 @@ const userInfo = async () => {
   }
 }
 
-onMounted(() => {
-  // 检查是否已经登录
-  const token = localStorage.getItem('token')
-  if (!token) {
-    // 如果没有登录，跳转到登录页面
+onMounted(async () => {
+  try {
+    await ensureAccessToken()
+    await userInfo()
+  } catch (error) {
+    clearAuth()
     router.push('/login')
   }
-  // 获取用户信息
-  userInfo()
 })
 </script>

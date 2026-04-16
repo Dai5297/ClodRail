@@ -53,22 +53,46 @@ public class SecurityFilter implements WebFilter {
         if (authorization == null || authorization.isEmpty()) {
             return handleError(exchange, RespCode.UNAUTHORIZED, "认证失败");
         }
-        String uuid = authorization.get(0).substring(AUTH_PREFIX.length());
-        String token;
-        String key = null;
-        URI uri = exchange.getRequest().getURI();
-        if (uri.getPath().startsWith(USER_PATH_PREFIX)) {
-            key = USER_LOGIN_TOKEN + uuid;
-        } else if (uri.getPath().startsWith(ADMIN_PATH_PREFIX)) {
-            key = ADMIN_LOGIN_TOKEN + uuid;
-        } else {
+        String authorizationValue = authorization.get(0);
+        if (!authorizationValue.startsWith(AUTH_PREFIX) || authorizationValue.length() <= AUTH_PREFIX.length()) {
             return handleError(exchange, RespCode.UNAUTHORIZED, "认证失败");
         }
+        String rawToken = authorizationValue.substring(AUTH_PREFIX.length());
+        URI uri = exchange.getRequest().getURI();
+        if (uri.getPath().startsWith(USER_PATH_PREFIX)) {
+            return authenticateCustomer(rawToken, exchange, chain);
+        }
+        if (!uri.getPath().startsWith(ADMIN_PATH_PREFIX)) {
+            return handleError(exchange, RespCode.UNAUTHORIZED, "认证失败");
+        }
+        return authenticateAdmin(rawToken, exchange, chain);
+    }
+
+    private Mono<Void> authenticateCustomer(String accessToken, ServerWebExchange exchange, WebFilterChain chain) {
+        try {
+            Claims claims = JWTUtil.parseJWT(accessToken);
+            if (!JWTUtil.isAccessToken(claims)) {
+                return handleError(exchange, RespCode.UNAUTHORIZED, "认证失败");
+            }
+            Long userId = JWTUtil.getUserId(claims);
+            if (userId == null) {
+                return handleError(exchange, RespCode.UNAUTHORIZED, "认证失败");
+            }
+            exchange.getAttributes().put(USER_INFO, userId);
+            return chain.filter(exchange);
+        } catch (Exception e) {
+            return handleError(exchange, RespCode.UNAUTHORIZED, "认证失败");
+        }
+    }
+
+    private Mono<Void> authenticateAdmin(String uuid, ServerWebExchange exchange, WebFilterChain chain) {
+        String key = ADMIN_LOGIN_TOKEN + uuid;
+        String token;
         token = stringRedisTemplate.opsForValue().get(key);
         if (token == null || token.isEmpty()) {
             return handleError(exchange, RespCode.UNAUTHORIZED, "认证失败");
         }
-        // 解析token并获取用户信息
+
         Claims claims;
         String subject;
         try {
@@ -85,20 +109,9 @@ public class SecurityFilter implements WebFilter {
                     RedisUserKeyConstant.USER_LOGIN_TOKEN_TTL, TimeUnit.MILLISECONDS);
             log.debug("用户token续期成功，uuid: {}", uuid);
         }
-        // 根据请求路径将claim转为对应实体类
-        if (exchange.getRequest().getPath().toString().startsWith(ADMIN_PATH_PREFIX)) {
-            // 将Subject转为Admin对应实体类
-            Admin admin = JSONUtil.toBean(subject, Admin.class);
-            exchange.getAttributes().put(USER_INFO, admin.getId());
-            return checkPermission(admin, exchange, chain);
-        } else if (exchange.getRequest().getPath().toString().startsWith(USER_PATH_PREFIX)) {
-            // 将Subject转为User对应实体类
-            User bean = JSONUtil.toBean(subject, User.class);
-            exchange.getAttributes().put(USER_INFO, bean.getId());
-            return chain.filter(exchange);
-        } else {
-            return handleError(exchange, RespCode.NOT_FOUND, "未知请求路径");
-        }
+        Admin admin = JSONUtil.toBean(subject, Admin.class);
+        exchange.getAttributes().put(USER_INFO, admin.getId());
+        return checkPermission(admin, exchange, chain);
     }
 
     private Mono<Void> checkPermission(Admin admin, ServerWebExchange exchange, WebFilterChain chain) {

@@ -8,6 +8,11 @@ public class RedisUserKeyConstant {
     public static final String USER_LOGIN_TOKEN = "user:login:token:";
 
     /**
+     * 用户refresh token Key
+     */
+    public static final String USER_REFRESH_TOKEN = "user:refresh:token:";
+
+    /**
      * 管理员登录tokenKey
      */
     public static final String ADMIN_LOGIN_TOKEN = "admin:login:token:";
@@ -21,6 +26,16 @@ public class RedisUserKeyConstant {
      * 用户登录tokenTTL
      */
     public static final Long USER_LOGIN_TOKEN_TTL = 3600000L;
+
+    /**
+     * 用户access token TTL（15分钟）
+     */
+    public static final Long USER_ACCESS_TOKEN_TTL = 900000L;
+
+    /**
+     * 用户refresh token TTL（7天）
+     */
+    public static final Long USER_REFRESH_TOKEN_TTL = 604800000L;
 
     /**
      * 用户登录时间Key

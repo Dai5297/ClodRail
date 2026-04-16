@@ -4,6 +4,7 @@ import cn.hutool.core.net.url.UrlQuery;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
+import com.rs.client.user.UserClient;
 import com.rs.constant.RedisUserKeyConstant;
 import com.rs.enums.RespCode;
 import com.rs.exception.CommonException;
@@ -21,8 +22,11 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static com.rs.constant.CommonConstant.ACCESS_TOKEN_TYPE;
 import static com.rs.constant.AttributeKeyConstant.*;
 
 @Slf4j
@@ -32,6 +36,7 @@ import static com.rs.constant.AttributeKeyConstant.*;
 public class TokenHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private final StringRedisTemplate stringRedisTemplate;
+    private final UserClient userClient;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
@@ -46,52 +51,94 @@ public class TokenHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             throw new CommonException(RespCode.ERROR, "非法请求");
         }
 
-        String uuid = null;
         String sessionId = null;
         UrlQuery urlQuery = UrlQuery.of(uri.getQuery(), CharsetUtil.CHARSET_UTF_8);
-        uuid = (String) urlQuery.get("token");
+        String token = (String) urlQuery.get("token");
         sessionId = (String) urlQuery.get("sessionId");
-
-        String key = null;
-        if (request.uri().contains("user")) {
-            key = RedisUserKeyConstant.USER_LOGIN_TOKEN + uuid;
-        }else {
-            key = RedisUserKeyConstant.ADMIN_LOGIN_TOKEN + uuid;
-        }
-        String token = stringRedisTemplate.opsForValue().get(key);
-        Claims claims = null;
-        try {
-            claims = JWTUtil.parseJWT(token);
-        } catch (Exception e) {
+        if (ObjectUtil.isEmpty(token) || ObjectUtil.isEmpty(sessionId)) {
             throw new CommonException(RespCode.UNAUTHORIZED, "用户未登录");
         }
-        String claimsSubject = claims.getSubject();
-        if (ObjectUtil.isEmpty(claimsSubject)) {
-            throw new CommonException(RespCode.UNAUTHORIZED, "用户未登录");
-        }
-
-        User user = null;
-        Admin admin = null;
         if (request.uri().startsWith("/ws/assistant/user")) {
-            user = JSONUtil.toBean(claimsSubject, User.class);
+            User user = authenticateUser(token, sessionId);
             ctx.channel().attr(USER).set(user);
-        }else {
-            admin = JSONUtil.toBean(claimsSubject, Admin.class);
+        } else {
+            Admin admin = authenticateAdmin(token);
             ctx.channel().attr(AGENT).set(admin);
+            renewRedisToken(RedisUserKeyConstant.ADMIN_LOGIN_TOKEN + token, token);
         }
 
         ctx.channel().attr(SESSION_ID).set(sessionId);
-
-        // 续期redisKey
-        Long expire = stringRedisTemplate.getExpire(RedisUserKeyConstant.USER_LOGIN_TOKEN + uuid, TimeUnit.SECONDS);
-
-        if (expire != null && expire > 0 && expire < RedisUserKeyConstant.USER_TOKEN_LEAST_TTL) {
-            // 使用秒为单位，与getExpire保持一致
-            stringRedisTemplate.expire(RedisUserKeyConstant.USER_LOGIN_TOKEN + uuid,
-                    RedisUserKeyConstant.USER_LOGIN_TOKEN_TTL, TimeUnit.SECONDS);
-            log.debug("用户token续期成功，uuid: {}", uuid);
-        }
-
         ctx.fireChannelRead(request.retain());
+    }
+
+    private User authenticateUser(String token, String sessionId) {
+        try {
+            Claims claims = JWTUtil.parseJWT(token);
+            if (!ACCESS_TOKEN_TYPE.equals(claims.get("tokenType", String.class))) {
+                throw new CommonException(RespCode.UNAUTHORIZED, "用户未登录");
+            }
+            Long userId = JWTUtil.getUserId(claims);
+            if (userId == null || !sessionId.startsWith(userId + "_")) {
+                throw new CommonException(RespCode.UNAUTHORIZED, "用户未登录");
+            }
+            User user = new User();
+            user.setId(userId);
+            user.setUsername(resolveUsername(userId));
+            return user;
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            return authenticateLegacyUser(token, sessionId);
+        }
+    }
+
+    private User authenticateLegacyUser(String token, String sessionId) {
+        String redisToken = stringRedisTemplate.opsForValue().get(RedisUserKeyConstant.USER_LOGIN_TOKEN + token);
+        Claims claims = parseClaims(redisToken);
+        User user = JSONUtil.toBean(claims.getSubject(), User.class);
+        if (user == null || user.getId() == null || !sessionId.startsWith(user.getId() + "_")) {
+            throw new CommonException(RespCode.UNAUTHORIZED, "用户未登录");
+        }
+        renewRedisToken(RedisUserKeyConstant.USER_LOGIN_TOKEN + token, token);
+        return user;
+    }
+
+    private Admin authenticateAdmin(String token) {
+        String redisToken = stringRedisTemplate.opsForValue().get(RedisUserKeyConstant.ADMIN_LOGIN_TOKEN + token);
+        Claims claims = parseClaims(redisToken);
+        return JSONUtil.toBean(claims.getSubject(), Admin.class);
+    }
+
+    private Claims parseClaims(String token) {
+        try {
+            Claims claims = JWTUtil.parseJWT(token);
+            if (ObjectUtil.isEmpty(claims.getSubject())) {
+                throw new CommonException(RespCode.UNAUTHORIZED, "用户未登录");
+            }
+            return claims;
+        } catch (Exception e) {
+            throw new CommonException(RespCode.UNAUTHORIZED, "用户未登录");
+        }
+    }
+
+    private void renewRedisToken(String redisKey, String token) {
+        Long expire = stringRedisTemplate.getExpire(redisKey, TimeUnit.MILLISECONDS);
+        if (expire != null && expire > 0 && expire < RedisUserKeyConstant.USER_TOKEN_LEAST_TTL) {
+            stringRedisTemplate.expire(redisKey, RedisUserKeyConstant.USER_LOGIN_TOKEN_TTL, TimeUnit.MILLISECONDS);
+            log.debug("用户token续期成功，token: {}", token);
+        }
+    }
+
+    private String resolveUsername(Long userId) {
+        try {
+            Map<Long, String> usernames = userClient.usernameList(List.of(userId));
+            String username = usernames.get(userId);
+            if (ObjectUtil.isNotEmpty(username)) {
+                return username;
+            }
+        } catch (Exception e) {
+            log.warn("查询用户昵称失败, userId={}", userId, e);
+        }
+        return "用户" + userId;
     }
 }

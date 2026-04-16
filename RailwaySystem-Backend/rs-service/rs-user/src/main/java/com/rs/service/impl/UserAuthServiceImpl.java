@@ -9,9 +9,11 @@ import com.rs.constant.RedisUserKeyConstant;
 import com.rs.enums.RespCode;
 import com.rs.exception.CommonException;
 import com.rs.mapper.UserAuthMapper;
+import com.rs.mapper.UserMapper;
 import com.rs.model.customer.User;
 import com.rs.model.dto.request.user.*;
 import com.rs.model.dto.response.user.UserLoginResDTO;
+import com.rs.model.dto.response.user.UserRefreshTokenResDTO;
 import com.rs.model.dto.response.user.UserRegisterResDTO;
 import com.rs.service.UserAuthService;
 import com.rs.util.EncoderUtil;
@@ -27,12 +29,15 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static com.rs.constant.CommonConstant.AUTH_PREFIX;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserAuthServiceImpl implements UserAuthService {
 
     private final UserAuthMapper userAuthMapper;
+    private final UserMapper userMapper;
     private final StringRedisTemplate stringRedisTemplate;
 
     /**
@@ -52,12 +57,19 @@ public class UserAuthServiceImpl implements UserAuthService {
         if (!EncoderUtil.matches(reqDTO.getPassword(), user.getPassword())) {
             throw new CommonException(RespCode.SYSTEM_ERROR, "密码错误");
         }
-        // 生成token并存储至redis
-        String token = JWTUtil.createJWT(JSONUtil.toJsonStr(user));
-        UUID uuid = UUID.randomUUID();
-        stringRedisTemplate.opsForValue().set(RedisUserKeyConstant.USER_LOGIN_TOKEN + uuid, token, RedisUserKeyConstant.USER_LOGIN_TOKEN_TTL, TimeUnit.MILLISECONDS);
+        String accessToken = JWTUtil.createAccessToken(user.getId(), RedisUserKeyConstant.USER_ACCESS_TOKEN_TTL);
+        String refreshToken = UUID.randomUUID().toString();
+        stringRedisTemplate.opsForValue().set(
+                RedisUserKeyConstant.USER_REFRESH_TOKEN + refreshToken,
+                String.valueOf(user.getId()),
+                RedisUserKeyConstant.USER_REFRESH_TOKEN_TTL,
+                TimeUnit.MILLISECONDS
+        );
         UserLoginResDTO userLoginResDTO = BeanUtil.copyProperties(user, UserLoginResDTO.class);
-        userLoginResDTO.setToken(uuid.toString());
+        userLoginResDTO.setToken(accessToken);
+        userLoginResDTO.setAccessToken(accessToken);
+        userLoginResDTO.setExpiresIn(TimeUnit.MILLISECONDS.toSeconds(RedisUserKeyConstant.USER_ACCESS_TOKEN_TTL));
+        userLoginResDTO.setRefreshToken(refreshToken);
         // 存储登录时间
         stringRedisTemplate.opsForValue().set(RedisUserKeyConstant.USER_LOGIN_TIME + user.getId(), LocalDateTime.now().toString());
         return userLoginResDTO;
@@ -67,12 +79,40 @@ public class UserAuthServiceImpl implements UserAuthService {
      * 登出
      */
     @Override
-    public void userLogout(String authorization) {
-        String uuid = authorization.substring(7);
-        Boolean delete = stringRedisTemplate.delete(RedisUserKeyConstant.USER_LOGIN_TOKEN + uuid);
+    public void userLogout(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return;
+        }
+        Boolean delete = stringRedisTemplate.delete(RedisUserKeyConstant.USER_REFRESH_TOKEN + refreshToken);
         if (!BooleanUtil.isTrue(delete)) {
             throw new CommonException(RespCode.SYSTEM_ERROR, "登出失败");
         }
+    }
+
+    @Override
+    public UserRefreshTokenResDTO refreshAccessToken(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new CommonException(RespCode.UNAUTHORIZED, "认证失败");
+        }
+        String userId = stringRedisTemplate.opsForValue().get(RedisUserKeyConstant.USER_REFRESH_TOKEN + refreshToken);
+        if (userId == null || userId.isBlank()) {
+            throw new CommonException(RespCode.UNAUTHORIZED, "认证失败");
+        }
+        User user = userMapper.queryById(Long.valueOf(userId));
+        if (user == null) {
+            throw new CommonException(RespCode.DATA_NOT_EXIST, "用户不存在");
+        }
+        String accessToken = JWTUtil.createAccessToken(user.getId(), RedisUserKeyConstant.USER_ACCESS_TOKEN_TTL);
+        stringRedisTemplate.expire(
+                RedisUserKeyConstant.USER_REFRESH_TOKEN + refreshToken,
+                RedisUserKeyConstant.USER_REFRESH_TOKEN_TTL,
+                TimeUnit.MILLISECONDS
+        );
+        UserRefreshTokenResDTO refreshTokenResDTO = new UserRefreshTokenResDTO();
+        refreshTokenResDTO.setAccessToken(accessToken);
+        refreshTokenResDTO.setTokenType(AUTH_PREFIX.trim());
+        refreshTokenResDTO.setExpiresIn(TimeUnit.MILLISECONDS.toSeconds(RedisUserKeyConstant.USER_ACCESS_TOKEN_TTL));
+        return refreshTokenResDTO;
     }
 
     /**
@@ -81,8 +121,8 @@ public class UserAuthServiceImpl implements UserAuthService {
      * @return 验证码
      */
     @Override
-    public String captcha() {
-        return RandomUtil.randomString(4);
+    public void captcha() {
+        // Deprecated: 前端本地生成登录验证码，服务端不再返回明文验证码。
     }
 
     /**
@@ -124,7 +164,6 @@ public class UserAuthServiceImpl implements UserAuthService {
     @Override
     public void captchaPhone(String phone) {
         int captcha = RandomUtil.randomInt(100000, 999999);
-        log.info("手机验证码：{}", captcha);
         String key = RedisUserKeyConstant.USER_PHONE_CAPTCHA + phone;
         stringRedisTemplate.opsForValue().set(key, String.valueOf(captcha), RedisUserKeyConstant.USER_PHONE_CAPTCHA_TTL, TimeUnit.SECONDS);
     }
@@ -151,7 +190,6 @@ public class UserAuthServiceImpl implements UserAuthService {
     @Override
     public void emailChangeCode(String email) {
         int code = RandomUtil.randomInt(100000, 999999);
-        log.info("邮箱验证码：{}", code);
         stringRedisTemplate.opsForValue().set(RedisUserKeyConstant.USER_EMAIL_CODE + email, String.valueOf(code), RedisUserKeyConstant.USER_EMAIL_CHANGE_CODE_TTL, TimeUnit.SECONDS);
     }
 

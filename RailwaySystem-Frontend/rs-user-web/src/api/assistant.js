@@ -1,4 +1,5 @@
 import request from '@/utils/request.js'
+import { getAccessToken } from '@/utils/auth.js'
 
 /**
  * AI助手相关API
@@ -14,7 +15,7 @@ export async function sendMessage({ memoryId, message }) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${getAccessToken()}`
       },
       body: JSON.stringify({ memoryId, message }),
     })
@@ -86,4 +87,3 @@ export const requestTransfer = (sessionId, question) => {
     }
   })
 }
-

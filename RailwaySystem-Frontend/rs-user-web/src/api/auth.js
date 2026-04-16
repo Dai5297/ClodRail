@@ -22,11 +22,10 @@ export const logout = () => {
   })
 }
 
-// 获取验证码
-export const getCaptcha = () => {
+export const refresh = () => {
   return request({
-    url: '/customer/auth/captcha',
-    method: 'GET'
+    url: '/customer/auth/refresh',
+    method: 'POST'
   })
 }
 

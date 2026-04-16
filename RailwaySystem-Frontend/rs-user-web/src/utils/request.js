@@ -1,14 +1,16 @@
 import axios from "axios";
 import router from "@/router/index.js";
 import { ElMessage } from 'element-plus'
+import { clearAuth, getAccessToken, refreshAccessToken } from '@/utils/auth.js'
 
 const request = axios.create({
   baseURL: '/api',
-  timeout: 5000
+  timeout: 5000,
+  withCredentials: true
 })
 
 request.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token')
+    const token = getAccessToken()
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -20,10 +22,10 @@ request.interceptors.response.use((response) => {
     
     // 处理认证失败
     if (code === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('userInfo')
-      router.push('/login')
-      return Promise.reject(new Error('登录过期'))
+      return Promise.reject(Object.assign(new Error(message || '登录过期'), {
+        response,
+        config: response.config
+      }))
     }
     
     // 返回统一格式的响应数据
@@ -33,8 +35,36 @@ request.interceptors.response.use((response) => {
       code: code,
       message: message
     }
-}, (error) => {
-    // 处理网络错误
+}, async (error) => {
+    const originalRequest = error.config
+    const responseCode = error.response?.data?.code
+    const responseStatus = error.response?.status
+
+    if ((responseCode === 401 || responseStatus === 401)
+      && originalRequest
+      && !originalRequest.__isRetryRequest
+      && !originalRequest.url?.includes('/customer/auth/refresh')
+      && !originalRequest.url?.includes('/customer/auth/login/username')) {
+      try {
+        originalRequest.__isRetryRequest = true
+        const token = await refreshAccessToken()
+        originalRequest.headers = originalRequest.headers || {}
+        originalRequest.headers.Authorization = `Bearer ${token}`
+        return request(originalRequest)
+      } catch (refreshError) {
+        clearAuth()
+        router.push('/login')
+        ElMessage.error('登录已过期，请重新登录')
+        return Promise.reject(refreshError)
+      }
+    }
+
+    if (responseCode === 401 || responseStatus === 401) {
+      clearAuth()
+      router.push('/login')
+      ElMessage.error('登录已过期，请重新登录')
+    }
+
     return Promise.reject(error)
 })
 

@@ -76,7 +76,8 @@
 import { ref, reactive, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import CaptchaDisplay from '@/components/CaptchaDisplay.vue'
-import { login, getCaptcha } from '@/api/auth.js'
+import { login } from '@/api/auth.js'
+import { setAccessToken, setUserInfo } from '@/utils/auth.js'
 import { ErrorHandler, FormValidator } from '@/utils/errorHandler.js'
 
 const emit = defineEmits(['login-success', 'switch-to-register', 'login-failed'])
@@ -187,14 +188,14 @@ onMounted(() => {
   }
 })
 
+const createLocalCaptcha = () => {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  return Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+}
+
 // 获取验证码
-const refreshCaptcha = async () => {
-  try {
-    const response = await getCaptcha()
-    captchaCode.value = response.data || 'ABCD'
-  } catch (error) {
-    captchaCode.value = 'ABCD' // 默认验证码
-  }
+const refreshCaptcha = () => {
+  captchaCode.value = createLocalCaptcha()
 }
 
 // 处理登录
@@ -231,12 +232,12 @@ const handleLogin = async () => {
       localStorage.removeItem('loginFailCount')
       
       // 保存token和用户信息
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token)
+      if (response.data.accessToken || response.data.token) {
+        setAccessToken(response.data.accessToken || response.data.token)
       }
       
       // 保存用户信息（直接使用response.data，因为它包含了完整的用户信息）
-      localStorage.setItem('userInfo', JSON.stringify(response.data))
+      setUserInfo(response.data)
       
       // 触发登录成功事件
       emit('login-success', response.data)

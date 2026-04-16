@@ -1,5 +1,6 @@
 package com.rs.model.dto.response.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -69,4 +70,13 @@ public class UserLoginResDTO {
      */
     @Schema(description = "登录token", example = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTYwMjMxNjQxNywiZXhwIjoxNjAyMzE5MDE3fQ.XwZjYXZjYX")
     private String token;
+
+    @Schema(description = "access token", example = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjAyMzE2NDE3LCJleHAiOjE2MDIzMTkwMTd9.XwZjYXZjYX")
+    private String accessToken;
+
+    @Schema(description = "access token 过期秒数", example = "900")
+    private Long expiresIn;
+
+    @JsonIgnore
+    private String refreshToken;
 }

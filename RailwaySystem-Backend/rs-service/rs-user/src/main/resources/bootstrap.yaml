@@ -19,5 +19,10 @@ spring:
       - nacos:shared-knife4j.yaml
       - nacos:shared-redis.yaml
 
+rs:
+  auth:
+    jwt-key: ${RS_AUTH_JWT_KEY}
+    refresh-cookie-secure: ${RS_AUTH_REFRESH_COOKIE_SECURE:false}
+
 server:
   port: 18081

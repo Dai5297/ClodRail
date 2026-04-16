@@ -1,27 +1,18 @@
 package com.rs.filters;
 
-import com.rs.constant.CommonConstant;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import static com.rs.constant.CommonConstant.AUTHENTICATION;
+import static com.rs.constant.CommonConstant.ADMIN_PATH_PREFIX;
 import static com.rs.constant.CommonConstant.USER_INFO;
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class AutoGlobalFilter implements GlobalFilter, Ordered {
-
-    private final StringRedisTemplate stringRedisTemplate;
-
 
     /**
      * 拦截器
@@ -34,18 +25,14 @@ public class AutoGlobalFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         Object userInfo = exchange.getAttributes().get(USER_INFO);
         String userId = (userInfo != null) ? String.valueOf(userInfo) : null;
-        if (userId != null) {
-            ServerHttpRequest request = exchange.getRequest().mutate()
-                    .header(USER_INFO, userId)
-                    .header(AUTHENTICATION, String.valueOf(exchange.getRequest().getHeaders().get(CommonConstant.AUTHENTICATION)))
-                    .build();
-            exchange = exchange.mutate().request(request).build();
+        ServerHttpRequest.Builder requestBuilder = exchange.getRequest().mutate();
+        requestBuilder.headers(headers -> headers.remove(USER_INFO));
+        if (userId != null && exchange.getRequest().getURI().getPath().startsWith(ADMIN_PATH_PREFIX)) {
+            requestBuilder.header(USER_INFO, userId);
         }
-
+        exchange = exchange.mutate().request(requestBuilder.build()).build();
         return chain.filter(exchange);
     }
-
-
 
     /**
      * 优先级

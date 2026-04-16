@@ -4,7 +4,7 @@ import com.rs.util.JWTUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+@SpringBootTest(properties = "rs.auth.jwt-key=test-jwt-key-1234567890-abcdef123456")
 public class JWTTest {
 
     @Test

@@ -33,3 +33,7 @@ rs:
       - groupName: 管理端-用户服务
         matchPath:
           - com.rs.controller.admin
+
+  auth:
+    jwt-key: <JWT_KEY>
+    refresh-cookie-secure: false
