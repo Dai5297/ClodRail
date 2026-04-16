@@ -64,14 +64,37 @@ venv/
 # Spring Boot local configs (contain passwords/keys)
 **/bootstrap-dev.yaml
 **/bootstrap-dev.yml
+**/bootstrap-dev.properties
 **/bootstrap-local.yaml
 **/bootstrap-local.yml
+**/bootstrap-local.properties
 **/application-dev.yaml
 **/application-dev.yml
+**/application-dev.properties
 **/application-local.yaml
 **/application-local.yml
+**/application-local.properties
 **/application-prod.yaml
 **/application-prod.yml
+**/application-prod.properties
+
+# Explicit local runtime configs that often carry real credentials
+**/src/main/resources/application.yaml
+**/src/main/resources/application.yml
+**/src/main/resources/application.properties
+
+# Sensitive test or ad-hoc local integration files
+**/TestOss.java
+
+# Certificates / private keys / keystores
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+*.keystore
 
 # ==================== Test ====================
 coverage/
