@@ -5,11 +5,14 @@ import java.sql.*;
 public class JdbcConnectTest {
     private static final String URL = "jdbc:mysql://localhost:3306/xsxx?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private static final String USER = "root";
-    private static final String PASSWORD = "20050918";
+    private static final String PASSWORD = System.getenv("RS_TEST_DB_PASSWORD");
 
     public static void main(String[] args) {
         Connection conn = null;
         try {
+            if (PASSWORD == null || PASSWORD.isBlank()) {
+                throw new IllegalStateException("RS_TEST_DB_PASSWORD is not configured");
+            }
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
             conn.setAutoCommit(false);
             System.out.println("事务开启...");
