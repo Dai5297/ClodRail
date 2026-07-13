@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="user-security-page space-y-6">
     <!-- 页面标题 -->
     <div class="border-b border-slate-200 pb-5">
       <h2 class="text-2xl font-bold text-slate-800">账号安全</h2>
@@ -53,7 +53,7 @@
       <!-- 邮箱绑定 -->
       <div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="flex items-start gap-4">
-          <div class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
+          <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
               <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
@@ -553,7 +553,12 @@ const sendPhoneCode = async () => {
     sendingPhoneCode.value = true
     const response = await getPhoneCode({ phone: phoneForm.newPhone })
     if (response.code === 200) {
-      toast.success('验证码已发送')
+      if (response.data) {
+        phoneForm.code = String(response.data)
+        toast.success(`验证码已生成：${response.data}`)
+      } else {
+        toast.success('验证码已发送')
+      }
       startPhoneCountdown()
     } else {
       toast.error(response.message || '发送验证码失败')
@@ -742,3 +747,65 @@ onMounted(() => {
   fetchUserInfo()
 })
 </script>
+
+<style scoped>
+.user-security-page {
+  height: 100%;
+  padding: 24px;
+  color: #172033;
+  overflow-y: auto;
+}
+
+.user-security-page :deep(h2),
+.user-security-page :deep(h3) {
+  color: #0b2559;
+  letter-spacing: 0;
+}
+
+.user-security-page :deep(.rounded-xl),
+.user-security-page :deep(.rounded-lg),
+.user-security-page :deep(.rounded-md) {
+  border-radius: 12px;
+}
+
+.user-security-page :deep(.border-slate-200),
+.user-security-page :deep(.border-slate-300),
+.user-security-page :deep(.divide-slate-100 > :not([hidden]) ~ :not([hidden])) {
+  border-color: #dde6f0;
+}
+
+.user-security-page :deep(.bg-blue-600) {
+  background-color: #1677ff;
+}
+
+.user-security-page :deep(.hover\:bg-blue-700:hover) {
+  background-color: #0b63d8;
+}
+
+.user-security-page :deep(.bg-blue-50) {
+  background-color: #eaf3ff;
+}
+
+.user-security-page :deep(.text-blue-600),
+.user-security-page :deep(.text-blue-900),
+.user-security-page :deep(.text-blue-800) {
+  color: #0b2559;
+}
+
+.user-security-page :deep(input) {
+  border-color: #dde6f0;
+  border-radius: 8px;
+}
+
+.user-security-page :deep(input:focus) {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.14);
+  outline: none;
+}
+
+@media (max-width: 640px) {
+  .user-security-page {
+    padding: 16px;
+  }
+}
+</style>

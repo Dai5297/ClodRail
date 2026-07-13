@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col lg:flex-row gap-8 h-[calc(100vh-80px)] overflow-hidden">
+  <div class="user-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col lg:flex-row gap-8 h-[calc(100vh-80px)] overflow-hidden">
     <!-- 侧边栏 -->
     <aside class="w-full lg:w-72 flex-shrink-0 overflow-y-auto hidden-scrollbar">
       <UserSidebar 
@@ -78,3 +78,47 @@ onMounted(() => {
   fetchUserInfo()
 })
 </script>
+
+<style scoped>
+.user-shell {
+  min-height: calc(100vh - 72px);
+  padding-top: 24px;
+  padding-bottom: 24px;
+  color: #172033;
+}
+
+.user-shell aside {
+  border-radius: 12px;
+}
+
+.user-shell main {
+  border: 1px solid #dde6f0;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(11, 37, 89, 0.06);
+}
+
+@media (max-width: 1023px) {
+  .user-shell {
+    height: auto;
+    min-height: calc(100vh - 72px);
+    overflow: visible;
+  }
+
+  .user-shell aside {
+    display: block;
+  }
+
+  .user-shell main {
+    min-height: 560px;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 640px) {
+  .user-shell {
+    padding: 14px 12px 24px;
+    gap: 16px;
+  }
+}
+</style>

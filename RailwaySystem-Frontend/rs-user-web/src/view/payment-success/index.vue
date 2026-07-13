@@ -32,7 +32,7 @@ const orderInfo = ref(null)
 
 // 前往订单页面
 const goToOrders = () => {
-  router.push('/orders')
+  router.push('/user/order')
 }
 
 // 返回首页
@@ -136,16 +136,24 @@ onMounted(() => {
 <style scoped>
 .payment-success-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 40px 20px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--rail-primary) 8%, transparent) 0, transparent 260px),
+    var(--rail-background);
+  padding: 56px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .container {
-  max-width: 600px;
+  max-width: 680px;
   width: 100%;
 }
-</style>
 
+@media (max-width: 640px) {
+  .payment-success-page {
+    align-items: flex-start;
+    padding: 24px 12px;
+  }
+}
+</style>

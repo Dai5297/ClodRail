@@ -1,6 +1,6 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden flex h-[calc(100vh-160px)]">
+  <div class="assistant-page max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="assistant-frame bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden flex h-[calc(100vh-160px)]">
       <!-- Sidebar -->
       <ChatSidebar
         :sessions="sessions"
@@ -353,3 +353,73 @@ onMounted(() => {
   loadSessions()
 })
 </script>
+
+<style scoped>
+.assistant-page {
+  color: #172033;
+}
+
+.assistant-frame {
+  min-height: 620px;
+  border-color: #dde6f0;
+  border-radius: 12px;
+  box-shadow: 0 14px 32px rgba(11, 37, 89, 0.08);
+}
+
+.assistant-page :deep(.bg-slate-900) {
+  background-color: #0b2559;
+}
+
+.assistant-page :deep(.hover\:bg-slate-800:hover) {
+  background-color: #14356f;
+}
+
+.assistant-page :deep(.bg-slate-50) {
+  background-color: #f5f8fc;
+}
+
+.assistant-page :deep(.text-primary),
+.assistant-page :deep(.text-blue-600),
+.assistant-page :deep(.text-blue-500) {
+  color: #1677ff;
+}
+
+.assistant-page :deep(.bg-blue-600),
+.assistant-page :deep(.bg-primary) {
+  background-color: #1677ff;
+}
+
+.assistant-page :deep(.border-slate-100),
+.assistant-page :deep(.border-slate-200),
+.assistant-page :deep(.border-blue-200) {
+  border-color: #dde6f0;
+}
+
+.assistant-page :deep(.rounded-3xl),
+.assistant-page :deep(.rounded-2xl),
+.assistant-page :deep(.rounded-xl),
+.assistant-page :deep(.rounded-lg) {
+  border-radius: 12px;
+}
+
+.assistant-page :deep(textarea),
+.assistant-page :deep(input) {
+  border-radius: 8px;
+}
+
+.assistant-page :deep(button) {
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .assistant-page {
+    padding: 12px;
+  }
+
+  .assistant-frame {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 96px);
+  }
+}
+</style>

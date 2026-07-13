@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 w-full flex flex-col bg-white rounded-3xl shadow-sm border border-slate-100 p-6 h-full overflow-hidden">
+  <div class="user-order-page flex-1 w-full flex flex-col bg-white rounded-3xl shadow-sm border border-slate-100 p-6 h-full overflow-hidden">
     <!-- 页面标题 -->
     <div class="border-b border-gray-200 pb-4 mb-6 flex-shrink-0">
       <h2 class="text-2xl font-bold text-gray-900">我的订单</h2>
@@ -630,7 +630,7 @@ export default {
     const getMallStatusClass = (status) => {
       const statusMap = {
         0: 'bg-blue-50 text-blue-600', // 待发货
-        1: 'bg-indigo-50 text-indigo-600', // 已发货
+        1: 'bg-blue-50 text-blue-600', // 已发货
         2: 'bg-green-50 text-green-600', // 已完成
         3: 'bg-gray-100 text-gray-500', // 已取消
       }
@@ -682,4 +682,63 @@ export default {
 
 <style scoped>
 /* 移除 Element Plus 相关样式，使用 Tailwind */
+.user-order-page {
+  border-color: #dde6f0;
+  border-radius: 12px;
+  box-shadow: none;
+  color: #172033;
+}
+
+.user-order-page :deep(h2),
+.user-order-page :deep(h3),
+.user-order-page :deep(h4) {
+  color: #0b2559;
+  letter-spacing: 0;
+}
+
+.user-order-page :deep(button) {
+  border-radius: 8px;
+}
+
+.user-order-page :deep(.rounded-3xl),
+.user-order-page :deep(.rounded-2xl),
+.user-order-page :deep(.rounded-xl) {
+  border-radius: 12px;
+}
+
+.user-order-page :deep(.text-blue-600),
+.user-order-page :deep(.text-blue-500) {
+  color: #1677ff;
+}
+
+.user-order-page :deep(.bg-blue-600),
+.user-order-page :deep(.bg-blue-500) {
+  background-color: #1677ff;
+}
+
+.user-order-page :deep(.text-red-500) {
+  color: #ff8200;
+}
+
+.user-order-page :deep(select),
+.user-order-page :deep(input) {
+  border-color: #dde6f0;
+  border-radius: 8px;
+}
+
+.user-order-page :deep(select:focus),
+.user-order-page :deep(input:focus) {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.14);
+  outline: none;
+}
+
+@media (max-width: 640px) {
+  .user-order-page {
+    height: auto;
+    min-height: 560px;
+    padding: 16px;
+    overflow: visible;
+  }
+}
 </style>

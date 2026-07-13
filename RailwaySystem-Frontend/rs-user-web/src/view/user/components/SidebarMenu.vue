@@ -1,5 +1,5 @@
 <template>
-  <nav class="space-y-1">
+  <nav class="sidebar-menu space-y-1">
     <router-link 
       v-for="item in menuItems" 
       :key="item.path"
@@ -34,3 +34,26 @@ const isExactActive = (item) => {
   return route.path.startsWith(item.path) && (item.path !== '/user' || route.path === '/user')
 }
 </script>
+
+<style scoped>
+.sidebar-menu :deep(a) {
+  border-radius: 8px;
+  color: #42526b;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.sidebar-menu :deep(a:hover) {
+  background: #f5f8fc;
+  color: #1677ff;
+}
+
+.sidebar-menu :deep(a.bg-blue-50),
+.sidebar-menu :deep(a.router-link-active) {
+  background: #eaf3ff;
+  color: #0b2559;
+}
+
+.sidebar-menu :deep(.bg-slate-100) {
+  background: #f5f8fc;
+}
+</style>

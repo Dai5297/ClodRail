@@ -87,7 +87,7 @@ defineEmits(['transfer', 'clear', 'end-service'])
 const chatName = computed(() => {
   return props.isHumanService 
     ? `人工客服 - ${props.serviceName || '在线客服'}` 
-    : 'CloudRail 智能助手'
+    : 'ClodRail 智能助手'
 })
 
 // 聊天状态

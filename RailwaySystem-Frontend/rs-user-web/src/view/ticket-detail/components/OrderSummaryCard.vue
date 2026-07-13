@@ -1,35 +1,40 @@
 <template>
-  <div class="bg-white rounded-xl p-6 mb-5 shadow-sm border border-gray-100">
-    <h3 class="flex items-center gap-2 text-lg font-medium text-gray-900 mb-5">
-      <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-      订单摘要
-    </h3>
+  <section class="overflow-hidden rounded-xl border border-line bg-white shadow-soft" aria-labelledby="order-summary-title">
+    <div class="border-b border-primary/25 bg-navy px-5 py-5 text-white">
+      <span class="inline-flex rounded bg-white/10 px-2.5 py-1 text-xs font-bold text-primary-soft">第 4 站 · 订单确认</span>
+      <h2 id="order-summary-title" class="mt-2 text-xl font-bold">核对订单</h2>
+      <p class="mt-1 text-xs text-primary-soft/75">提交前请确认车次、席别和人数</p>
+    </div>
 
-    <div class="flex flex-col gap-3">
-      <div class="flex justify-between items-center py-2 text-sm">
-        <span class="text-gray-500">车次信息：</span>
-        <span class="text-gray-900 font-medium">{{ trainCode }} {{ departureDate }}</span>
+    <dl class="divide-y divide-line/70 px-5">
+      <div class="flex items-start justify-between gap-4 py-4 text-sm">
+        <dt class="shrink-0 text-secondary">车次日期</dt>
+        <dd class="data-number text-right font-semibold text-ink">{{ trainCode }}<br /><span class="text-xs font-normal text-secondary">{{ departureDate }}</span></dd>
       </div>
-      <div class="flex justify-between items-center py-2 text-sm">
-        <span class="text-gray-500">出发到达：</span>
-        <span class="text-gray-900 font-medium">
-          {{ originStation }} → {{ destinationStation }}
-        </span>
+      <div class="flex items-start justify-between gap-4 py-4 text-sm">
+        <dt class="shrink-0 text-secondary">出发到达</dt>
+        <dd class="text-right font-semibold text-ink">{{ originStation }} <span class="mx-1 text-primary">→</span> {{ destinationStation }}</dd>
       </div>
-      <div class="flex justify-between items-center py-2 text-sm">
-        <span class="text-gray-500">座位类型：</span>
-        <span class="text-gray-900 font-medium">{{ seatTypeName }}</span>
+      <div class="flex items-center justify-between gap-4 py-4 text-sm">
+        <dt class="text-secondary">席别</dt>
+        <dd class="font-semibold" :class="seatTypeName === '未选择' ? 'text-secondary/60' : 'text-ink'">{{ seatTypeName }}</dd>
       </div>
-      <div class="flex justify-between items-center py-2 text-sm">
-        <span class="text-gray-500">乘客数量：</span>
-        <span class="text-gray-900 font-medium">{{ passengerCount }}人</span>
+      <div class="flex items-center justify-between gap-4 py-4 text-sm">
+        <dt class="text-secondary">乘车人</dt>
+        <dd class="data-number font-semibold" :class="passengerCount ? 'text-ink' : 'text-secondary/60'">{{ passengerCount }} 人</dd>
       </div>
-      <div class="flex justify-between items-center pt-4 mt-2 border-t border-gray-100">
-        <span class="text-gray-900 font-semibold text-lg">总金额：</span>
-        <span class="text-orange-500 font-bold text-2xl">￥{{ totalAmount }}</span>
+    </dl>
+
+    <div class="border-t border-line bg-action-soft px-5 py-5">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <p class="text-sm font-semibold text-secondary">订单总额</p>
+          <p class="mt-1 text-xs text-secondary/80">优惠票按实际规则计价</p>
+        </div>
+        <p class="data-number text-3xl font-bold leading-none text-action"><span class="mr-0.5 text-base">￥</span>{{ Number(totalAmount).toFixed(2) }}</p>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -65,3 +70,9 @@ const props = defineProps({
 })
 </script>
 
+<style scoped>
+.data-number {
+  font-family: "DIN Alternate", "Arial Narrow", Arial, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+</style>

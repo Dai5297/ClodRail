@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-slate-50 pb-20">
+  <div class="mall-page min-h-screen bg-[var(--rail-fog)] pb-16">
     <!-- 横幅区 -->
     <MallBanner :user-points="userPoints" />
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-10">
-      <div class="flex flex-col lg:flex-row gap-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 relative z-10">
+      <div class="flex flex-col lg:flex-row gap-6">
         <!-- 侧边分类菜单 -->
         <aside class="w-full lg:w-64 flex-shrink-0">
           <CategorySidebar
@@ -16,22 +16,22 @@
         <!-- 主内容区域 -->
         <main class="flex-1">
           <!-- 搜索和过滤栏 -->
-          <div class="bg-white rounded-2xl p-4 shadow-sm mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 border border-slate-100">
+          <div class="bg-white rounded-xl p-4 shadow-[0_8px_24px_rgba(11,37,89,0.06)] mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-[var(--rail-line)]">
              <div class="text-lg font-bold text-slate-800">
                {{ categoryTitle }}
                <span class="text-sm font-normal text-slate-500 ml-2">共 {{ total }} 件商品</span>
              </div>
 
-             <div class="flex items-center gap-4 w-full sm:w-auto">
+             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                 <a-input-search
                   v-model:value="searchKeyword"
                   placeholder="搜索商品..."
-                  class="w-full sm:w-64"
+                  class="w-full sm:w-64 rail-search"
                   @search="handleSearch"
                   allow-clear
                 />
                 
-                <a-select v-model:value="sortOption" placeholder="默认排序" style="width: 120px" @change="handleSortChange">
+                <a-select v-model:value="sortOption" placeholder="默认排序" class="w-full sm:w-[132px]" @change="handleSortChange">
                   <a-select-option value="">综合排序</a-select-option>
                   <a-select-option value="price">价格升序</a-select-option>
                   <a-select-option value="price_desc">价格降序</a-select-option>
@@ -40,15 +40,15 @@
           </div>
 
           <!-- 商品网格 -->
-          <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-             <a-skeleton active :paragraph="{ rows: 6 }" class="bg-white p-4 rounded-xl" v-for="i in 8" :key="i" />
+          <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+             <a-skeleton active :paragraph="{ rows: 6 }" class="bg-white p-4 rounded-xl border border-[var(--rail-line)]" v-for="i in 8" :key="i" />
           </div>
 
-          <div v-else-if="products.length === 0" class="bg-white rounded-2xl py-20 text-center shadow-sm border border-slate-100">
+          <div v-else-if="products.length === 0" class="bg-white rounded-xl py-20 text-center shadow-sm border border-[var(--rail-line)]">
             <a-empty description="暂无相关商品" />
           </div>
 
-          <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+          <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-8">
             <ProductCard
               v-for="product in products"
               :key="product.id"
@@ -59,7 +59,7 @@
 
           <!-- 加载更多 -->
           <div v-if="hasMore && products.length > 0" class="text-center py-8">
-            <a-button @click="loadMore" :loading="loadingMore" size="large" shape="round">
+            <a-button @click="loadMore" :loading="loadingMore" size="large" class="rounded-lg border-[var(--rail-line)]">
               加载更多商品
             </a-button>
           </div>
@@ -372,3 +372,47 @@ onMounted(() => {
   fetchProducts()
 })
 </script>
+
+<style scoped>
+.mall-page {
+  color: #172033;
+}
+
+.mall-page :deep(.rounded-3xl),
+.mall-page :deep(.rounded-2xl),
+.mall-page :deep(.rounded-xl),
+.mall-page :deep(.rounded-lg) {
+  border-radius: 12px;
+}
+
+.mall-page :deep(.border-slate-100),
+.mall-page :deep(.border-slate-200),
+.mall-page :deep(.border-\[var\(--rail-line\)\]) {
+  border-color: #dde6f0;
+}
+
+.mall-page :deep(.text-blue-600),
+.mall-page :deep(.text-primary) {
+  color: #1677ff;
+}
+
+.mall-page :deep(.bg-blue-600),
+.mall-page :deep(.bg-primary) {
+  background-color: #1677ff;
+}
+
+.mall-page :deep(.bg-\[\#FF8200\]) {
+  background-color: #ff8200;
+}
+
+.mall-page :deep(.rail-search .ant-input-search-button) {
+  border-color: #ff8200;
+  background: #ff8200;
+}
+
+@media (max-width: 640px) {
+  .mall-page {
+    padding-bottom: 32px;
+  }
+}
+</style>

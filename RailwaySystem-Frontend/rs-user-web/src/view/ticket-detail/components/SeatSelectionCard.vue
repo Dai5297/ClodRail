@@ -1,77 +1,124 @@
 <template>
-  <div class="bg-white rounded-xl p-6 mb-5 shadow-sm border border-gray-100">
-    <h3 class="flex items-center gap-2 text-lg font-medium text-gray-900 mb-5">
-      <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-      选择座位类型
-    </h3>
+  <section class="rounded-xl border border-line bg-white p-5 shadow-soft sm:p-6" aria-labelledby="seat-selection-title">
+    <div class="mb-5 flex items-start justify-between gap-4 border-b border-line pb-4">
+      <div>
+        <span class="inline-flex rounded-md bg-primary-soft px-2.5 py-1 text-xs font-bold text-primary">第 2 站 · 席别</span>
+        <h2 id="seat-selection-title" class="mt-2 text-lg font-bold text-navy">选择席别与座位偏好</h2>
+      </div>
+      <p class="hidden text-right text-xs leading-5 text-secondary/80 sm:block">单次最多选择 5 张车票<br />座位偏好以实际出票为准</p>
+    </div>
 
-    <div class="flex flex-col gap-4">
+    <div v-if="seatTypes.length" class="space-y-3">
       <div
-          v-for="seatType in seatTypes"
-          :key="seatType.type"
-          class="border-2 rounded-lg p-5 cursor-pointer transition-all duration-300 w-full"
-          :class="{
-            'border-blue-500 bg-blue-50/50': selectedSeatType?.type === seatType.type,
-            'border-gray-100 hover:border-blue-300': selectedSeatType?.type !== seatType.type,
-            'bg-gray-50 opacity-60 cursor-not-allowed border-gray-100': seatType.remainingSeats === 0
-          }"
-          @click="handleSelectSeatType(seatType)"
+        v-for="seatType in seatTypes"
+        :key="seatType.type"
+        class="w-full rounded-lg border p-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:p-5"
+        :class="{
+          'cursor-pointer border-primary bg-[color-mix(in_srgb,var(--rail-primary)_5%,var(--rail-surface))] shadow-[inset_4px_0_0_var(--rail-primary)]': selectedSeatType?.type === seatType.type,
+          'cursor-pointer border-line hover:border-primary-hover': selectedSeatType?.type !== seatType.type && seatType.remainingSeats > 0,
+          'cursor-not-allowed border-line/70 bg-background opacity-70': seatType.remainingSeats === 0,
+        }"
+        role="button"
+        :tabindex="seatType.remainingSeats > 0 ? 0 : -1"
+        :aria-pressed="selectedSeatType?.type === seatType.type"
+        :aria-disabled="seatType.remainingSeats === 0"
+        @click="handleSelectSeatType(seatType)"
+        @keydown.enter="handleSelectSeatType(seatType)"
+        @keydown.space.prevent="handleSelectSeatType(seatType)"
       >
-        <div class="flex justify-between items-center mb-3">
-          <div class="text-base font-semibold text-gray-900">{{ seatType.name }}</div>
-          <div class="text-xl font-semibold text-orange-500">￥{{ seatType.price }}</div>
-        </div>
-        <div class="flex justify-between items-center">
-          <div class="text-sm" :class="seatType.remainingSeats > 0 ? 'text-green-500' : 'text-gray-400'">
-            {{ seatType.remainingSeats > 0 ? `余票${seatType.remainingSeats}张` : '无票' }}
+        <div class="flex items-start justify-between gap-4">
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-bold text-ink">{{ seatType.name }}</span>
+              <span
+                class="rounded px-2 py-0.5 text-xs font-semibold"
+                :class="seatType.remainingSeats > 0 ? 'bg-[#edf8f2] text-[#16794b]' : 'bg-background text-secondary/80'"
+              >
+                {{ seatType.remainingSeats > 0 ? `余票 ${seatType.remainingSeats} 张` : '已售罄' }}
+              </span>
+            </div>
+            <p class="mt-2 text-xs leading-5 text-secondary sm:text-sm">{{ seatType.features || '舒适座席，具体座位以出票结果为准' }}</p>
           </div>
-          <div class="text-xs text-gray-400">{{ seatType.features }}</div>
+          <div class="shrink-0 text-right">
+            <span class="data-number text-xl font-bold text-action">￥{{ seatType.price }}</span>
+            <p class="text-xs text-secondary/80">每人</p>
+          </div>
         </div>
 
-        <!-- 座位位置选择下拉菜单 -->
         <div
-            v-if="selectedSeatType?.type === seatType.type && seatPositions[seatType.type] && seatPositions[seatType.type].length > 0"
-            class="mt-4 pt-4 border-t border-blue-100"
-            @click.stop
+          v-if="selectedSeatType?.type === seatType.type && seatPositions[seatType.type]?.length"
+          class="mt-5 border-t border-primary/20 pt-5"
+          @click.stop
+          @keydown.stop
         >
-          <div class="text-sm text-gray-700 mb-3 font-medium">选择座位位置：</div>
-          <div class="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-2">
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <p class="text-sm font-bold text-secondary">选择座位位置</p>
+            <p class="text-xs text-secondary/80">已选 {{ selectedPositions.length }} / 5</p>
+          </div>
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fit,minmax(124px,1fr))]">
             <div
-                v-for="position in seatPositions[seatType.type]"
-                :key="position.code"
-                :class="{
-                  'border-blue-500 bg-blue-50': getPositionCount(position.code) > 0,
-                  'border-gray-200 hover:border-blue-300 hover:bg-blue-50/30': getPositionCount(position.code) === 0,
-                  'bg-gray-50 opacity-60 cursor-not-allowed': position.remainingSeats === 0
-                }"
-                class="relative border rounded-md p-3 cursor-pointer transition-all duration-300 bg-white text-center"
-                @click="handleMainClick(position.code)"
+              v-for="position in seatPositions[seatType.type]"
+              :key="position.code"
+              class="relative rounded-lg border p-3 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              :class="{
+                'cursor-pointer border-primary bg-white': getPositionCount(position.code) > 0,
+                'cursor-pointer border-line bg-white hover:border-primary-hover hover:bg-[color-mix(in_srgb,var(--rail-primary)_3%,var(--rail-surface))]': getPositionCount(position.code) === 0 && position.remainingSeats > 0,
+                'cursor-not-allowed border-line/70 bg-background opacity-60': position.remainingSeats === 0,
+              }"
+              role="button"
+              :tabindex="position.remainingSeats > 0 ? 0 : -1"
+              :aria-label="`${position.name}${position.code}座，余票${position.remainingSeats}张，已选${getPositionCount(position.code)}张`"
+              :aria-disabled="position.remainingSeats === 0"
+              @click="handleMainClick(position.code)"
+              @keydown.enter="handleMainClick(position.code)"
+              @keydown.space.prevent="handleMainClick(position.code)"
             >
-              <div v-if="getPositionCount(position.code) > 0" 
-                   class="absolute -top-3 -right-3 flex items-center bg-white rounded-full shadow-md border border-gray-200 overflow-hidden z-20"
-                   @click.stop
+              <div
+                v-if="getPositionCount(position.code) > 0"
+                class="absolute -right-2 -top-3 z-20 flex overflow-hidden rounded-lg border border-primary/25 bg-white shadow-sm"
+                @click.stop
               >
-                <button 
-                  class="w-7 h-7 flex items-center justify-center hover:bg-gray-100 text-gray-600 font-bold transition-colors"
+                <button
+                  type="button"
+                  class="flex h-7 w-7 items-center justify-center text-secondary transition-colors hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+                  :aria-label="`减少一个${position.name}座`"
                   @click="handleUpdateCount(position.code, -1)"
-                >−</button>
-                <span class="w-6 text-center text-sm font-bold text-blue-600 select-none bg-blue-50 h-7 flex items-center justify-center">{{ getPositionCount(position.code) }}</span>
-                <button 
-                  class="w-7 h-7 flex items-center justify-center hover:bg-gray-100 text-blue-600 font-bold transition-colors"
+                >
+                  −
+                </button>
+                <span class="data-number flex h-7 w-7 select-none items-center justify-center bg-primary-soft text-sm font-bold text-primary">{{ getPositionCount(position.code) }}</span>
+                <button
+                  type="button"
+                  class="flex h-7 w-7 items-center justify-center font-bold text-primary transition-colors hover:bg-primary-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+                  :aria-label="`增加一个${position.name}座`"
                   @click="handleUpdateCount(position.code, 1)"
-                >+</button>
+                >
+                  +
+                </button>
               </div>
-              <div class="flex items-center justify-center gap-2 mb-2">
-                <span class="text-lg font-bold text-blue-500 bg-blue-50 border border-blue-100 rounded px-2 min-w-[24px] text-center">{{ position.code }}</span>
-                <span class="text-sm text-gray-500 font-medium">{{ position.name }}</span>
+              <div class="mb-2 flex items-center justify-center gap-2">
+                <span class="data-number min-w-7 rounded border border-primary/25 bg-primary-soft px-2 text-lg font-bold text-primary">{{ position.code }}</span>
+                <span class="text-sm font-semibold text-secondary">{{ position.name }}</span>
               </div>
-              <div class="text-xs font-medium" :class="position.remainingSeats > 0 ? 'text-green-500' : 'text-gray-400'">余{{ position.remainingSeats }}张</div>
+              <p class="data-number text-xs font-medium" :class="position.remainingSeats > 0 ? 'text-[#16794b]' : 'text-secondary/80'">余 {{ position.remainingSeats }} 张</p>
             </div>
           </div>
         </div>
+
+        <p
+          v-else-if="selectedSeatType?.type === seatType.type"
+          class="mt-4 rounded-lg border border-dashed border-line bg-white px-4 py-3 text-sm text-secondary"
+        >
+          暂无座位位置数据，可稍后重新选择该席别刷新。
+        </p>
       </div>
     </div>
-  </div>
+
+    <div v-else class="rounded-lg border border-dashed border-line bg-[color-mix(in_srgb,var(--rail-primary)_3%,var(--rail-surface))] px-5 py-10 text-center">
+      <p class="font-semibold text-secondary">当前车次暂无可选席别</p>
+      <p class="mt-1 text-sm text-secondary/80">请返回车票列表选择其他车次</p>
+    </div>
+  </section>
 </template>
 
 <script setup>
@@ -116,3 +163,9 @@ const getPositionCount = (positionCode) => {
 }
 </script>
 
+<style scoped>
+.data-number {
+  font-family: "DIN Alternate", "Arial Narrow", Arial, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+</style>

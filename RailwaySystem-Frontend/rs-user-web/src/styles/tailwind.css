@@ -3,17 +3,240 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: light;
+
+    --rail-primary: #1677ff;
+    --rail-primary-hover: #4096ff;
+    --rail-primary-active: #0958d9;
+    --rail-primary-soft: #eaf3ff;
+    --rail-navy: #0b2559;
+    --rail-action: #ff8200;
+    --rail-action-hover: #f07200;
+    --rail-action-soft: #fff3e6;
+    --rail-ink: #172033;
+    --rail-muted: #5f6b7a;
+    --rail-background: #f5f8fc;
+    --rail-surface: #ffffff;
+    --rail-line: #dde6f0;
+    --rail-success: #16a06a;
+    --rail-warning: #d97706;
+    --rail-danger: #d9363e;
+    --rail-control-radius: 8px;
+    --rail-card-radius: 12px;
+    --rail-hero-radius: 16px;
+    --rail-shadow-soft: 0 8px 28px rgba(11, 37, 89, 0.08);
+    --rail-shadow-card: 0 10px 32px rgba(11, 37, 89, 0.1);
+    --rail-focus-ring: 0 0 0 3px rgba(22, 119, 255, 0.18);
+
+    /* Element Plus theme bridge */
+    --el-color-primary: var(--rail-primary);
+    --el-color-primary-light-3: #5ca3ff;
+    --el-color-primary-light-5: #8abbff;
+    --el-color-primary-light-7: #bad7ff;
+    --el-color-primary-light-8: #d5e7ff;
+    --el-color-primary-light-9: var(--rail-primary-soft);
+    --el-color-primary-dark-2: var(--rail-primary-active);
+    --el-border-color: var(--rail-line);
+    --el-border-color-light: #e8eef5;
+    --el-border-radius-base: var(--rail-control-radius);
+    --el-text-color-primary: var(--rail-ink);
+    --el-text-color-regular: #344054;
+    --el-text-color-secondary: var(--rail-muted);
+    --el-fill-color-light: var(--rail-background);
+    --el-bg-color-page: var(--rail-background);
+  }
+
+  html {
+    @apply bg-background;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
-    @apply bg-background text-slate-800 font-sans antialiased;
+    @apply min-h-screen bg-background font-sans text-ink antialiased;
+    margin: 0;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button,
+  [role='button'],
+  a,
+  input,
+  textarea,
+  select,
+  [tabindex]:not([tabindex='-1']) {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--rail-primary);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: rgba(22, 119, 255, 0.18);
+    color: var(--rail-navy);
   }
 }
 
 @layer components {
-  .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/30;
+  .font-data,
+  .rail-data {
+    font-family: 'DIN Alternate', 'DIN Condensed', 'Arial Narrow', 'Roboto Condensed', Arial, sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+    letter-spacing: 0.01em;
   }
-  
+
+  .rail-focus-ring:focus-visible {
+    outline: none;
+    box-shadow: var(--rail-focus-ring);
+  }
+
+  .rail-control {
+    @apply rounded-control border border-line bg-white text-ink transition-colors duration-150;
+  }
+
+  .rail-control:hover {
+    border-color: var(--rail-primary-hover);
+  }
+
+  .rail-control:focus-within {
+    border-color: var(--rail-primary);
+    box-shadow: var(--rail-focus-ring);
+  }
+
+  .rail-control[disabled],
+  .rail-control[aria-disabled='true'] {
+    @apply cursor-not-allowed bg-slate-100 text-slate-400;
+    border-color: var(--rail-line);
+  }
+
+  /* Compatibility aliases: keep old markup working without the glass effect. */
+  .glass {
+    @apply border border-line bg-white/95;
+  }
+
   .glass-card {
-    @apply bg-white/90 backdrop-blur-sm shadow-soft border border-white/50;
+    @apply rounded-card border border-line bg-white shadow-soft;
+  }
+
+  /* Ant Design Vue bridge */
+  .ant-btn:not(.ant-btn-circle):not(.ant-btn-round):not(.ant-space-compact-item),
+  .ant-input:not(.ant-space-compact-item):not(.ant-input-group *),
+  .ant-input-affix-wrapper:not(.ant-space-compact-item):not(.ant-input-group *),
+  .ant-select:not(.ant-space-compact-item) .ant-select-selector,
+  .ant-picker:not(.ant-space-compact-item) {
+    border-radius: var(--rail-control-radius);
+  }
+
+  .ant-btn-primary {
+    background: var(--rail-primary);
+    border-color: var(--rail-primary);
+    box-shadow: none;
+  }
+
+  .ant-btn-primary:not(:disabled):hover {
+    background: var(--rail-primary-hover);
+    border-color: var(--rail-primary-hover);
+  }
+
+  .ant-btn-primary:not(:disabled):active {
+    background: var(--rail-primary-active);
+    border-color: var(--rail-primary-active);
+  }
+
+  .ant-btn:focus-visible,
+  .ant-input:not(.ant-input-status-error):not(.ant-input-status-warning):focus-visible,
+  .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-status-error):not(.ant-input-affix-wrapper-status-warning):focus-within,
+  .ant-select-focused:not(.ant-select-status-error):not(.ant-select-status-warning) .ant-select-selector,
+  .ant-picker-focused:not(.ant-picker-status-error):not(.ant-picker-status-warning) {
+    outline: none;
+    border-color: var(--rail-primary);
+    box-shadow: var(--rail-focus-ring);
+  }
+
+  .ant-input:not(.ant-input-status-error):not(.ant-input-status-warning):hover,
+  .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-status-error):not(.ant-input-affix-wrapper-status-warning):hover,
+  .ant-select:not(.ant-select-disabled):not(.ant-select-status-error):not(.ant-select-status-warning):hover .ant-select-selector,
+  .ant-picker:not(.ant-picker-status-error):not(.ant-picker-status-warning):hover {
+    border-color: var(--rail-primary-hover) !important;
+  }
+
+  .ant-card,
+  .ant-modal-content,
+  .ant-dropdown-menu {
+    border-radius: var(--rail-card-radius) !important;
+  }
+
+  /* Element Plus bridge */
+  .el-button,
+  .el-input__wrapper,
+  .el-select__wrapper,
+  .el-textarea__inner,
+  .el-date-editor {
+    border-radius: var(--rail-control-radius);
+  }
+
+  .el-card,
+  .el-dialog {
+    border-color: var(--rail-line);
+  }
+
+  .el-card,
+  .el-dialog,
+  .el-message-box {
+    border-radius: var(--rail-card-radius);
+  }
+
+  .el-button--primary {
+    --el-button-bg-color: var(--rail-primary);
+    --el-button-border-color: var(--rail-primary);
+    --el-button-hover-bg-color: var(--rail-primary-hover);
+    --el-button-hover-border-color: var(--rail-primary-hover);
+    --el-button-active-bg-color: var(--rail-primary-active);
+    --el-button-active-border-color: var(--rail-primary-active);
+  }
+
+  .el-button:focus-visible {
+    outline: none;
+    box-shadow: var(--rail-focus-ring);
+  }
+
+  .el-input__wrapper:focus-within,
+  .el-select__wrapper.is-focused,
+  .el-textarea__inner:focus,
+  .el-date-editor.is-active {
+    outline: 3px solid rgba(22, 119, 255, 0.18);
+    outline-offset: 1px;
+  }
+
+  .el-form-item.is-error :is(.el-input__wrapper, .el-select__wrapper, .el-textarea__inner, .el-date-editor):is(:focus-within, .is-focused, :focus, .is-active) {
+    outline-color: rgba(217, 54, 62, 0.22);
+  }
+
+  .el-form-item.is-warning :is(.el-input__wrapper, .el-select__wrapper, .el-textarea__inner, .el-date-editor):is(:focus-within, .is-focused, :focus, .is-active) {
+    outline-color: rgba(217, 119, 6, 0.24);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

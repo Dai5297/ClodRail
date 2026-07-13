@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full flex flex-col overflow-hidden space-y-4">
+  <div class="user-point-page h-full flex flex-col overflow-hidden space-y-4">
     <!-- 页面标题 -->
     <div class="border-b border-slate-200 pb-3 flex-shrink-0">
       <h2 class="text-xl font-bold text-slate-800">积分管理</h2>
@@ -7,8 +7,8 @@
     </div>
 
     <!-- 积分概览 -->
-    <div class="relative flex-shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-indigo-600 to-purple-700 p-4 sm:p-6 text-white shadow-lg">
-      <div v-if="overviewLoading" class="absolute inset-0 flex items-center justify-center bg-indigo-600/50 backdrop-blur-sm z-10">
+    <div class="relative flex-shrink-0 overflow-hidden rounded-xl bg-[#0B2559] p-4 sm:p-6 text-white shadow-lg">
+      <div v-if="overviewLoading" class="absolute inset-0 flex items-center justify-center bg-[#0B2559]/60 z-10">
         <svg class="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -18,28 +18,28 @@
       <div class="relative z-0 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div class="flex items-center gap-2 mb-1">
-            <h3 class="text-base font-medium text-indigo-100">我的积分</h3>
+            <h3 class="text-base font-medium text-white/80">我的积分</h3>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-300" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.699-3.181a1 1 0 011.827 1.035L17.474 6.88A9.956 9.956 0 0120 12C20 17.523 15.523 22 10 22S0 17.523 0 12a9.956 9.956 0 012.526-5.12l-1.003-3.042a1 1 0 011.827-1.035l1.699 3.181L9 4.323V3a1 1 0 011-1zm-5 8.274l-.818 2.455a7.957 7.957 0 00-1.044 3.27A7.962 7.962 0 0010 20a7.962 7.962 0 006.862-3.999 7.957 7.957 0 00-1.044-3.27L15 10.274V12a5 5 0 11-10 0v-1.726z" clip-rule="evenodd" />
             </svg>
           </div>
           <div class="flex items-baseline gap-2">
             <span class="text-3xl font-bold tracking-tight">{{ pointsInfo.currentPoints || 0 }}</span>
-            <span class="text-sm text-indigo-100">积分</span>
+            <span class="text-sm text-white/80">积分</span>
           </div>
         </div>
         
         <div class="grid grid-cols-3 gap-6 md:gap-8 border-t border-white/10 md:border-t-0 md:border-l md:pl-8 pt-4 md:pt-0">
           <div>
-            <p class="text-xs text-indigo-200 mb-1">累计获得</p>
+            <p class="text-xs text-white/70 mb-1">累计获得</p>
             <p class="text-lg font-semibold">{{ pointsInfo.totalEarned || 0 }}</p>
           </div>
           <div>
-            <p class="text-xs text-indigo-200 mb-1">累计消费</p>
+            <p class="text-xs text-white/70 mb-1">累计消费</p>
             <p class="text-lg font-semibold">{{ pointsInfo.totalSpent || 0 }}</p>
           </div>
           <div>
-            <p class="text-xs text-indigo-200 mb-1">即将过期</p>
+            <p class="text-xs text-white/70 mb-1">即将过期</p>
             <p class="text-lg font-semibold text-yellow-300">{{ pointsInfo.expiringSoon || 0 }}</p>
           </div>
         </div>
@@ -47,7 +47,7 @@
       
       <!-- Decorative background elements -->
       <div class="absolute top-0 right-0 -mt-10 -mr-10 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-      <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-32 h-32 bg-[#1677FF]/20 rounded-full blur-2xl pointer-events-none"></div>
     </div>
 
     <!-- 积分明细 -->
@@ -61,7 +61,7 @@
             <select
               v-model="filterForm.type"
               @change="handleFilter"
-              class="block w-32 pl-3 pr-8 py-2 text-sm border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 appearance-none cursor-pointer"
+              class="block w-32 pl-3 pr-8 py-2 text-sm border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer"
             >
               <option value="">全部类型</option>
               <option value="earn">获得</option>
@@ -80,7 +80,7 @@
             <input 
               type="date" 
               v-model="startDate"
-              class="block w-36 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+              class="block w-36 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               placeholder="开始日期"
               @change="handleFilter"
             />
@@ -88,7 +88,7 @@
             <input 
               type="date" 
               v-model="endDate"
-              class="block w-36 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+              class="block w-36 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               placeholder="结束日期"
               @change="handleFilter"
             />
@@ -105,7 +105,7 @@
 
       <div class="flex-1 overflow-y-auto">
         <div v-if="historyLoading" class="flex justify-center items-center py-20">
-          <svg class="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <svg class="animate-spin h-8 w-8 text-[#1677FF]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
@@ -214,7 +214,7 @@
                   v-else
                   @click="handleCurrentChange(page)"
                   :class="[
-                    page === currentPage ? 'z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600' : 'text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:outline-offset-0',
+                    page === currentPage ? 'z-10 bg-[#1677FF] text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600' : 'text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:outline-offset-0',
                     'relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20'
                   ]"
                 >
@@ -378,3 +378,40 @@ onMounted(() => {
   fetchPointsHistory()
 })
 </script>
+
+<style scoped>
+.user-point-page {
+  padding: 24px;
+  color: #172033;
+}
+
+.user-point-page :deep(h2),
+.user-point-page :deep(h3) {
+  color: #0b2559;
+  letter-spacing: 0;
+}
+
+.user-point-page :deep(.rounded-xl),
+.user-point-page :deep(.rounded-lg),
+.user-point-page :deep(.rounded-md) {
+  border-radius: 12px;
+}
+
+.user-point-page :deep(.text-yellow-300) {
+  color: #ff8200;
+}
+
+.user-point-page :deep(.focus\:ring-blue-500:focus),
+.user-point-page :deep(.focus\:border-blue-500:focus) {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.14);
+}
+
+@media (max-width: 640px) {
+  .user-point-page {
+    height: auto;
+    padding: 16px;
+    overflow: visible;
+  }
+}
+</style>

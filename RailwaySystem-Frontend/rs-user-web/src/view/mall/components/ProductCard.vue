@@ -1,11 +1,11 @@
 <template>
-  <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-transparent hover:border-slate-100 overflow-hidden group h-full flex flex-col cursor-pointer" @click="handleClick">
+  <div class="bg-white rounded-xl shadow-sm hover:shadow-[0_12px_28px_rgba(11,37,89,0.10)] transition-shadow duration-200 border border-[var(--rail-line)] overflow-hidden group h-full flex flex-col cursor-pointer" @click="handleClick">
     <!-- Image -->
     <div class="relative pt-[75%] bg-slate-50 overflow-hidden">
       <img 
         :src="getDisplayImage()" 
         :alt="product.name" 
-        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
       />
       
       <!-- Tags -->
@@ -13,17 +13,17 @@
         <span 
           v-for="tag in product.tags" 
           :key="tag" 
-          class="px-2 py-1 bg-blue-600/90 backdrop-blur-sm text-white text-xs font-medium rounded-lg"
+          class="px-2 py-1 bg-[#1677FF] text-white text-xs font-medium rounded-md"
         >
           {{ tag }}
         </span>
       </div>
       
-      <div v-if="product.isAd" class="absolute top-3 right-3 px-2 py-1 bg-orange-500/90 backdrop-blur-sm text-white text-xs font-medium rounded-lg z-10">
+      <div v-if="product.isAd" class="absolute top-3 right-3 px-2 py-1 bg-[#FF8200] text-white text-xs font-medium rounded-md z-10">
         推广
       </div>
       
-      <div v-if="product.stock <= 10 && product.stock > 0" class="absolute bottom-3 right-3 px-2 py-1 bg-red-500/90 backdrop-blur-sm text-white text-xs font-medium rounded-lg z-10">
+      <div v-if="product.stock <= 10 && product.stock > 0" class="absolute bottom-3 right-3 px-2 py-1 bg-[#fff4e5] text-[#ad4e00] border border-[#ffd8a8] text-xs font-medium rounded-md z-10">
         仅剩 {{ product.stock }} 件
       </div>
       
@@ -32,18 +32,18 @@
     </div>
 
     <!-- Content -->
-    <div class="p-5 flex-1 flex flex-col">
+    <div class="p-4 flex-1 flex flex-col">
       <div class="mb-1">
-        <span v-if="product.brand" class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md mr-2">{{ product.brand }}</span>
+        <span v-if="product.brand" class="text-xs text-slate-500 bg-[#F5F8FC] px-2 py-0.5 rounded-md mr-2">{{ product.brand }}</span>
       </div>
       
-      <h3 class="text-base font-bold text-slate-800 mb-2 line-clamp-2 min-h-[3rem] group-hover:text-primary transition-colors">
+      <h3 class="text-base font-bold text-[#172033] mb-2 line-clamp-2 min-h-[3rem] group-hover:text-[#1677FF] transition-colors">
         {{ product.name }}
       </h3>
 
       <div class="mt-auto">
         <div class="flex items-baseline gap-1 mb-3">
-          <span class="text-xl font-bold text-blue-600">{{ product.price }}</span>
+          <span class="text-2xl font-bold text-[#0B2559] font-data">{{ product.price }}</span>
           <span class="text-xs text-slate-500">积分</span>
         </div>
 
@@ -57,10 +57,10 @@
         </div>
 
         <button 
-          class="w-full py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2"
+          class="w-full py-2.5 rounded-lg font-bold text-sm transition-colors duration-200 flex items-center justify-center gap-2"
           :class="[
-            isAvailable 
-              ? 'bg-primary hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40' 
+            isAvailable
+              ? 'bg-[#FF8200] hover:bg-[#e87500] text-white shadow-sm'
               : 'bg-slate-100 text-slate-400 cursor-not-allowed'
           ]"
           :disabled="!isAvailable"

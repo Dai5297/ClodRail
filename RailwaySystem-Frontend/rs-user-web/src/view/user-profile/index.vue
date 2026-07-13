@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="user-profile-page space-y-6">
     <!-- 页面标题 -->
     <PageHeader
       :is-editing="isEditing"
@@ -130,3 +130,44 @@ onMounted(() => {
   fetchUserInfo()
 })
 </script>
+
+<style scoped>
+.user-profile-page {
+  height: 100%;
+  padding: 24px;
+  color: #172033;
+  overflow-y: auto;
+}
+
+.user-profile-page :deep(.rounded-3xl),
+.user-profile-page :deep(.rounded-2xl),
+.user-profile-page :deep(.rounded-xl) {
+  border-radius: 12px;
+}
+
+.user-profile-page :deep(.border-slate-100),
+.user-profile-page :deep(.border-slate-200) {
+  border-color: #dde6f0;
+}
+
+.user-profile-page :deep(h2),
+.user-profile-page :deep(h3) {
+  color: #0b2559;
+  letter-spacing: 0;
+}
+
+.user-profile-page :deep(button) {
+  border-radius: 8px;
+}
+
+.user-profile-page :deep(.bg-blue-600),
+.user-profile-page :deep(.bg-primary) {
+  background-color: #1677ff;
+}
+
+@media (max-width: 640px) {
+  .user-profile-page {
+    padding: 16px;
+  }
+}
+</style>

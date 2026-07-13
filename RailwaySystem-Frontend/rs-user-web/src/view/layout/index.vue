@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen flex flex-col bg-background font-sans">
-    <header class="bg-white/80 backdrop-blur-md border-b border-slate-100 fixed w-full top-0 z-50 h-20 shadow-sm transition-all duration-300">
+    <header class="portal-header">
       <Header
           :username="username"
           :user-avatar="userAvatar"
@@ -8,7 +8,7 @@
           :on-logout="handleLogout"
       />
     </header>
-    <main class="flex-grow pt-20">
+    <main class="portal-main">
       <router-view/>
     </main>
   </div>
@@ -28,6 +28,18 @@ const router = useRouter()
 // 用户信息数据
 const username = ref('用户名')
 const userAvatar = ref('')
+
+const applyStoredUserInfo = () => {
+  try {
+    const stored = JSON.parse(localStorage.getItem('userInfo') || '{}')
+    username.value = stored.realName || stored.username || username.value
+    userAvatar.value = stored.avatar || stored.icon || userAvatar.value
+    return Boolean(stored.realName || stored.username || stored.avatar || stored.icon)
+  } catch (error) {
+    // ignore invalid local user info
+  }
+  return false
+}
 
 // 跳转到用户中心的方法
 const goToUserCenter = () => {
@@ -51,6 +63,7 @@ const handleLogout = async () => {
 
 // 获取用户信息
 const userInfo = async () => {
+  if (applyStoredUserInfo()) return
   try {
     const response = await getUserInfo()
     if (response.code === 200) {
@@ -58,6 +71,7 @@ const userInfo = async () => {
       userAvatar.value = response.data.avatar
     }
   } catch (error) {
+    applyStoredUserInfo()
     message.error('获取用户信息失败')
   }
 }
@@ -65,6 +79,7 @@ const userInfo = async () => {
 onMounted(async () => {
   try {
     await ensureAccessToken()
+    applyStoredUserInfo()
     await userInfo()
   } catch (error) {
     clearAuth()
@@ -72,3 +87,21 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.portal-header {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 72px;
+  border-bottom: 1px solid var(--rail-line);
+  background: #fff;
+}
+
+.portal-main {
+  flex-grow: 1;
+  padding-top: 72px;
+}
+</style>

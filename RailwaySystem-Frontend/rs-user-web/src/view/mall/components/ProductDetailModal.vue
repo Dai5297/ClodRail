@@ -254,7 +254,7 @@ export default {
 
 .thumbnail:hover,
 .thumbnail.active {
-  border-color: #667eea;
+  border-color: #1677ff;
 }
 
 .thumbnail img {
@@ -285,7 +285,7 @@ export default {
 .points-price {
   font-size: 28px;
   font-weight: 700;
-  color: #667eea;
+  color: #1677ff;
 }
 
 .original-price {
@@ -351,7 +351,7 @@ export default {
 }
 
 .total-value {
-  color: #667eea;
+  color: #1677ff;
   font-size: 24px;
 }
 

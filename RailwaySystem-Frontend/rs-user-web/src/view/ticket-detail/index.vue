@@ -1,122 +1,125 @@
 <template>
-  <div class="min-h-screen bg-gray-50 pb-10">
-    <!-- 页面头部 -->
-    <div class="bg-white shadow-sm mb-5 sticky top-0 z-30">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+  <main class="min-h-screen bg-background pb-12 text-ink">
+    <header class="border-b border-line bg-white">
+      <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         <button
+          type="button"
+          class="mb-3 inline-flex items-center gap-1.5 rounded-lg text-sm font-medium text-secondary transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           @click="goBack"
-          class="flex items-center text-blue-600 hover:text-blue-800 transition-colors mb-2 text-sm"
         >
-          <svg
-            class="w-4 h-4 mr-1"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            ></path>
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
           返回车票列表
         </button>
-        <h2 class="text-2xl font-bold text-gray-900">车票详情</h2>
+        <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Ticket booking</p>
+            <h1 class="mt-1 text-2xl font-bold text-navy sm:text-3xl">确认您的出行信息</h1>
+          </div>
+          <p class="text-sm text-secondary">按顺序完成席别与乘车人选择后提交订单</p>
+        </div>
       </div>
-    </div>
+    </header>
 
-    <!-- 加载状态 -->
-    <div v-if="loading" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div class="animate-pulse space-y-4">
-        <div class="h-4 bg-gray-200 rounded w-1/4"></div>
-        <div class="h-32 bg-gray-200 rounded"></div>
-        <div class="h-32 bg-gray-200 rounded"></div>
-        <div class="h-32 bg-gray-200 rounded"></div>
+    <section class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8" aria-label="订票进度">
+      <ol class="grid grid-cols-4 overflow-hidden rounded-xl border border-line bg-white shadow-soft">
+        <li
+          v-for="(step, index) in ['车次', '席别', '乘车人', '订单确认']"
+          :key="step"
+          class="relative flex min-h-16 items-center justify-center gap-2 border-r border-line px-2 last:border-r-0 sm:justify-start sm:px-5"
+          :class="index === 0 || (index === 1 && selectedSeatType) || (index >= 2 && selectedPassengers.length) ? 'text-navy' : 'text-secondary/80'"
+        >
+          <span
+            class="data-number flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-bold"
+            :class="index === 0 || (index === 1 && selectedSeatType) || (index >= 2 && selectedPassengers.length) ? 'border-primary bg-primary text-white' : 'border-line bg-background'"
+          >{{ index + 1 }}</span>
+          <span class="hidden text-sm font-semibold sm:inline">{{ step }}</span>
+          <span v-if="index < 3" class="absolute -right-1.5 top-1/2 z-10 h-3 w-3 -translate-y-1/2 rotate-45 border-r border-t border-line bg-white" aria-hidden="true" />
+        </li>
+      </ol>
+    </section>
+
+    <section v-if="loading" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-live="polite" aria-busy="true">
+      <span class="sr-only">正在加载车票详情</span>
+      <div class="animate-pulse space-y-5">
+        <div class="h-48 rounded-xl border border-line bg-white" />
+        <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+          <div class="space-y-5">
+            <div class="h-64 rounded-xl border border-line bg-white" />
+            <div class="h-48 rounded-xl border border-line bg-white" />
+          </div>
+          <div class="h-80 rounded-xl border border-line bg-white" />
+        </div>
       </div>
-    </div>
+    </section>
 
-    <!-- 主要内容 -->
-    <div v-else class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- 车次信息卡片 -->
+    <section v-else class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <TrainInfoCard :ticket-detail="ticketDetail" />
 
-      <!-- 座位选择区域 -->
-      <SeatSelectionCard
-        :seat-types="ticketDetail.seatTypes"
-        :selected-seat-type="selectedSeatType"
-        :seat-positions="seatPositions"
-        :selected-positions="selectedPositions"
-        @select-seat-type="selectSeatType"
-        @update-position-count="updatePositionCount"
-      />
+      <div class="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div class="min-w-0 space-y-5">
+          <SeatSelectionCard
+            :seat-types="ticketDetail.seatTypes"
+            :selected-seat-type="selectedSeatType"
+            :seat-positions="seatPositions"
+            :selected-positions="selectedPositions"
+            @select-seat-type="selectSeatType"
+            @update-position-count="updatePositionCount"
+          />
 
-      <!-- 乘客信息区域 -->
-      <PassengerInfoCard
-        :selected-passengers="selectedPassengers"
-        :selected-seat-type="selectedSeatType"
-        @add-passenger="showContactModal = true"
-        @remove-passenger="removePassenger"
-      />
+          <PassengerInfoCard
+            :selected-passengers="selectedPassengers"
+            :selected-seat-type="selectedSeatType"
+            @add-passenger="showContactModal = true"
+            @remove-passenger="removePassenger"
+          />
+        </div>
 
-      <!-- 订单摘要 -->
-      <OrderSummaryCard
-        :train-code="ticketDetail.trainCode"
-        :departure-date="formatDate(ticketDetail.departureDate)"
-        :origin-station="ticketDetail.originStation.name"
-        :destination-station="ticketDetail.destinationStation.name"
-        :seat-type-name="selectedSeatType?.name || '未选择'"
-        :passenger-count="selectedPassengers.length"
-        :total-amount="totalAmount"
-      />
+        <aside class="lg:sticky lg:top-6">
+          <OrderSummaryCard
+            :train-code="ticketDetail.trainCode"
+            :departure-date="formatDate(ticketDetail.departureDate)"
+            :origin-station="ticketDetail.originStation.name"
+            :destination-station="ticketDetail.destinationStation.name"
+            :seat-type-name="selectedSeatType?.name || '未选择'"
+            :passenger-count="selectedPassengers.length"
+            :total-amount="totalAmount"
+          />
 
-      <!-- 操作按钮 -->
-      <div class="mt-8 flex justify-center gap-4">
-        <button
-          @click="goBack"
-          class="px-8 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-        >
-          取消
-        </button>
-        <button
-          @click="proceedToPayment"
-          :disabled="!canProceed || submitting"
-          class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
-        >
-          <svg
-            v-if="submitting"
-            class="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-          立即预订
-        </button>
+          <div class="mt-4 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              class="rounded-lg border border-line bg-white px-4 py-3 text-sm font-semibold text-secondary transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              @click="goBack"
+            >
+              取消
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-lg bg-action px-4 py-3 text-sm font-bold text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--rail-action)_20%,transparent)] transition-colors hover:bg-action-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-secondary/40 disabled:shadow-none"
+              :disabled="!canProceed || submitting"
+              @click="proceedToPayment"
+            >
+              <svg v-if="submitting" class="mr-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              {{ submitting ? '正在提交' : '提交订单' }}
+            </button>
+          </div>
+          <p v-if="!canProceed" class="mt-3 text-center text-xs leading-5 text-secondary/80">选择席别并添加乘车人后即可提交</p>
+        </aside>
       </div>
-    </div>
+    </section>
 
-    <!-- 联系人选择弹窗 -->
     <ContactModal
       v-model="showContactModal"
       :contacts="contacts"
       :selected-seat-type="selectedSeatType"
       @confirm="confirmPassengerSelection"
     />
-  </div>
+  </main>
 </template>
 
 <script setup>
@@ -495,4 +498,9 @@ onMounted(async () => {
 })
 </script>
 
-
+<style scoped>
+.data-number {
+  font-family: "DIN Alternate", "Arial Narrow", Arial, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+</style>

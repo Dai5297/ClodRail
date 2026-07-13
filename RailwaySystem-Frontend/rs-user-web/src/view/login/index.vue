@@ -46,6 +46,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import AuthTabs from '@/view/login/components/AuthTabs.vue'
 import LoginForm from '@/view/login/components/LoginForm.vue'
 import RegisterForm from '@/view/login/components/RegisterForm.vue'
@@ -131,152 +132,224 @@ onMounted(async () => {
 <style scoped>
 .login-page {
   min-height: 100vh;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  background:
+    linear-gradient(90deg, rgba(22, 119, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(11, 37, 89, 0.05) 1px, transparent 1px),
+    #f5f8fc;
+  background-size: 56px 56px;
 }
 
 .login-container {
   width: 100%;
-  max-width: 480px;
-  padding: 20px;
+  max-width: 1120px;
+  padding: 32px;
   position: relative;
   z-index: 10;
 }
 
 .login-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(420px, 1fr);
+  min-height: 640px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #dde6f0;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 18px 42px rgba(11, 37, 89, 0.1);
+}
+
+.login-card::before {
+  content: "";
+  position: absolute;
+  inset: auto 32px 32px 32px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #1677ff 18%, #ff8200 50%, #1677ff 82%, transparent);
+  opacity: 0.28;
+}
+
+.login-card::after {
+  content: "";
+  position: absolute;
+  left: 31%;
+  bottom: 27px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #ff8200;
+  box-shadow: 230px 0 0 #1677ff, 460px 0 0 #0b2559;
+}
+
+.login-header,
+.login-content {
+  position: relative;
+  z-index: 1;
 }
 
 .login-header {
-  text-align: center;
-  padding: 40px 40px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 44px 40px;
+  color: #ffffff;
+  background:
+    linear-gradient(135deg, rgba(11, 37, 89, 0.96), rgba(11, 37, 89, 0.88)),
+    repeating-linear-gradient(90deg, transparent 0 26px, rgba(255, 255, 255, 0.08) 26px 27px);
+}
+
+.login-header::after {
+  content: "";
+  width: min(100%, 340px);
+  height: 112px;
+  margin-top: auto;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.38);
+  border-left: 3px solid rgba(255, 255, 255, 0.14);
+  transform: skewX(-18deg);
+}
+
+.login-header::before {
+  content: "ClodRail";
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-bottom: 36px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
 .login-title {
-  font-size: 28px;
-  font-weight: 700;
-  margin: 0 0 8px 0;
-  letter-spacing: 1px;
+  max-width: 9em;
+  margin: 0 0 14px;
+  color: #ffffff;
+  font-size: clamp(32px, 4vw, 46px);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: 0;
 }
 
 .login-subtitle {
-  font-size: 14px;
-  opacity: 0.9;
+  max-width: 24em;
   margin: 0;
-  font-weight: 300;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 15px;
+  line-height: 1.7;
 }
 
 .login-content {
-  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 44px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
 }
 
-/* 背景装饰 */
 .background-decoration {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   pointer-events: none;
   z-index: 1;
 }
 
 .decoration-circle {
   position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  animation: float 6s ease-in-out infinite;
+  border-radius: 999px;
+  border: 1px solid rgba(22, 119, 255, 0.18);
+  background: transparent;
 }
 
 .circle-1 {
-  width: 200px;
-  height: 200px;
-  top: 10%;
-  left: 10%;
-  animation-delay: 0s;
+  width: 280px;
+  height: 280px;
+  top: -96px;
+  right: -70px;
 }
 
 .circle-2 {
-  width: 150px;
-  height: 150px;
-  top: 60%;
-  right: 10%;
-  animation-delay: 2s;
+  width: 180px;
+  height: 180px;
+  bottom: 12%;
+  left: -80px;
 }
 
 .circle-3 {
-  width: 100px;
-  height: 100px;
-  bottom: 20%;
-  left: 20%;
-  animation-delay: 4s;
+  width: 88px;
+  height: 88px;
+  right: 12%;
+  bottom: 10%;
+  border-color: rgba(255, 130, 0, 0.24);
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-    opacity: 0.7;
+@media (max-width: 900px) {
+  .login-page {
+    align-items: flex-start;
   }
-  50% {
-    transform: translateY(-20px) rotate(180deg);
-    opacity: 0.3;
-  }
-}
 
-/* 响应式设计 */
-@media (max-width: 768px) {
   .login-container {
-    max-width: 100%;
-    padding: 16px;
+    padding: 18px;
   }
-  
+
   .login-card {
-    border-radius: 16px;
+    grid-template-columns: 1fr;
+    min-height: auto;
   }
-  
-  .login-header {
-    padding: 32px 24px 16px;
-  }
-  
-  .login-title {
-    font-size: 24px;
-  }
-  
-  .login-subtitle {
-    font-size: 13px;
-  }
-  
-  .decoration-circle {
+
+  .login-card::before,
+  .login-card::after {
     display: none;
+  }
+
+  .login-header {
+    min-height: 220px;
+    padding: 30px 26px;
+  }
+
+  .login-header::after {
+    height: 54px;
+  }
+
+  .login-title {
+    font-size: 30px;
+  }
+
+  .login-content {
+    padding: 28px 18px 32px;
   }
 }
 
 @media (max-width: 480px) {
-  .login-header {
-    padding: 24px 20px 12px;
+  .login-container {
+    padding: 12px;
   }
-  
+
+  .login-card {
+    border-radius: 12px;
+  }
+
+  .login-header {
+    padding: 24px 20px;
+  }
+
   .login-title {
-    font-size: 22px;
+    font-size: 26px;
+  }
+
+  .login-content {
+    padding: 24px 10px 28px;
   }
 }
 
+/* 背景装饰 */
+
+/* 响应式设计 */
+
 /* 深色模式支持 */
-@media (prefers-color-scheme: dark) {
-  .login-card {
-    background: rgba(30, 30, 30, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-}
 </style>

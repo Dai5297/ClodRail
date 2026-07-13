@@ -7,7 +7,7 @@
       </div>
       <div class="max-w-[80%] space-y-1">
         <div class="bg-white px-5 py-4 rounded-2xl rounded-tl-none shadow-sm text-slate-700 text-sm leading-relaxed border border-slate-100">
-          <p class="mb-2 font-medium text-slate-900">您好！我是 CloudRail 智能助手 🚄</p>
+          <p class="mb-2 font-medium text-slate-900">您好！我是 ClodRail 智能助手 🚄</p>
           <p class="mb-2">我可以帮您解答关于铁路出行的各种问题，包括：</p>
           <ul class="space-y-1 pl-4 mb-3 list-none">
             <li class="flex items-center gap-2"><i class="ri-ticket-2-line text-blue-500"></i> 车票查询与预订</li>

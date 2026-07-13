@@ -1,17 +1,23 @@
 <template>
-  <div class="min-h-screen bg-slate-50 pb-20">
-    <!-- 顶部背景图 -->
-    <div class="h-48 bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
-      <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20"></div>
-      <div class="absolute inset-0 bg-black/10"></div>
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center">
-        <h1 class="text-3xl font-bold text-white mb-2">车票查询</h1>
-        <p class="text-blue-100">轻松预订，开启您的美好旅程</p>
+  <main class="ticket-page">
+    <header class="ticket-page__masthead">
+      <div class="ticket-page__masthead-inner">
+        <div>
+          <span class="ticket-page__kicker">CLODRAIL · 车票预订</span>
+          <h1>车票查询</h1>
+          <p>按车次信息牌快速比较时间、余票与价格。</p>
+        </div>
+        <div class="ticket-page__guide" aria-hidden="true">
+          <span class="ticket-page__guide-dot"></span>
+          <span class="ticket-page__guide-line"></span>
+          <i class="ri-train-line"></i>
+          <span class="ticket-page__guide-line"></span>
+          <span class="ticket-page__guide-dot ticket-page__guide-dot--end"></span>
+        </div>
       </div>
-    </div>
+    </header>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
-      <!-- Search Bar -->
+    <div class="ticket-page__container">
       <TicketSearch
         :initial-params="searchParams"
         :show-title="false"
@@ -19,93 +25,103 @@
         @search="handleSearch"
       />
 
-      <!-- Filter & Sort Bar -->
-      <div class="flex flex-col lg:flex-row gap-6">
-        <!-- Sidebar Filter -->
-        <div class="w-full lg:w-64 flex-shrink-0 space-y-6">
-          <div class="bg-white rounded-2xl p-6 shadow-sm sticky top-24 border border-slate-100">
-            <h3 class="font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <i class="ri-filter-3-line text-primary"></i> 筛选条件
-            </h3>
-            
-            <div class="space-y-6">
-              <div>
-                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">车型</div>
-                <a-checkbox-group v-model:value="filters.trainTypes" class="flex flex-col gap-3">
-                  <a-checkbox value="G">G-高铁</a-checkbox>
-                  <a-checkbox value="D">D-动车</a-checkbox>
-                  <a-checkbox value="Z">Z-直达</a-checkbox>
-                  <a-checkbox value="K">K-普快</a-checkbox>
-                </a-checkbox-group>
-              </div>
-              
-              <div class="h-px bg-slate-100"></div>
-              
-              <div>
-                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">出发时段</div>
-                <a-checkbox-group v-model:value="filters.departureTimes" class="flex flex-col gap-3">
-                  <a-checkbox value="0-6">凌晨 (00:00-06:00)</a-checkbox>
-                  <a-checkbox value="6-12">上午 (06:00-12:00)</a-checkbox>
-                  <a-checkbox value="12-18">下午 (12:00-18:00)</a-checkbox>
-                  <a-checkbox value="18-24">晚上 (18:00-24:00)</a-checkbox>
-                </a-checkbox-group>
-              </div>
-
-               <div class="h-px bg-slate-100"></div>
-
-               <div>
-                 <a-checkbox v-model:checked="filters.hasTicket">只看有票</a-checkbox>
-               </div>
+      <div class="ticket-page__content">
+        <aside class="ticket-filters" aria-labelledby="filter-title">
+          <div class="ticket-filters__heading">
+            <div>
+              <span>FILTER</span>
+              <h2 id="filter-title">筛选条件</h2>
             </div>
+            <i class="ri-equalizer-2-line" aria-hidden="true"></i>
           </div>
-        </div>
 
-        <!-- Results List -->
-        <div class="flex-1">
-          <!-- Sort Bar -->
-          <div class="bg-white px-6 py-4 rounded-2xl shadow-sm flex items-center justify-between text-sm mb-6 border border-slate-100">
-            <div class="flex gap-8">
-              <span 
-                class="cursor-pointer font-bold flex items-center gap-1 transition-colors"
-                :class="sortBy === 'startTime' ? 'text-primary' : 'text-slate-500 hover:text-slate-900'"
+          <div class="ticket-filters__groups">
+            <section class="ticket-filters__group">
+              <h3>车型</h3>
+              <a-checkbox-group v-model:value="filters.trainTypes" class="ticket-filters__options">
+                <a-checkbox value="G">G · 高铁</a-checkbox>
+                <a-checkbox value="D">D · 动车</a-checkbox>
+                <a-checkbox value="Z">Z · 直达</a-checkbox>
+                <a-checkbox value="K">K · 普快</a-checkbox>
+              </a-checkbox-group>
+            </section>
+
+            <section class="ticket-filters__group">
+              <h3>出发时段</h3>
+              <a-checkbox-group v-model:value="filters.departureTimes" class="ticket-filters__options">
+                <a-checkbox value="0-6">凌晨 <small>00:00—06:00</small></a-checkbox>
+                <a-checkbox value="6-12">上午 <small>06:00—12:00</small></a-checkbox>
+                <a-checkbox value="12-18">下午 <small>12:00—18:00</small></a-checkbox>
+                <a-checkbox value="18-24">晚上 <small>18:00—24:00</small></a-checkbox>
+              </a-checkbox-group>
+            </section>
+
+            <section class="ticket-filters__group ticket-filters__group--availability">
+              <a-checkbox v-model:checked="filters.hasTicket">只看有票车次</a-checkbox>
+            </section>
+          </div>
+        </aside>
+
+        <section class="ticket-results" aria-labelledby="result-title">
+          <div class="ticket-results__toolbar">
+            <div>
+              <span class="ticket-results__eyebrow">SEARCH RESULT</span>
+              <h2 id="result-title">可选车次</h2>
+            </div>
+
+            <div class="ticket-results__sort" aria-label="车次排序方式">
+              <span>排序</span>
+              <button
+                type="button"
+                :class="{ 'is-active': sortBy === 'startTime' }"
+                :aria-pressed="sortBy === 'startTime'"
                 @click="handleSort('startTime')"
               >
-                出发时间 <i class="ri-arrow-up-line" v-if="sortBy === 'startTime'"></i>
-              </span>
-              <span 
-                class="cursor-pointer font-bold flex items-center gap-1 transition-colors"
-                :class="sortBy === 'duration' ? 'text-primary' : 'text-slate-500 hover:text-slate-900'"
+                出发时间
+              </button>
+              <button
+                type="button"
+                :class="{ 'is-active': sortBy === 'duration' }"
+                :aria-pressed="sortBy === 'duration'"
                 @click="handleSort('duration')"
               >
-                耗时最短 <i class="ri-arrow-up-line" v-if="sortBy === 'duration'"></i>
-              </span>
-              <span 
-                class="cursor-pointer font-bold flex items-center gap-1 transition-colors"
-                :class="sortBy === 'price' ? 'text-primary' : 'text-slate-500 hover:text-slate-900'"
+                耗时最短
+              </button>
+              <button
+                type="button"
+                :class="{ 'is-active': sortBy === 'price' }"
+                :aria-pressed="sortBy === 'price'"
                 @click="handleSort('price')"
               >
-                价格最低 <i class="ri-arrow-up-line" v-if="sortBy === 'price'"></i>
-              </span>
+                价格最低
+              </button>
             </div>
-            <span class="text-slate-400">共找到 {{ filteredTickets.length }} 个车次</span>
+
+            <p class="ticket-results__count" aria-live="polite">
+              <strong>{{ filteredTickets.length }}</strong>
+              个车次
+            </p>
           </div>
 
-          <!-- Loading State -->
-          <div v-if="loading" class="space-y-4">
-             <a-skeleton active :paragraph="{ rows: 4 }" class="bg-white p-6 rounded-2xl" v-for="i in 3" :key="i" />
+          <div v-if="loading" class="ticket-results__loading" aria-label="正在加载车次">
+            <a-skeleton
+              v-for="i in 3"
+              :key="i"
+              active
+              :paragraph="{ rows: 4 }"
+              class="ticket-results__skeleton"
+            />
           </div>
 
-          <!-- Empty State -->
-          <div v-else-if="filteredTickets.length === 0" class="bg-white rounded-2xl py-16 text-center border border-slate-100 shadow-sm">
-            <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
-               <i class="ri-train-line text-4xl"></i>
+          <div v-else-if="filteredTickets.length === 0" class="ticket-results__empty">
+            <div class="ticket-results__empty-icon" aria-hidden="true">
+              <i class="ri-train-line"></i>
             </div>
-            <h3 class="text-lg font-bold text-slate-900">暂无符合条件的车次</h3>
-            <p class="text-slate-500 mt-2">请尝试更改筛选条件或搜索日期</p>
+            <h3>暂无符合条件的车次</h3>
+            <p>可以调整筛选条件，或更换出发日期后重新查询。</p>
           </div>
 
-          <!-- Ticket List -->
-          <div v-else class="space-y-4">
+          <div v-else class="ticket-results__list">
             <TicketCard
               v-for="ticket in filteredTickets"
               :key="ticket.trainId"
@@ -113,10 +129,10 @@
               @view-detail="handleViewDetail"
             />
           </div>
-        </div>
+        </section>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup>
@@ -162,7 +178,7 @@ const fetchTickets = async () => {
       originStationId: searchParams.originStationId,
       destinationStationId: searchParams.destinationStationId
     }
-    
+
     const response = await searchTickets(params)
     if (response.code === 200) {
       tickets.value = response.data?.records || []
@@ -203,7 +219,7 @@ const handleSort = (type) => {
 const handleViewDetail = (ticket) => {
   // Navigate to booking page or show modal
   router.push({
-    path: '/ticket-detail', 
+    path: '/ticket-detail',
     query: {
       ticketId: ticket.id,
       date: searchParams.date,
@@ -213,6 +229,15 @@ const handleViewDetail = (ticket) => {
   })
 }
 
+const getMinAvailablePrice = (ticket) => {
+  const availablePrices = (ticket.seatTypes || [])
+    .filter(seat => seat.remainingSeats > 0)
+    .map(seat => Number(seat.price))
+    .filter(price => Number.isFinite(price))
+
+  return availablePrices.length > 0 ? Math.min(...availablePrices) : Infinity
+}
+
 // Client-side filtering and sorting
 const filteredTickets = computed(() => {
   let result = [...tickets.value]
@@ -220,7 +245,8 @@ const filteredTickets = computed(() => {
   // Filter by train type
   if (filters.trainTypes.length > 0) {
     result = result.filter(t => {
-      const type = t.trainCode ? t.trainCode[0] : ''
+      const trainNumber = t.trainNumber || t.trainCode || ''
+      const type = trainNumber[0] || ''
       return filters.trainTypes.includes(type)
     })
   }
@@ -246,13 +272,9 @@ const filteredTickets = computed(() => {
     if (sortBy.value === 'startTime') {
       return a.startTime.localeCompare(b.startTime)
     } else if (sortBy.value === 'duration') {
-       return a.duration.localeCompare(b.duration) 
+      return a.duration.localeCompare(b.duration)
     } else if (sortBy.value === 'price') {
-      const getMinPrice = (t) => {
-          if (!t.seatTypes || t.seatTypes.length === 0) return 999999
-          return Math.min(...t.seatTypes.map(s => s.price))
-      }
-      return getMinPrice(a) - getMinPrice(b)
+      return getMinAvailablePrice(a) - getMinAvailablePrice(b)
     }
     return 0
   })
@@ -264,3 +286,402 @@ onMounted(() => {
   initParams()
 })
 </script>
+
+<style scoped>
+.ticket-page {
+  min-height: 100vh;
+  padding-bottom: 72px;
+  background: var(--rail-background);
+  color: var(--rail-ink);
+}
+
+.ticket-page__masthead {
+  min-height: 188px;
+  border-bottom: 1px solid var(--rail-line);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--rail-primary) 7%, transparent) 1px, transparent 1px) 0 0 / 84px 100%,
+    var(--rail-surface);
+}
+
+.ticket-page__masthead-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(1180px, calc(100% - 32px));
+  min-height: 188px;
+  margin: 0 auto;
+  padding-bottom: 30px;
+}
+
+.ticket-page__kicker,
+.ticket-results__eyebrow,
+.ticket-filters__heading span {
+  color: var(--rail-primary);
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.ticket-page__masthead h1 {
+  margin: 8px 0 6px;
+  color: var(--rail-navy);
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.ticket-page__masthead p {
+  margin: 0;
+  color: var(--rail-muted);
+  font-size: 15px;
+}
+
+.ticket-page__guide {
+  display: flex;
+  align-items: center;
+  width: min(360px, 34vw);
+  color: var(--rail-primary);
+}
+
+.ticket-page__guide i {
+  margin: 0 10px;
+  font-size: 28px;
+}
+
+.ticket-page__guide-line {
+  flex: 1;
+  height: 2px;
+  background: var(--rail-primary);
+}
+
+.ticket-page__guide-dot {
+  width: 12px;
+  height: 12px;
+  border: 3px solid var(--rail-primary);
+  border-radius: 50%;
+  background: var(--rail-surface);
+}
+
+.ticket-page__guide-dot--end {
+  border-color: var(--rail-action);
+}
+
+.ticket-page__container {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, calc(100% - 32px));
+  margin: -30px auto 0;
+}
+
+.ticket-page__content {
+  display: grid;
+  grid-template-columns: 236px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  margin-top: 24px;
+}
+
+.ticket-filters {
+  position: sticky;
+  top: 88px;
+  overflow: hidden;
+  border: 1px solid var(--rail-line);
+  border-radius: var(--rail-card-radius);
+  background: var(--rail-surface);
+}
+
+.ticket-filters__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid var(--rail-line);
+}
+
+.ticket-filters__heading h2,
+.ticket-results__toolbar h2 {
+  margin: 3px 0 0;
+  color: var(--rail-navy);
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.ticket-filters__heading i {
+  color: var(--rail-primary);
+  font-size: 20px;
+}
+
+.ticket-filters__group {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--rail-line);
+}
+
+.ticket-filters__group:last-child {
+  border-bottom: 0;
+}
+
+.ticket-filters__group h3 {
+  margin: 0 0 12px;
+  color: var(--rail-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ticket-filters__options {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.ticket-filters__options small {
+  margin-left: 4px;
+  color: var(--rail-muted);
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  font-size: 11px;
+}
+
+.ticket-filters__group--availability {
+  background: var(--rail-primary-soft);
+}
+
+.ticket-results {
+  min-width: 0;
+}
+
+.ticket-results__toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  min-height: 74px;
+  margin-bottom: 14px;
+  padding: 12px 18px;
+  border: 1px solid var(--rail-line);
+  border-radius: var(--rail-card-radius);
+  background: var(--rail-surface);
+}
+
+.ticket-results__sort {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.ticket-results__sort > span {
+  margin-right: 4px;
+  color: var(--rail-muted);
+  font-size: 12px;
+}
+
+.ticket-results__sort button {
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--rail-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.ticket-results__sort button:hover {
+  background: var(--rail-background);
+  color: var(--rail-ink);
+}
+
+.ticket-results__sort button.is-active {
+  background: var(--rail-primary-soft);
+  color: var(--rail-primary-active);
+}
+
+.ticket-results__sort button:focus-visible {
+  outline: none;
+  box-shadow: var(--rail-focus-ring);
+}
+
+.ticket-results__count {
+  margin: 0;
+  color: var(--rail-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ticket-results__count strong {
+  margin-right: 4px;
+  color: var(--rail-navy);
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ticket-results__loading,
+.ticket-results__list {
+  display: grid;
+  gap: 12px;
+}
+
+.ticket-results__skeleton,
+.ticket-results__empty {
+  padding: 24px;
+  border: 1px solid var(--rail-line);
+  border-radius: var(--rail-card-radius);
+  background: var(--rail-surface);
+}
+
+.ticket-results__empty {
+  padding-block: 64px;
+  text-align: center;
+}
+
+.ticket-results__empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 14px;
+  border: 1px solid var(--rail-line);
+  border-radius: 50%;
+  background: var(--rail-background);
+  color: var(--rail-primary);
+  font-size: 28px;
+}
+
+.ticket-results__empty h3 {
+  margin: 0;
+  color: var(--rail-navy);
+  font-size: 18px;
+}
+
+.ticket-results__empty p {
+  margin: 8px 0 0;
+  color: var(--rail-muted);
+  font-size: 14px;
+}
+
+@media (max-width: 1020px) {
+  .ticket-page__content {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ticket-filters {
+    position: static;
+  }
+
+  .ticket-filters__groups {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 0.8fr;
+  }
+
+  .ticket-filters__group {
+    border-right: 1px solid var(--rail-line);
+    border-bottom: 0;
+  }
+
+  .ticket-filters__group:last-child {
+    display: flex;
+    align-items: center;
+    border-right: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .ticket-page__masthead,
+  .ticket-page__masthead-inner {
+    min-height: 164px;
+  }
+
+  .ticket-page__masthead-inner {
+    padding-bottom: 24px;
+  }
+
+  .ticket-page__guide {
+    display: none;
+  }
+
+  .ticket-page__container {
+    margin-top: -20px;
+  }
+
+  .ticket-filters__groups {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ticket-filters__group:nth-child(2) {
+    border-right: 0;
+  }
+
+  .ticket-filters__group--availability {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--rail-line);
+  }
+
+  .ticket-results__toolbar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .ticket-results__sort {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .ticket-page {
+    padding-bottom: 48px;
+  }
+
+  .ticket-page__masthead-inner,
+  .ticket-page__container {
+    width: min(100% - 20px, 1180px);
+  }
+
+  .ticket-page__masthead h1 {
+    font-size: 28px;
+  }
+
+  .ticket-page__masthead p {
+    font-size: 13px;
+  }
+
+  .ticket-page__content {
+    margin-top: 16px;
+  }
+
+  .ticket-filters__groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ticket-filters__group,
+  .ticket-filters__group:nth-child(2) {
+    border-right: 0;
+    border-bottom: 1px solid var(--rail-line);
+  }
+
+  .ticket-filters__group--availability {
+    grid-column: auto;
+    border-top: 0;
+    border-bottom: 0;
+  }
+
+  .ticket-results__toolbar {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .ticket-results__sort button {
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticket-results__sort button {
+    transition: none;
+  }
+}
+</style>

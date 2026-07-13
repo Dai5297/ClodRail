@@ -1,11 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gray-50 pb-10">
+  <main class="min-h-screen bg-background pb-12 text-ink">
     <!-- 页面头部 -->
-    <div class="bg-white shadow-sm mb-5 sticky top-0 z-30">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="border-b border-slate-200 bg-white">
+      <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         <button 
           @click="goBack" 
-          class="flex items-center text-blue-600 hover:text-blue-800 transition-colors mb-2 text-sm"
+          type="button"
+          class="mb-2 flex items-center text-sm font-medium text-primary hover:text-navy focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
         >
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           返回订单详情
@@ -15,21 +16,21 @@
     </div>
 
     <!-- 支付进度条 -->
-    <div class="bg-white border-b border-gray-200 py-8 mb-6">
-      <div class="max-w-3xl mx-auto px-4">
+    <div class="mb-6 border-b border-slate-200 bg-white py-6">
+      <div class="mx-auto max-w-3xl px-4">
         <div class="flex items-center justify-between relative">
           <!-- 进度条背景线 -->
-          <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-200 -z-10"></div>
+          <div class="absolute left-0 top-4 h-0.5 w-full bg-slate-200"></div>
           <!-- 进度条激活线 -->
-          <div class="absolute left-0 top-1/2 transform -translate-y-1/2 h-1 bg-blue-600 -z-10 transition-all duration-500" :style="{ width: `${(currentStep - 1) / 3 * 100}%` }"></div>
+          <div class="absolute left-0 top-4 h-0.5 bg-primary duration-500" :style="{ width: `${(currentStep - 1) / 3 * 100}%` }"></div>
           
           <!-- 步骤项 -->
-          <div v-for="(step, index) in steps" :key="index" class="flex flex-col items-center bg-white px-2">
+          <div v-for="(step, index) in steps" :key="index" class="relative flex flex-col items-center bg-white px-2">
             <div 
               class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-colors duration-300"
               :class="[
-                currentStep > index + 1 ? 'bg-blue-600 border-blue-600 text-white' : 
-                currentStep === index + 1 ? 'bg-blue-600 border-blue-600 text-white' : 
+                currentStep > index + 1 ? 'bg-primary border-primary text-white' :
+                currentStep === index + 1 ? 'bg-primary border-primary text-white' :
                 'bg-white border-gray-300 text-gray-400'
               ]"
             >
@@ -38,7 +39,7 @@
             </div>
             <span 
               class="mt-2 text-xs font-medium transition-colors duration-300"
-              :class="currentStep >= index + 1 ? 'text-blue-600' : 'text-gray-400'"
+              :class="currentStep >= index + 1 ? 'text-navy' : 'text-gray-400'"
             >
               {{ step.title }}
             </span>
@@ -48,7 +49,7 @@
     </div>
 
     <!-- 加载状态 -->
-    <div v-if="loading" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div v-if="loading" class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8" aria-live="polite" aria-label="正在加载订单信息">
       <div class="animate-pulse space-y-4">
         <div class="h-4 bg-gray-200 rounded w-1/4"></div>
         <div class="h-32 bg-gray-200 rounded"></div>
@@ -57,10 +58,10 @@
     </div>
 
     <!-- 主要内容 -->
-    <div v-else class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div v-else class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
         <!-- 左侧：订单信息 -->
-        <div class="lg:col-span-2 space-y-6">
+        <div class="space-y-6">
           <!-- 订单详情卡片 -->
           <OrderInfoCard :order-info="orderInfo" />
 
@@ -69,7 +70,7 @@
         </div>
 
         <!-- 右侧：支付方式 -->
-        <div class="space-y-6">
+        <div class="space-y-5 lg:sticky lg:top-6 lg:self-start">
           <PaymentMethodsCard
             :payment-methods="paymentMethods"
             :selected-method="selectedPaymentMethod"
@@ -157,7 +158,7 @@
         </div>
       </template>
     </Modal>
-  </div>
+  </main>
 </template>
 
 <script setup>

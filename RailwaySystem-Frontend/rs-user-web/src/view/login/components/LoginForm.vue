@@ -386,4 +386,95 @@ defineExpose({
     width: 100%;
   }
 }
+
+.login-form {
+  max-width: 100%;
+}
+
+.form-title {
+  margin-bottom: 22px;
+  color: #0b2559;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.login-form-content .el-form-item {
+  margin-bottom: 18px;
+}
+
+:deep(.el-input__wrapper) {
+  min-height: 44px;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px #dde6f0 inset;
+}
+
+:deep(.el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px #1677ff inset;
+}
+
+:deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.18) inset, 0 0 0 1px #1677ff inset;
+}
+
+.captcha-container {
+  min-height: 44px;
+  height: auto;
+  align-items: stretch;
+}
+
+.captcha-display {
+  width: 120px;
+  border: 1px solid #dde6f0;
+  border-radius: 8px;
+  background: #f5f8fc;
+  transition: border-color 0.18s ease;
+}
+
+.captcha-display:hover {
+  border-color: #1677ff;
+}
+
+.login-button {
+  height: 46px;
+  border-color: #ff8200;
+  border-radius: 8px;
+  background: #ff8200;
+  font-weight: 800;
+}
+
+.login-button:hover,
+.login-button:focus {
+  border-color: #e87500;
+  background: #e87500;
+}
+
+.form-footer {
+  margin-top: 12px;
+}
+
+.form-footer :deep(.el-link__inner) {
+  color: #1677ff;
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .login-form {
+    padding: 0;
+  }
+
+  .form-title {
+    margin-bottom: 18px;
+    font-size: 20px;
+  }
+
+  .captcha-container {
+    flex-direction: column;
+  }
+
+  .captcha-display {
+    width: 100%;
+    min-height: 44px;
+  }
+}
 </style>

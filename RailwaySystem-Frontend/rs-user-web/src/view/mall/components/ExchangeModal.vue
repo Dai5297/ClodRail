@@ -198,7 +198,7 @@ export default {
 }
 
 .confirm-points {
-  color: #667eea;
+  color: #1677ff;
   font-weight: 500;
 }
 
@@ -226,7 +226,7 @@ export default {
   display: block;
   font-size: 24px;
   font-weight: 700;
-  color: #667eea;
+  color: #1677ff;
 }
 
 .balance-value.warning {

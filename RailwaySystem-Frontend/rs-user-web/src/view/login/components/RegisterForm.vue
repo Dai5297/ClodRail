@@ -256,7 +256,12 @@ const sendVerificationCode = async () => {
   try {
     const response = await getPhoneCode({phone: registerForm.phone})
     if (response.code === 200) {
-      ElMessage.success('验证码已发送到您的手机')
+      if (response.data) {
+        registerForm.verificationCode = String(response.data)
+        ElMessage.success(`验证码已生成：${response.data}`)
+      } else {
+        ElMessage.success('验证码已发送到您的手机')
+      }
     } else {
       ElMessage.error(response.message || '获取验证码失败')
       return
@@ -427,6 +432,89 @@ defineExpose({
   
   .register-form-content .el-form-item {
     margin-bottom: 16px;
+  }
+}
+
+.register-form {
+  max-width: 100%;
+}
+
+.form-title {
+  margin-bottom: 22px;
+  color: #0b2559;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.register-form-content .el-form-item,
+.verification-item {
+  margin-bottom: 16px;
+}
+
+:deep(.el-input__wrapper) {
+  min-height: 44px;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px #dde6f0 inset;
+}
+
+:deep(.el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px #1677ff inset;
+}
+
+:deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.18) inset, 0 0 0 1px #1677ff inset;
+}
+
+.verification-container {
+  align-items: stretch;
+}
+
+.send-code-btn {
+  width: 128px;
+  border-color: #1677ff;
+  border-radius: 8px;
+  background: #1677ff;
+  font-weight: 700;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.register-button {
+  height: 46px;
+  border-color: #ff8200;
+  border-radius: 8px;
+  background: #ff8200;
+  font-weight: 800;
+}
+
+.register-button:hover,
+.register-button:focus {
+  border-color: #e87500;
+  background: #e87500;
+}
+
+.form-footer {
+  margin-top: 12px;
+}
+
+.form-footer :deep(.el-link__inner) {
+  color: #1677ff;
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .register-form {
+    padding: 0;
+  }
+
+  .form-title {
+    margin-bottom: 18px;
+    font-size: 20px;
+  }
+
+  .send-code-btn {
+    width: 100%;
   }
 }
 </style>

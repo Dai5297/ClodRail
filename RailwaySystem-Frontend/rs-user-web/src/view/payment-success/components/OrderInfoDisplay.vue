@@ -1,85 +1,56 @@
 <template>
-  <div class="order-info">
+  <dl class="order-info" aria-label="支付订单摘要">
     <div class="info-item">
-      <span class="label">订单号：</span>
-      <span class="value">{{ orderInfo.out_trade_no || orderInfo.orderId }}</span>
+      <dt>订单号</dt>
+      <dd class="data-value">{{ orderInfo.out_trade_no || orderInfo.orderId }}</dd>
     </div>
-    <div class="info-item" v-if="orderInfo.trade_no">
-      <span class="label">支付宝交易号：</span>
-      <span class="value">{{ orderInfo.trade_no }}</span>
+    <div v-if="orderInfo.trade_no && orderInfo.trade_no !== '---'" class="info-item">
+      <dt>支付宝交易号</dt>
+      <dd class="data-value">{{ orderInfo.trade_no }}</dd>
     </div>
-    <div class="info-item" v-if="orderInfo.total_amount">
-      <span class="label">支付金额：</span>
-      <span class="value amount">￥{{ orderInfo.total_amount }}</span>
+    <div v-if="orderInfo.total_amount" class="info-item">
+      <dt>支付金额</dt>
+      <dd class="amount">¥{{ formatAmount(orderInfo.total_amount) }}</dd>
     </div>
-    <div class="info-item" v-if="orderInfo.timestamp">
-      <span class="label">支付时间：</span>
-      <span class="value">{{ formatTime(orderInfo.timestamp) }}</span>
+    <div v-if="orderInfo.timestamp" class="info-item">
+      <dt>支付时间</dt>
+      <dd class="data-value">{{ formatTime(orderInfo.timestamp) }}</dd>
     </div>
-  </div>
+  </dl>
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   orderInfo: {
     type: Object,
     required: true
   }
 })
 
-// 格式化时间
+const formatAmount = (amount) => Number(amount || 0).toFixed(2)
+
 const formatTime = (timestamp) => {
-  if (!timestamp) return ''
+  if (!timestamp) return '--'
   const date = new Date(timestamp)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  const hours = String(date.getHours()).padStart(2, '0')
-  const minutes = String(date.getMinutes()).padStart(2, '0')
-  const seconds = String(date.getSeconds()).padStart(2, '0')
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+  if (Number.isNaN(date.getTime())) return '--'
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`
 }
 </script>
 
 <style scoped>
 .order-info {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 32px;
+  margin: 0;
+  padding: 8px 20px;
+  border: 1px solid var(--rail-line);
+  border-radius: 10px;
+  background: var(--rail-background);
   text-align: left;
 }
-
-.info-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.info-item:last-child {
-  border-bottom: none;
-}
-
-.label {
-  font-size: 14px;
-  color: #666;
-}
-
-.value {
-  font-size: 14px;
-  color: #333;
-  font-weight: 500;
-  word-break: break-all;
-}
-
-.value.amount {
-  color: #52c41a;
-  font-size: 18px;
-  font-weight: 600;
-}
+.info-item { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 13px 0; border-bottom: 1px dashed color-mix(in srgb, var(--rail-line) 82%, var(--rail-navy)); }
+.info-item:last-child { border-bottom: 0; }
+dt { color: var(--rail-muted); font-size: 13px; }
+dd { margin: 0; color: var(--rail-ink); font-size: 14px; font-weight: 600; text-align: right; word-break: break-all; }
+.data-value { font-family: "Arial Narrow", "DIN Alternate", Arial, sans-serif; font-variant-numeric: tabular-nums; }
+.amount { color: var(--rail-action); font-family: "Arial Narrow", "DIN Alternate", Arial, sans-serif; font-size: 20px; font-variant-numeric: tabular-nums; }
+@media (max-width: 480px) { .info-item { align-items: flex-start; flex-direction: column; gap: 4px; } dd { text-align: left; } }
 </style>
-
-
-

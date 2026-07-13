@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="user-contact-page space-y-6">
     <!-- 页面头部 -->
     <div class="border-b border-slate-200 pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
@@ -451,3 +451,52 @@ onMounted(async () => {
   await fetchContactList()
 })
 </script>
+
+<style scoped>
+.user-contact-page {
+  height: 100%;
+  padding: 24px;
+  color: #172033;
+  overflow-y: auto;
+}
+
+.user-contact-page :deep(h2),
+.user-contact-page :deep(h3) {
+  color: #0b2559;
+  letter-spacing: 0;
+}
+
+.user-contact-page :deep(.rounded-lg),
+.user-contact-page :deep(.rounded-xl),
+.user-contact-page :deep(.rounded-md) {
+  border-radius: 8px;
+}
+
+.user-contact-page :deep(.border-slate-200),
+.user-contact-page :deep(.border-slate-300) {
+  border-color: #dde6f0;
+}
+
+.user-contact-page :deep(button) {
+  border-radius: 8px;
+}
+
+.user-contact-page :deep(.bg-blue-600) {
+  background-color: #ff8200;
+}
+
+.user-contact-page :deep(.hover\:bg-blue-700:hover) {
+  background-color: #e87500;
+}
+
+.user-contact-page :deep(.text-blue-600),
+.user-contact-page :deep(.text-blue-500) {
+  color: #1677ff;
+}
+
+@media (max-width: 640px) {
+  .user-contact-page {
+    padding: 16px;
+  }
+}
+</style>

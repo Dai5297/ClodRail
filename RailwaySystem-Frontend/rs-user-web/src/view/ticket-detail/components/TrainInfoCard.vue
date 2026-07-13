@@ -1,48 +1,49 @@
 <template>
-  <div class="bg-white rounded-xl p-8 mb-6 shadow-sm border border-gray-100">
-    <div class="flex items-center gap-5 mb-8 pb-5 border-b border-gray-100">
-      <div class="text-3xl font-bold text-blue-600">{{ ticketDetail.trainCode }}</div>
-      <div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-medium">{{ ticketDetail.trainType }}</div>
-      <div class="text-gray-500 text-base">{{ formatDate(ticketDetail.departureDate) }}</div>
+  <article class="mb-5 overflow-hidden rounded-xl border border-line bg-white shadow-soft">
+    <div class="flex flex-wrap items-center gap-3 border-b border-line bg-[color-mix(in_srgb,var(--rail-primary)_3%,var(--rail-surface))] px-5 py-4 sm:px-7">
+      <span class="rounded-md bg-navy px-3 py-1 text-xs font-bold tracking-wider text-white">第 1 站 · 车次</span>
+      <span class="data-number text-2xl font-bold text-primary sm:text-3xl">{{ ticketDetail.trainCode }}</span>
+      <span class="rounded-full border border-primary/25 bg-primary-soft px-2.5 py-1 text-xs font-semibold text-primary-active">{{ ticketDetail.trainType }}</span>
+      <span class="ml-0 text-sm text-secondary sm:ml-auto">{{ formatDate(ticketDetail.departureDate) }}</span>
     </div>
 
-    <div class="grid grid-cols-[1fr_auto_1fr] gap-10 items-center max-w-4xl mx-auto">
-      <!-- Departure -->
-      <div class="text-left">
-        <div class="mb-2">
-          <div class="text-4xl font-bold text-gray-900 leading-none mb-1">{{ formatTime(ticketDetail.startTime) }}</div>
-          <div class="text-xs text-gray-400">{{ formatDate(ticketDetail.startTime) }}</div>
+    <div class="grid grid-cols-[1fr_64px_1fr] items-center gap-2 px-5 py-7 sm:grid-cols-[1fr_minmax(160px,260px)_1fr] sm:gap-8 sm:px-10 sm:py-9">
+      <div class="min-w-0 text-left">
+        <div class="mb-3">
+          <time class="data-number block text-3xl font-bold leading-none text-navy sm:text-4xl">{{ formatTime(ticketDetail.startTime) }}</time>
+          <span class="mt-1 hidden text-xs text-secondary/80 sm:block">{{ formatDate(ticketDetail.startTime) }}</span>
         </div>
-        <div class="text-xl text-gray-800 mb-1 font-medium">{{ ticketDetail.originStation.name }}</div>
-        <div class="text-sm text-gray-500">{{ ticketDetail.originStation.platform }}站台</div>
+        <p class="truncate text-lg font-bold text-ink sm:text-xl">{{ ticketDetail.originStation.name }}</p>
+        <p class="mt-1 text-xs text-secondary sm:text-sm">{{ ticketDetail.originStation.platform }}站台 · 出发</p>
       </div>
 
-      <!-- Journey Info -->
-      <div class="flex flex-col items-center gap-3 w-full">
-        <div class="flex items-center gap-1.5 text-gray-500 text-sm">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <div class="flex min-w-0 flex-col items-center gap-2 text-center">
+        <div class="flex items-center gap-1.5 text-xs font-medium text-secondary sm:text-sm">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           <span>{{ formatDuration(ticketDetail.duration) }}</span>
         </div>
-        <div class="flex flex-col items-center w-full gap-1">
-          <div class="w-32 h-0.5 bg-gradient-to-r from-blue-500 to-green-500 rounded-full relative">
-            <div class="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-500 rounded-full border-2 border-white"></div>
-            <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-green-500 rounded-full border-2 border-white"></div>
-          </div>
-          <div class="text-xs text-gray-400">{{ ticketDetail.stopCount }}站</div>
+        <div class="flex w-full items-center" aria-hidden="true">
+          <span class="h-2.5 w-2.5 shrink-0 rounded-full border-2 border-primary bg-white" />
+          <span class="h-0.5 min-w-4 flex-1 bg-primary" />
+          <svg class="mx-1 h-5 w-5 shrink-0 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M4 15.5V9.2c0-2.5 2-4.5 4.5-4.5h7c2.5 0 4.5 2 4.5 4.5v6.3h-2v2.3a1.2 1.2 0 0 1-2.4 0v-2.3H8.4v2.3a1.2 1.2 0 0 1-2.4 0v-2.3H4Zm2-2h12V9.2c0-1.4-1.1-2.5-2.5-2.5h-7A2.5 2.5 0 0 0 6 9.2v4.3Zm2-1.2a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Zm8 0a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Z" /></svg>
+          <span class="h-0.5 min-w-4 flex-1 bg-primary" />
+          <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-action ring-2 ring-action-soft" />
+        </div>
+        <div class="text-xs text-secondary/80">
+          经停 {{ ticketDetail.stopCount }} 站
         </div>
       </div>
 
-      <!-- Arrival -->
-      <div class="text-right">
-        <div class="mb-2">
-          <div class="text-4xl font-bold text-gray-900 leading-none mb-1">{{ formatTime(ticketDetail.endTime) }}</div>
-          <div class="text-xs text-gray-400">{{ formatDate(ticketDetail.endTime) }}</div>
+      <div class="min-w-0 text-right">
+        <div class="mb-3">
+          <time class="data-number block text-3xl font-bold leading-none text-navy sm:text-4xl">{{ formatTime(ticketDetail.endTime) }}</time>
+          <span class="mt-1 hidden text-xs text-secondary/80 sm:block">{{ formatDate(ticketDetail.endTime) }}</span>
         </div>
-        <div class="text-xl text-gray-800 mb-1 font-medium">{{ ticketDetail.destinationStation.name }}</div>
-        <div class="text-sm text-gray-500">{{ ticketDetail.destinationStation.platform }}站台</div>
+        <p class="truncate text-lg font-bold text-ink sm:text-xl">{{ ticketDetail.destinationStation.name }}</p>
+        <p class="mt-1 text-xs text-secondary sm:text-sm">{{ ticketDetail.destinationStation.platform }}站台 · 到达</p>
       </div>
     </div>
-  </div>
+  </article>
 </template>
 
 <script setup>
@@ -105,3 +106,9 @@ const formatDuration = (isoDuration) => {
 }
 </script>
 
+<style scoped>
+.data-number {
+  font-family: "DIN Alternate", "Arial Narrow", Arial, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+</style>
